@@ -308,5 +308,50 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { social: 75, fun: 50 }
       }
     ]
+  },
+
+  stereo_hifi: {
+    id: 'stereo_hifi',
+    name: 'HiFi-Stereoanlage Pro',
+    category: 'entertainment',
+    price: 400,
+    width: 1,
+    height: 1,
+    color: '#34495e',
+    accentColor: '#00e5ff',
+    icon: '📻',
+    description: '4 Simlish-Radiosender (Pop, Retro, Lo-Fi, Electro) & Tanzfläche.',
+    interactions: [
+      {
+        id: 'toggle_radio',
+        label: 'Radio An / Aus',
+        icon: '🎵',
+        duration: 2,
+        needEffects: { fun: 20 }
+      },
+      {
+        id: 'cycle_station',
+        label: 'Radiosender wechseln',
+        icon: '🎛️',
+        duration: 2,
+        needEffects: { fun: 15 }
+      },
+      {
+        id: 'dance_solo',
+        label: 'Allein tanzen',
+        icon: '🕺',
+        duration: 7,
+        needEffects: { fun: 85, energy: -10 },
+        skillGain: { skill: 'fitness', amount: 20 }
+      },
+      {
+        id: 'dance_couple',
+        label: 'Paartanzen mit Nachbar',
+        icon: '💃',
+        duration: 8,
+        needEffects: { fun: 90, social: 80 },
+        skillGain: { skill: 'charisma', amount: 25 }
+      }
+    ]
   }
 };

@@ -22,10 +22,11 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 ### Core Gameplay Loop
 - **Create-A-Sim (CAS)**: Gestalte deinen Wunsch-Sim (Name, Aussehen, Kleidung, Merkmale).
 - **Bedürfnis- & Stimmungsmanagement**: Halte die 6 Hauptbedürfnisse im grünen Bereich.
-- **Lebensphasen & Alterungssystem**: Durchlaufe 6 Lebensphasen (🍼 Baby, 🧸 Kleinkind, 🎒 Kind, 🎧 Teenager, 💼 Erwachsener, 👵 Senior). Feiere Geburtstage mit Kerzenauspusten oder gründe eine Familie (Baby planen) mit Stammbaum-Übersicht.
-- **Interaktive 2.5D Welt**: Bewege deinen Sim frei im Haus, benutze Möbel (Bett, Dusche, Kühlschrank, PC, Staffelei, Sofa, Smart-TV, Geburtstagstorte, Baby-Wiege).
+- **Stereoanlage & Radio-Synthesizer**: Höre 4 prozedural erzeugte Simlish-Radiosender (Pop, Retro Synthwave, Lo-Fi, Electro Dance) und tanze allein oder im Paar zu den Beats!
+- **Lebensphasen & Alterungssystem**: Durchlaufe 6 Lebensphasen (🍼 Baby, 🧸 Kleinkind, 🎒 Kind, 🎧 Teenager, 💼 Erwachsener, 👵 Senior). Feiere Geburtstage mit Kerzenauspusten oder gründe eine Familie mit Stammbaum-Übersicht.
+- **Interaktive 2.5D Welt**: Bewege deinen Sim frei im Haus, benutze Möbel (Bett, Dusche, PC, Staffelei, Torte, Wiege, Stereoanlage).
 - **Architekt & Baumodus**: Baue individuelle 3D-Wände, setze Türen & Fenster ein, verlege Parkett, Marmor oder Teppich und hebe kühle Swimmingpools aus!
-- **NPC-Nachbarn & Beziehungs-System**: Interagiere mit Nachbarn (Mortimer Goth, Penny Pizazz, Bob Pancakes, Eliza Pancakes) über das **Sims 4 Pie-Dialograd** und baue Freundschaften oder Romantik auf.
+- **NPC-Nachbarn & Beziehungs-System**: Interagiere mit Nachbarn über das **Sims 4 Pie-Dialograd** und baue Freundschaften oder Romantik auf.
 - **Aktions-Schlange (Action Queue)**: Staple bis zu 5 Aktionen nacheinander (wie in Sims 4).
 - **Karriere & Sims Mobile Quests**: Steigere Fähigkeiten (Programmieren, Kochen, Malen, Fitness, Charisma), schließe tägliche Quests ab und steige auf.
 
@@ -55,16 +56,17 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 
 ## ✨ Features & Highlights
 
-- 🍼 **Lebensphasen & Alterungs-System**: 6 Lebensphasen (Baby, Kleinkind, Kind, Teenager, Erwachsener, Senior) mit proportionaler Render-Skalierung, Alters-Fortschrittsbalken und ergrauenden Haaren im Alter.
-- 🎂 **Geburtstagstorte & Kerzen ausblasen**: Feiere Geburtstage und steige per Interaktion an der Torte in die nächste Lebensphase auf.
-- 👶 **Baby erzeugen & Familienstammbaum**: Erzeuge Babys bei hoher Romantik (>75%) über die Interaktion "Baby planen (Whahoo)" und verwalte die Verwandtschaft im Stammbaum-Panel (`👨‍👩‍👧‍👦 Stammbaum`).
+- 📻 **Prozeduraler Radio-Synthesizer**: 4 Simlish-Musiksender (Pop Hits, 80s Synthwave, Lo-Fi Chillbeats, Electro Dance) erzeugt via Web Audio API ohne MP3s.
+- 🕺 **Tanz-System & Paartanzen**: Rhythmische Tanz-Animationen & Musik-Sprechblasen (🎵, 🎶, 🕺, <ctrl42>) beim alleinigen oder gemeinsamen Tanzen mit Nachbarn.
+- 🍼 **Lebensphasen & Alterungs-System**: 6 Lebensphasen (Baby bis Senior) mit Größen-Skalierung & Stammbaum.
+- 🎂 **Geburtstagstorte & Kerzen ausblasen**: Kerzen ausblasen für Lebensphasen-Aufstieg.
 - 🧱 **Erweiterter Baumodus & Raum-Editor**: 5 Architektur-Tabs (Möbel, Wände, Türen/Fenster, Bodenbeläge, Pool & Outdoor).
-- 🏊 **Swimmingpool & Schwimm-System**: Ausheben von Swimmingpools mit transparent animierter Wasser-Textur & Schwimm-Interaktion.
-- 💬 **Sims 4 Pie-Dialograd & Emote-Bubbles**: Interaktions-Rad mit Kategorien (Freundlich, Lustig, Romantisch, Gemein). Animierte Sprechblasen (❤️, 😀, 💬, 💔, 😡, 👶).
-- 💕 **Beziehungs-Engine**: Freundschafts- (0-100%) und Romantikbalken (0-100%) mit dynamischen Beziehungs-Titeln.
-- 🟢 **Symbolisches Plumbob-System**: Der schwebende Plumbob-Kristall über dem Sim reagiert dynamisch auf die aktuelle Stimmung.
-- 🗣️ **Simlish Vocal Synthesizer**: Prozedural generierte Stimmen (Simlish) und Soundeffekte via Web Audio API.
-- 💾 **Automatischer Speicherstand**: Automatisches Speichern & Laden im LocalStorage (inklusive Lebensphase, Alter & Stammbaum).
+- 🏊 **Swimmingpool & Schwimm-System**: Ausheben von Pools mit animierter Wasser-Textur & Schwimmen.
+- 💬 **Sims 4 Pie-Dialograd & Emote-Bubbles**: Interaktions-Rad (Freundlich, Lustig, Romantisch, Gemein) mit Emote-Bubbles.
+- 💕 **Beziehungs-Engine**: Freundschafts- und Romantikbalken mit dynamischen Beziehungs-Titeln.
+- 🟢 **Symbolisches Plumbob-System**: Der schwebende Plumbob-Kristall reagiert dynamisch auf die Stimmung.
+- 🗣️ **Simlish Vocal Synthesizer**: Prozedural generierte Stimmen (Simlish) & UI-Soundeffekte.
+- 💾 **Automatischer Speicherstand**: Automatisches Speichern & Laden im LocalStorage.
 
 ---
 
@@ -82,15 +84,16 @@ Sims/
     │   ├── Sanitizer.ts         # XSS Maskierung, Text Clean & Prototype-Pollution Guard
     │   └── PrivacyManager.ts    # DSGVO Consent, LocalStorage Manager & Right-to-Erasure
     ├── audio/
-    │   └── SoundManager.ts      # Web Audio API Simlish Chatter, UI & Level-Up Synthesizer
+    │   ├── SoundManager.ts      # Web Audio API Simlish Chatter, UI & Level-Up Synthesizer
+    │   └── RadioManager.ts      # Web Audio API Prozeduraler Radio-Synthesizer (4 Sender)
     ├── engine/                  # Core 2.5D Game Engine
-    │   ├── Game.ts              # Haupt-Gameschleife (requestAnimationFrame)
-    │   ├── IsometricRenderer.ts # 2.5D Isometric Canvas Grid, Walls, Doors, Pools & LifeStage Scaled Sprites
+    │   ├── Game.ts              # Haupt-Gameschleife & Event-Controller
+    │   ├── IsometricRenderer.ts # 2.5D Canvas Grid, Walls, Pools, Dance Animations & Emotes
     │   ├── Camera.ts            # Panning, Zooming & Smooth Interpolation
     │   └── Input.ts             # Maus-, Touch- & Tastatur-Eingabeverarbeitung
     ├── entity/                  # Sim Entitäten & Verhalten
     │   ├── Sim.ts               # Player Sim State (Lebensphase, Alterstage, Kinder, Partner, Skills)
-    │   ├── LifeStage.ts         # 6 Lebensphasen (Baby bis Senior), Render-Skalierung & Altersschwellen
+    │   ├── LifeStage.ts         # 6 Lebensphasen (Baby bis Senior), Render-Skalierung
     │   ├── NPCManager.ts        # Besuchende Nachbarn (Mortimer Goth, Penny Pizazz, Bob Pancakes)
     │   ├── Relationship.ts      # Beziehungs-Klasse (Freundschaft, Romantik & Status)
     │   ├── ActionQueue.ts       # Sims 4 Aktions-Stapelsystem (max. 5 Aktionen)
@@ -98,15 +101,15 @@ Sims/
     │   └── Moods.ts             # Stimmungs-Zustände (Glücklich, Energetisch, Angespannt, Erschöpft)
     ├── world/                   # Spielwelt & Möbel
     │   ├── House.ts             # Raster-Layout, Wände, Türen, Fenster, Böden & Pool-Raster
-    │   ├── Furniture.ts         # Möbel-Katalog (Bett, Dusche, PC, Torte, Wiege, Pool-Leiter)
+    │   ├── Furniture.ts         # Möbel-Katalog (Bett, Dusche, PC, Stereoanlage, Torte, Wiege, Pool-Leiter)
     │   └── Pathfinding.ts       # A* Pfadfindungs-Algorithmus auf dem Raster
     ├── systems/                 # Spiel-Mechaniken
     │   ├── TimeSystem.ts        # Uhrzeit, Tag/Nacht-Licht & Geschwindigkeits-Regelung
     │   ├── CareerSystem.ts      # Berufe (Tech Guru, Gourmet Chef, Künstler) & Skills
     │   ├── QuestSystem.ts       # Sims Mobile Style Aufgaben & Belohnungen
-    │   └── SaveManager.ts       # Sichere JSON-Speicherung von Sims, Altersphasen, Wänden & Stammbaum
+    │   └── SaveManager.ts       # Sichere JSON-Speicherung von Sims, Wänden, Böden & Radio-Status
     ├── ui/                      # Responsive UI Modals & HUD Views
-    │   ├── HUD.ts               # Oberer & unterer UI-Balken, Lebensphasen-Icon & Aktionschips
+    │   ├── HUD.ts               # Oberer & unterer UI-Balken, Radio-Widget, Bedürfnisse & Aktionschips
     │   ├── FamilyTreePanel.ts   # Stammbaum-Panel (Generationen, Partner, Kinder & Alter)
     │   ├── BuildBuyCatalog.ts   # 5-Tab Architekt-Katalog (Möbel, Wände, Türen, Böden, Pool)
     │   ├── SocialWheel.ts       # Sims 4 Pie-Dialograd für freundliche, lustige, romantische Aktionen
@@ -124,10 +127,11 @@ Sims/
 
 ## ⌨️ Anleitung & Steuerung
 
-### Steuerung für Lebensphasen & Familie
-- **Geburtstagstorte kaufen**: Platziere die Geburtstagstorte aus dem Katalog und wähle *"Kerzen ausblasen"*, um in die nächste Lebensphase aufzusteigen.
-- **Baby erzeugen**: Erreiche >75% Romantik mit einem Partner-Sim und wähle im Social Pie Menu *"Baby planen (Whahoo)"*.
-- **Familienstammbaum öffnen**: Klicke im HUD auf `👨‍👩‍👧‍👦 Stammbaum`, um die Generationen und das Alter einzusehen.
+### Steuerung für Stereoanlage & Tanzen
+- **Stereoanlage Pro kaufen**: Platziere die Stereoanlage aus dem Katalog (Tab 🛋️ Möbel) im Haus.
+- **Radio einschalten**: Klicke auf die Stereoanlage oder den `📻 Radio`-Button im oberen HUD-Balken.
+- **Sender wechseln**: Schalte zwischen *Simlish Pop*, *80s Synthwave*, *Lo-Fi Chillbeats* und *Electro Dance* um.
+- **Tanzen**: Wähle *"Allein tanzen"* oder *"Paartanzen mit Nachbar"*, um Spaß, Fitness und Sozialpunkte aufzuladen.
 
 ### Tastatur-Hotkeys (WCAG Barrierefreiheit)
 - `W / A / S / D` oder `Pfeiltasten`: Kamera verschieben.
@@ -167,19 +171,14 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 1.4.0 (Stereo System & Radio Synthesizer Upgrade)
+- **[Feature] Prozeduraler Radio Synthesizer**: 4 Simlish Radiosender (Pop Hits, 80s Synthwave, Lo-Fi Chillbeats, Electro Dance) erzeugt via Web Audio API.
+- **[Feature] Tanz-System**: Rhythmische Wipp-Animationen und Musik-Sprechblasen beim Allein- oder Paartanzen mit Nachbarn.
+- **[Feature] HiFi-Stereoanlage**: Neues Möbelstück mit Senderauswahl und Radio-Interaktionen.
+- **[Feature] HUD Radio Widget**: Schnelles Umschalten des Radiosenders direkt im oberen HUD-Balken.
+
 ### Version 1.3.0 (Life Stages, Aging & Family Tree Upgrade)
-- **[Feature] 6 Lebensphasen**: Baby, Kleinkind, Kind, Teenager, Erwachsener, Senior mit getrennten Größen-Skalierungen & Altersschwellen.
-- **[Feature] Geburtstagstorte**: Kerzen ausblasen, um das Alterungsevent und Konfetti auszulösen.
-- **[Feature] Baby-Erzeugung & Wiege**: Romantische Interaktion "Baby planen (Whahoo)" schaltet Säuglinge und Wiege frei.
-- **[Feature] Familienstammbaum Panel**: Visualisierung der Familie (Partner, Kinder, Generationen, Altersbalken).
-
-### Version 1.2.0 (Advanced Build Mode & Swimming Pool Upgrade)
-- **[Feature] 3D Wandkonstruktion**: Freies Bauen von Wänden auf Grid-Grenzen.
-- **[Feature] Türen & Fenster**: Einsetzen von Türen und Fenstern mit Aussparrungen.
-- **[Feature] Boden-Anstrich**: 5 Bodenbelags-Typen (Parkett, Edelmarmor, Fliesen, Teppich, Rasen).
-- **[Feature] Swimmingpool System**: Ausheben von Pools mit animierter Wasser-Textur & Schwimm-Interaktion.
-
-### Version 1.1.0 (Social & Relationship Upgrade)
-- **[Feature] Beziehungs-System**: Freundschafts- und Romantikbalken mit dynamischen Beziehungs-Titeln.
-- **[Feature] Sims 4 Pie-Dialograd**: Interaktions-Menü mit 4 Hauptkategorien.
-- **[Feature] NPC-Townies**: Spawnen besuchender Nachbarn.
+- **[Feature] 6 Lebensphasen**: Baby, Kleinkind, Kind, Teenager, Erwachsener, Senior mit Render-Skalierung.
+- **[Feature] Geburtstagstorte**: Kerzen ausblasen, um Alterungsevent auszulösen.
+- **[Feature] Baby-Erzeugung & Wiege**: Romantische Interaktion "Baby planen (Whahoo)".
+- **[Feature] Familienstammbaum Panel**: Visualisierung der Familie (Partner, Kinder, Generationen).

@@ -272,7 +272,12 @@ export class IsometricRenderer {
     const stageInfo = LifeStage.getInfo(sim.lifeStage);
     const scale = stageInfo.renderScale;
 
-    const yOffset = isSwimming ? 10 : 0;
+    const currentAction = sim.actionQueue.getCurrentAction();
+    const isDancing = currentAction && (currentAction.name.includes('tanzen') || currentAction.name.includes('Dance'));
+
+    // Rhythmic dance bobbing animation
+    const danceOffset = isDancing ? Math.sin(Date.now() / 150) * 4 : 0;
+    const yOffset = isSwimming ? 10 : danceOffset;
 
     ctx.save();
     ctx.translate(isoX, isoY);
@@ -310,7 +315,6 @@ export class IsometricRenderer {
     this.drawPlumbob(0, plumbobY, mood.plumbobColor);
 
     // Action progress bar
-    const currentAction = sim.actionQueue.getCurrentAction();
     if (currentAction) {
       const progress = currentAction.elapsedSeconds / currentAction.durationSeconds;
       const barW = 40;

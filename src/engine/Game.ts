@@ -10,6 +10,7 @@ import { Camera } from './Camera';
 import { IsometricRenderer } from './IsometricRenderer';
 import { InputHandler } from './Input';
 import { SoundManager } from '../audio/SoundManager';
+import { RadioManager } from '../audio/RadioManager';
 import { TimeSystem } from '../systems/TimeSystem';
 import { CareerManager } from '../systems/CareerSystem';
 import { QuestManager } from '../systems/QuestSystem';
@@ -32,6 +33,7 @@ export class Game {
   private camera: Camera;
   private renderer: IsometricRenderer;
   private soundManager: SoundManager;
+  public radioManager: RadioManager;
   private inputHandler: InputHandler;
 
   public house: House;
@@ -58,6 +60,7 @@ export class Game {
     this.camera = new Camera();
     this.renderer = new IsometricRenderer(canvas);
     this.soundManager = new SoundManager();
+    this.radioManager = new RadioManager();
 
     this.house = new House();
     this.sim = new Sim();
@@ -186,6 +189,33 @@ export class Game {
               this.sim.needs.modify(need as any, val!);
             });
 
+            if (interaction.id === 'toggle_radio') {
+              const playing = this.radioManager.toggleRadio();
+              const info = this.radioManager.getActiveStationInfo();
+              this.updateRadioHUD();
+              alert(`📻 Radio ${playing ? 'Eingeschaltet' : 'Ausgeschaltet'} (${info.name})`);
+            } else if (interaction.id === 'cycle_station') {
+              const next = this.radioManager.cycleNextStation();
+              this.updateRadioHUD();
+              alert(`🎛️ Radiosender gewechselt zu: ${next.icon} ${next.name}`);
+            } else if (interaction.id === 'dance_solo') {
+              if (!this.radioManager.getIsPlaying()) {
+                this.radioManager.playStation('pop');
+                this.updateRadioHUD();
+              }
+              this.soundManager.playSimlish(1.2, 'happy');
+            } else if (interaction.id === 'dance_couple') {
+              if (!this.radioManager.getIsPlaying()) {
+                this.radioManager.playStation('retro');
+                this.updateRadioHUD();
+              }
+              this.soundManager.playSimlish(1.1, 'flirty');
+              // Trigger dance emote on nearby NPC
+              if (this.npcManager.npcs.length > 0) {
+                this.npcManager.triggerEmote(this.npcManager.npcs[0].id, '💃', 5000);
+              }
+            }
+
             if (interaction.id === 'blow_candles') {
               const newStage = this.sim.ageUp();
               this.soundManager.playLevelUp();
@@ -243,6 +273,12 @@ export class Game {
     this.hud.onOpenFamilyTree = () => this.familyTreePanel.open(this.sim);
     this.hud.onOpenPrivacy = () => this.privacyModal.open();
 
+    this.hud.onToggleRadio = () => {
+      const next = this.radioManager.cycleNextStation();
+      this.updateRadioHUD();
+      alert(`📻 Sender gewechselt: ${next.icon} ${next.name}`);
+    };
+
     this.hud.onSaveGame = () => {
       SaveManager.saveGame(this.sim, this.house, this.careerManager, this.npcManager);
       this.soundManager.playLevelUp();
@@ -254,6 +290,15 @@ export class Game {
 
     this.inputHandler.onKeyboardSpeedToggle = (speed) => this.timeSystem.setSpeed(speed);
     this.inputHandler.onKeyboardPauseToggle = () => this.timeSystem.togglePause();
+  }
+
+  private updateRadioHUD(): void {
+    const radioBtn = document.getElementById('btn-radio-toggle');
+    if (radioBtn) {
+      const playing = this.radioManager.getIsPlaying();
+      const info = this.radioManager.getActiveStationInfo();
+      radioBtn.innerText = playing ? `📻 ${info.icon} ${info.name}` : `📻 Radio: Aus`;
+    }
   }
 
   private attemptLoadSave(): void {

@@ -20,6 +20,7 @@ export class HUDManager {
   public onOpenRelationships?: () => void;
   public onOpenFamilyTree?: () => void;
   public onOpenPrivacy?: () => void;
+  public onToggleRadio?: () => void;
   public onSpeedChange?: (speed: number) => void;
   public onTogglePause?: () => void;
   public onSaveGame?: () => void;
@@ -52,6 +53,7 @@ export class HUDManager {
             <div class="currency-badge" id="hud-simoleons" aria-label="Guthaben in Simoleons">
               § 2,500
             </div>
+            <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
             <button class="btn-hud" id="btn-sound-toggle" aria-label="Ton umschalten">🔊 Sound</button>
             <button class="btn-hud" id="btn-save" aria-label="Spielstand speichern">💾 Speichern</button>
             <button class="btn-hud" id="btn-privacy" aria-label="Datenschutz & DSGVO">🛡️ DSGVO</button>
@@ -128,6 +130,11 @@ export class HUDManager {
     document.getElementById('btn-save')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onSaveGame) this.onSaveGame();
+    });
+
+    document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onToggleRadio) this.onToggleRadio();
     });
 
     document.getElementById('btn-sound-toggle')?.addEventListener('click', (e) => {
