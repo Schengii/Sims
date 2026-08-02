@@ -17,6 +17,10 @@ export interface GameSaveData {
     needs: ReturnType<Sim['needs']['getValues']>;
     simoleons: number;
     skills: Sim['skills'];
+    lifeStage?: import('../entity/LifeStage').LifeStageType;
+    ageDays?: number;
+    partnerName?: string;
+    childrenNames?: string[];
   };
   house: {
     placedFurniture: House['placedFurniture'];
@@ -55,7 +59,11 @@ export class SaveManager {
           gridPos: sim.gridPos,
           needs: sim.needs.getValues(),
           simoleons: sim.simoleons,
-          skills: sim.skills
+          skills: sim.skills,
+          lifeStage: sim.lifeStage,
+          ageDays: sim.ageDays,
+          partnerName: sim.partnerName,
+          childrenNames: sim.childrenNames
         },
         house: {
           placedFurniture: house.placedFurniture,
@@ -121,6 +129,19 @@ export class SaveManager {
 
       if (data.sim.skills) {
         sim.skills = data.sim.skills;
+      }
+
+      if (data.sim.lifeStage) {
+        sim.lifeStage = data.sim.lifeStage;
+      }
+      if (typeof data.sim.ageDays === 'number') {
+        sim.ageDays = data.sim.ageDays;
+      }
+      if (data.sim.partnerName) {
+        sim.partnerName = Sanitizer.sanitizeText(data.sim.partnerName, 24);
+      }
+      if (Array.isArray(data.sim.childrenNames)) {
+        sim.childrenNames = data.sim.childrenNames.map(c => Sanitizer.sanitizeText(c, 24));
       }
 
       // Restore House furniture & tiles

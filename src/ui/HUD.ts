@@ -8,6 +8,7 @@ import { Sim } from '../entity/Sim';
 import { TimeSystem } from '../systems/TimeSystem';
 import { SoundManager } from '../audio/SoundManager';
 import { Sanitizer } from '../security/Sanitizer';
+import { LifeStage } from '../entity/LifeStage';
 
 export class HUDManager {
   private container: HTMLElement;
@@ -17,6 +18,7 @@ export class HUDManager {
   public onOpenBuildBuy?: () => void;
   public onOpenCareer?: () => void;
   public onOpenRelationships?: () => void;
+  public onOpenFamilyTree?: () => void;
   public onOpenPrivacy?: () => void;
   public onSpeedChange?: (speed: number) => void;
   public onTogglePause?: () => void;
@@ -85,6 +87,7 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-build" aria-label="Bauen & Kaufen Modus">🛋️ Baumodus</button>
             <button class="btn-hud" id="btn-open-career" aria-label="Karriere & Aufgaben Panel">💼 Karriere</button>
             <button class="btn-hud" id="btn-open-rel" aria-label="Beziehungen & Nachbarn Panel">💕 Beziehungen</button>
+            <button class="btn-hud" id="btn-open-family" aria-label="Familienstammbaum Panel">👨‍👩‍👧‍👦 Stammbaum</button>
           </div>
         </footer>
       </div>
@@ -110,6 +113,11 @@ export class HUDManager {
     document.getElementById('btn-open-rel')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenRelationships) this.onOpenRelationships();
+    });
+
+    document.getElementById('btn-open-family')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenFamilyTree) this.onOpenFamilyTree();
     });
 
     document.getElementById('btn-privacy')?.addEventListener('click', () => {
@@ -157,8 +165,9 @@ export class HUDManager {
 
     // 2. Sim Profile & Mood
     const mood = sim.getCurrentMood();
+    const stageInfo = LifeStage.getInfo(sim.lifeStage);
     const nameEl = document.getElementById('hud-sim-name');
-    if (nameEl) nameEl.innerText = Sanitizer.sanitizeText(sim.customization.name, 24);
+    if (nameEl) nameEl.innerText = `${stageInfo.icon} ${Sanitizer.sanitizeText(sim.customization.name, 24)}`;
 
     const moodEl = document.getElementById('hud-sim-mood');
     if (moodEl) moodEl.innerText = `Stimmung: ${mood.label}`;

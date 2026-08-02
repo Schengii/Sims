@@ -264,5 +264,49 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         skillGain: { skill: 'fitness', amount: 30 }
       }
     ]
+  },
+
+  birthday_cake: {
+    id: 'birthday_cake',
+    name: 'Geburtstagstorte',
+    category: 'appliances',
+    price: 150,
+    width: 1,
+    height: 1,
+    color: '#e74c3c',
+    accentColor: '#f1c40f',
+    icon: '🎂',
+    description: 'Puste die Kerzen aus, um in die nächste Lebensphase aufzusteigen!',
+    interactions: [
+      {
+        id: 'blow_candles',
+        label: 'Kerzen ausblasen (Altern)',
+        icon: '🎉',
+        duration: 5,
+        needEffects: { fun: 90, social: 30 }
+      }
+    ]
+  },
+
+  baby_crib: {
+    id: 'baby_crib',
+    name: 'Gemütliche Baby-Wiege',
+    category: 'comfort',
+    price: 280,
+    width: 1,
+    height: 1,
+    color: '#9b59b6',
+    accentColor: '#ffffff',
+    icon: '🍼',
+    description: 'Bietet Wiegekomfort für Säuglinge & Babys.',
+    interactions: [
+      {
+        id: 'cuddle_baby',
+        label: 'Baby wiegen & füttern',
+        icon: '👶',
+        duration: 6,
+        needEffects: { social: 75, fun: 50 }
+      }
+    ]
   }
 };

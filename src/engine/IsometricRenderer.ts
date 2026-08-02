@@ -9,6 +9,7 @@ import { Sim } from '../entity/Sim';
 import { Camera } from './Camera';
 import { FURNITURE_CATALOG } from '../world/Furniture';
 import { NPCManager, type NPCSim } from '../entity/NPCManager';
+import { LifeStage } from '../entity/LifeStage';
 
 export class IsometricRenderer {
   private canvas: HTMLCanvasElement;
@@ -268,39 +269,45 @@ export class IsometricRenderer {
   private drawSim(isoX: number, isoY: number, sim: Sim, isSwimming: boolean = false): void {
     const ctx = this.ctx;
     const mood = sim.getCurrentMood();
+    const stageInfo = LifeStage.getInfo(sim.lifeStage);
+    const scale = stageInfo.renderScale;
 
-    const yOffset = isSwimming ? 10 : 0; // Dip body into water when swimming
+    const yOffset = isSwimming ? 10 : 0;
+
+    ctx.save();
+    ctx.translate(isoX, isoY);
+    ctx.scale(scale, scale);
 
     // Shadow (only when not swimming)
     if (!isSwimming) {
       ctx.beginPath();
-      ctx.ellipse(isoX, isoY + 14, 14, 7, 0, 0, Math.PI * 2);
+      ctx.ellipse(0, 14, 14, 7, 0, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.fill();
     }
 
     // Body
     ctx.fillStyle = sim.customization.outfitColor;
-    ctx.fillRect(isoX - 8, isoY - 26 + yOffset, 16, 26 - yOffset);
+    ctx.fillRect(-8, -26 + yOffset, 16, 26 - yOffset);
     ctx.strokeStyle = '#111';
-    ctx.strokeRect(isoX - 8, isoY - 26 + yOffset, 16, 26 - yOffset);
+    ctx.strokeRect(-8, -26 + yOffset, 16, 26 - yOffset);
 
     // Head
     ctx.beginPath();
-    ctx.arc(isoX, isoY - 36 + yOffset, 10, 0, Math.PI * 2);
+    ctx.arc(0, -36 + yOffset, 10, 0, Math.PI * 2);
     ctx.fillStyle = sim.customization.skinColor;
     ctx.fill();
     ctx.stroke();
 
     // Hair
     ctx.beginPath();
-    ctx.arc(isoX, isoY - 40 + yOffset, 10, Math.PI, Math.PI * 2);
+    ctx.arc(0, -40 + yOffset, 10, Math.PI, Math.PI * 2);
     ctx.fillStyle = sim.customization.hairColor;
     ctx.fill();
 
     // Floating Plumbob
-    const plumbobY = isoY - 65 + yOffset + Math.sin(Date.now() / 250) * 4;
-    this.drawPlumbob(isoX, plumbobY, mood.plumbobColor);
+    const plumbobY = -65 + yOffset + Math.sin(Date.now() / 250) * 4;
+    this.drawPlumbob(0, plumbobY, mood.plumbobColor);
 
     // Action progress bar
     const currentAction = sim.actionQueue.getCurrentAction();
@@ -308,8 +315,8 @@ export class IsometricRenderer {
       const progress = currentAction.elapsedSeconds / currentAction.durationSeconds;
       const barW = 40;
       const barH = 6;
-      const bx = isoX - barW / 2;
-      const by = isoY - 80 + yOffset;
+      const bx = -barW / 2;
+      const by = -80 + yOffset;
 
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.fillRect(bx - 2, by - 2, barW + 4, barH + 4);
@@ -317,6 +324,8 @@ export class IsometricRenderer {
       ctx.fillStyle = '#2ecc71';
       ctx.fillRect(bx, by, barW * progress, barH);
     }
+
+    ctx.restore();
   }
 
   private drawNPCSim(isoX: number, isoY: number, npc: NPCSim): void {

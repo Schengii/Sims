@@ -25,6 +25,7 @@ import { CareerPanel } from '../ui/CareerPanel';
 import { PrivacyModal } from '../ui/PrivacyModal';
 import { SocialWheel } from '../ui/SocialWheel';
 import { RelationshipsPanel } from '../ui/RelationshipsPanel';
+import { FamilyTreePanel } from '../ui/FamilyTreePanel';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -47,6 +48,7 @@ export class Game {
   public privacyModal: PrivacyModal;
   public socialWheel: SocialWheel;
   public relationshipsPanel: RelationshipsPanel;
+  public familyTreePanel: FamilyTreePanel;
 
   private lastTime: number = 0;
   private isRunning: boolean = false;
@@ -72,6 +74,7 @@ export class Game {
     this.privacyModal = new PrivacyModal(uiContainer, this.soundManager);
     this.socialWheel = new SocialWheel(uiContainer, this.soundManager);
     this.relationshipsPanel = new RelationshipsPanel(uiContainer);
+    this.familyTreePanel = new FamilyTreePanel(uiContainer);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -183,6 +186,12 @@ export class Game {
               this.sim.needs.modify(need as any, val!);
             });
 
+            if (interaction.id === 'blow_candles') {
+              const newStage = this.sim.ageUp();
+              this.soundManager.playLevelUp();
+              alert(`🎉 GEBURTSTAG! ${this.sim.customization.name} ist in die Lebensphase "${newStage.toUpperCase()}" aufgestiegen!`);
+            }
+
             if (interaction.skillGain) {
               const leveledUp = this.sim.addSkillXP(interaction.skillGain.skill, interaction.skillGain.amount);
               if (leveledUp) {
@@ -215,8 +224,15 @@ export class Game {
 
     // Social Wheel Interaction Callback
     this.socialWheel.onInteractionExecuted = (npc, option) => {
-      // Trigger Emote Speech Bubble on NPC
       this.npcManager.triggerEmote(npc.id, option.emoteSymbol, 3000);
+
+      if (option.id === 'make_baby') {
+        const babyName = `${this.sim.customization.name.split(' ')[0]} Jr.`;
+        this.sim.childrenNames.push(babyName);
+        this.sim.partnerName = npc.name;
+        this.soundManager.playLevelUp();
+        alert(`👶 GLÜCKWUNSCH! Ein baby namens "${babyName}" wurde geboren und der Familie hinzugefügt!`);
+      }
     };
 
     // HUD Handlers
@@ -224,6 +240,7 @@ export class Game {
     this.hud.onOpenBuildBuy = () => this.buildCatalog.open(this.sim, this.house);
     this.hud.onOpenCareer = () => this.careerPanel.open(this.sim, this.careerManager, this.questManager);
     this.hud.onOpenRelationships = () => this.relationshipsPanel.open(this.npcManager);
+    this.hud.onOpenFamilyTree = () => this.familyTreePanel.open(this.sim);
     this.hud.onOpenPrivacy = () => this.privacyModal.open();
 
     this.hud.onSaveGame = () => {

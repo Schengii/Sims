@@ -9,6 +9,7 @@ import { Moods, type MoodInfo } from './Moods';
 import { ActionQueue } from './ActionQueue';
 import type { Point } from '../world/Pathfinding';
 import { Sanitizer } from '../security/Sanitizer';
+import { LifeStage, type LifeStageType } from './LifeStage';
 
 export interface SimCustomization {
   name: string;
@@ -34,6 +35,11 @@ export class Sim {
   public gridPos: Point = { x: 5, y: 5 };
   public renderPos: { x: number; y: number } = { x: 5, y: 5 };
   
+  public lifeStage: LifeStageType = 'adult';
+  public ageDays: number = 0;
+  public partnerName?: string;
+  public childrenNames: string[] = [];
+
   public needs: Needs;
   public actionQueue: ActionQueue;
   public simoleons: number = 2500;
@@ -116,6 +122,18 @@ export class Sim {
       }
       this.currentPath = path;
     }
+  }
+
+  public ageUp(): LifeStageType {
+    const nextStage = LifeStage.getNextStage(this.lifeStage);
+    this.lifeStage = nextStage;
+    this.ageDays = 0;
+    
+    // Change hair to grey if senior
+    if (nextStage === 'senior') {
+      this.customization.hairColor = '#bdc3c7';
+    }
+    return nextStage;
   }
 
   public addSkillXP(skill: keyof SimSkills, amount: number): boolean {

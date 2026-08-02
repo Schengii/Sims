@@ -112,6 +112,7 @@ export class SocialWheel {
       { id: 'hold_hands', label: 'Hände halten', category: 'romantic', icon: '🤝', friendshipDelta: 8, romanceDelta: 25, emoteSymbol: '💖', minFriendshipRequired: 40 },
       { id: 'hug', label: 'Herzlich umarmen', category: 'romantic', icon: '🤗', friendshipDelta: 10, romanceDelta: 15, emoteSymbol: '🤗', minFriendshipRequired: 30 },
       { id: 'first_kiss', label: 'Erster Kuss', category: 'romantic', icon: '💋', friendshipDelta: 15, romanceDelta: 40, emoteSymbol: '💋', minFriendshipRequired: 60 },
+      { id: 'make_baby', label: 'Baby planen (Whahoo)', category: 'romantic', icon: '👶', friendshipDelta: 20, romanceDelta: 45, emoteSymbol: '👶', minFriendshipRequired: 75 },
 
       // Mean
       { id: 'insult', label: 'Beleidigen', category: 'mean', icon: '😡', friendshipDelta: -25, romanceDelta: -20, emoteSymbol: '😡' },
