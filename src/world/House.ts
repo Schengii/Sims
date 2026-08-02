@@ -1,15 +1,23 @@
 /**
  * House & World Layout Engine
- * Handles floor tiles, room walls, furniture placement, and collision validation.
+ * Handles floor tiles, wall segments, door/window cutouts, pool tiles,
+ * furniture placement, and collision validation.
  */
 
 import { FURNITURE_CATALOG, type PlacedFurniture } from './Furniture';
 
+export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool';
+
 export interface FloorTile {
   x: number;
   y: number;
-  type: 'wood' | 'tile' | 'carpet' | 'grass';
+  type: FloorType;
   color: string;
+  hasWallNorth?: boolean;
+  hasWallWest?: boolean;
+  wallColor?: string;
+  openingNorth?: 'door' | 'window';
+  openingWest?: 'door' | 'window';
 }
 
 export class House {
@@ -27,24 +35,69 @@ export class House {
     for (let x = 0; x < this.width; x++) {
       this.tiles[x] = [];
       for (let y = 0; y < this.height; y++) {
-        // Center 10x10 is wooden house interior, outer is grass garden
         const isIndoor = x >= 3 && x <= 12 && y >= 3 && y <= 12;
         this.tiles[x][y] = {
           x,
           y,
           type: isIndoor ? 'wood' : 'grass',
-          color: isIndoor ? '#8d5524' : '#27ae60'
+          color: isIndoor ? '#8d5524' : '#27ae60',
+          wallColor: '#2c3e50'
         };
       }
     }
 
-    // Default starter furniture set
+    // Surround indoor room with walls
+    for (let x = 3; x <= 12; x++) {
+      this.tiles[x][3].hasWallNorth = true;
+      this.tiles[x][12].hasWallNorth = true;
+    }
+    for (let y = 3; y <= 12; y++) {
+      this.tiles[3][y].hasWallWest = true;
+      this.tiles[12][y].hasWallWest = true;
+    }
+
+    // Door cutout on south entrance
+    this.tiles[7][12].openingNorth = 'door';
+
+    // Default starter furniture
     this.addFurniture('bed_basic', 4, 4);
     this.addFurniture('fridge_modern', 10, 4);
     this.addFurniture('shower_glass', 4, 10);
     this.addFurniture('toilet_deluxe', 6, 10);
     this.addFurniture('pc_station', 10, 8);
     this.addFurniture('sofa_luxury', 7, 7);
+  }
+
+  public setFloorStyle(x: number, y: number, type: FloorType, color: string): void {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      this.tiles[x][y].type = type;
+      this.tiles[x][y].color = color;
+    }
+  }
+
+  public toggleWallNorth(x: number, y: number, wallColor: string = '#2c3e50'): void {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      const tile = this.tiles[x][y];
+      tile.hasWallNorth = !tile.hasWallNorth;
+      tile.wallColor = wallColor;
+      if (!tile.hasWallNorth) tile.openingNorth = undefined;
+    }
+  }
+
+  public toggleWallWest(x: number, y: number, wallColor: string = '#2c3e50'): void {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      const tile = this.tiles[x][y];
+      tile.hasWallWest = !tile.hasWallWest;
+      tile.wallColor = wallColor;
+      if (!tile.hasWallWest) tile.openingWest = undefined;
+    }
+  }
+
+  public setOpeningNorth(x: number, y: number, type: 'door' | 'window' | undefined): void {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      this.tiles[x][y].hasWallNorth = true;
+      this.tiles[x][y].openingNorth = type;
+    }
   }
 
   public addFurniture(furnitureId: string, gridX: number, gridY: number): PlacedFurniture | null {
@@ -80,12 +133,10 @@ export class House {
     const def = FURNITURE_CATALOG[furnitureId];
     if (!def) return false;
 
-    // Boundary check
     if (gridX < 0 || gridY < 0 || gridX + def.width > this.width || gridY + def.height > this.height) {
       return false;
     }
 
-    // Check overlap with existing furniture
     for (const item of this.placedFurniture) {
       const itemDef = FURNITURE_CATALOG[item.furnitureId];
       if (!itemDef) continue;
@@ -104,7 +155,7 @@ export class House {
   public isWalkable(x: number, y: number): boolean {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
 
-    // Check if tile is occupied by furniture
+    // Check furniture overlap
     for (const item of this.placedFurniture) {
       const def = FURNITURE_CATALOG[item.furnitureId];
       if (!def) continue;

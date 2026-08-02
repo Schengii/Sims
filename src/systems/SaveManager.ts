@@ -20,6 +20,15 @@ export interface GameSaveData {
   };
   house: {
     placedFurniture: House['placedFurniture'];
+    tiles?: Array<Array<{
+      type: import('../world/House').FloorType;
+      color: string;
+      hasWallNorth?: boolean;
+      hasWallWest?: boolean;
+      wallColor?: string;
+      openingNorth?: 'door' | 'window';
+      openingWest?: 'door' | 'window';
+    }>>;
   };
   career: {
     careerId: string;
@@ -49,7 +58,16 @@ export class SaveManager {
           skills: sim.skills
         },
         house: {
-          placedFurniture: house.placedFurniture
+          placedFurniture: house.placedFurniture,
+          tiles: house.tiles.map(row => row.map(tile => ({
+            type: tile.type,
+            color: tile.color,
+            hasWallNorth: tile.hasWallNorth,
+            hasWallWest: tile.hasWallWest,
+            wallColor: tile.wallColor,
+            openingNorth: tile.openingNorth,
+            openingWest: tile.openingWest
+          })))
         },
         career: {
           careerId: career.currentCareerId,
@@ -105,9 +123,27 @@ export class SaveManager {
         sim.skills = data.sim.skills;
       }
 
-      // Restore House furniture
+      // Restore House furniture & tiles
       if (Array.isArray(data.house.placedFurniture)) {
         house.placedFurniture = data.house.placedFurniture;
+      }
+
+      if (Array.isArray(data.house.tiles)) {
+        data.house.tiles.forEach((row, x) => {
+          if (Array.isArray(row)) {
+            row.forEach((savedTile, y) => {
+              if (house.tiles[x] && house.tiles[x][y]) {
+                house.tiles[x][y].type = savedTile.type || 'grass';
+                house.tiles[x][y].color = savedTile.color || '#27ae60';
+                house.tiles[x][y].hasWallNorth = savedTile.hasWallNorth;
+                house.tiles[x][y].hasWallWest = savedTile.hasWallWest;
+                house.tiles[x][y].wallColor = savedTile.wallColor;
+                house.tiles[x][y].openingNorth = savedTile.openingNorth;
+                house.tiles[x][y].openingWest = savedTile.openingWest;
+              }
+            });
+          }
+        });
       }
 
       // Restore Career

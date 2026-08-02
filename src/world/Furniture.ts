@@ -241,5 +241,28 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 80, social: 15 }
       }
     ]
+  },
+
+  pool_ladder: {
+    id: 'pool_ladder',
+    name: 'Pool-Leiter Pro',
+    category: 'entertainment',
+    price: 350,
+    width: 1,
+    height: 1,
+    color: '#3498db',
+    accentColor: '#ecf0f1',
+    icon: '🏊',
+    description: 'Einstieg in den Swimming-Pool. Steigert Fitness, Hygiene & Spaß!',
+    interactions: [
+      {
+        id: 'swim',
+        label: 'Im Pool schwimmen',
+        icon: '🏊‍♂️',
+        duration: 8,
+        needEffects: { fun: 85, hygiene: 30, energy: -15 },
+        skillGain: { skill: 'fitness', amount: 30 }
+      }
+    ]
   }
 };

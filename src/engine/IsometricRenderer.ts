@@ -1,10 +1,10 @@
 /**
  * 2.5D Isometric Rendering Engine
- * Renders grid tiles, room walls, furniture objects, Player Sim, NPC Townies,
- * action progress bars, floating Plumbobs, and animated Emote Speech Bubbles.
+ * Renders floor tiles, animated pool water, room walls, door/window cutouts,
+ * furniture blocks, Sims sprites, and emote speech bubbles.
  */
 
-import { House } from '../world/House';
+import { House, type FloorTile } from '../world/House';
 import { Sim } from '../entity/Sim';
 import { Camera } from './Camera';
 import { FURNITURE_CATALOG } from '../world/Furniture';
@@ -58,13 +58,13 @@ export class IsometricRenderer {
     ctx.translate(this.canvas.width / 2 + camera.x, (this.canvas.height / 2 - 100) + camera.y);
     ctx.scale(camera.zoom, camera.zoom);
 
-    // 1. Render Floor Grid Tiles
+    // 1. Render Floor Grid Tiles & Pools
     for (let x = 0; x < house.width; x++) {
       for (let y = 0; y < house.height; y++) {
         const tile = house.tiles[x][y];
         const iso = this.gridToIso(x, y);
 
-        this.drawTile(iso.x, iso.y, tile.color, tile.type);
+        this.drawTile(iso.x, iso.y, tile);
 
         if (this.hoverGrid && this.hoverGrid.x === x && this.hoverGrid.y === y) {
           this.drawTileOverlay(iso.x, iso.y, 'rgba(255, 255, 255, 0.4)');
@@ -72,7 +72,22 @@ export class IsometricRenderer {
       }
     }
 
-    // 2. Render Placed Furniture
+    // 2. Render Walls & Openings (North & West Grid Edges)
+    for (let x = 0; x < house.width; x++) {
+      for (let y = 0; y < house.height; y++) {
+        const tile = house.tiles[x][y];
+        const iso = this.gridToIso(x, y);
+
+        if (tile.hasWallNorth) {
+          this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth);
+        }
+        if (tile.hasWallWest) {
+          this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest);
+        }
+      }
+    }
+
+    // 3. Render Placed Furniture
     house.placedFurniture.forEach(item => {
       const def = FURNITURE_CATALOG[item.furnitureId];
       if (!def) return;
@@ -80,21 +95,22 @@ export class IsometricRenderer {
       this.drawFurnitureBlock(iso.x, iso.y, def);
     });
 
-    // 3. Render NPC Townies
+    // 4. Render NPC Townies
     npcManager.npcs.forEach(npc => {
       const npcIso = this.gridToIso(npc.renderPos.x, npc.renderPos.y);
       this.drawNPCSim(npcIso.x, npcIso.y, npc);
     });
 
-    // 4. Render Active Player Sim
+    // 5. Render Active Player Sim
     const simIso = this.gridToIso(sim.renderPos.x, sim.renderPos.y);
-    this.drawSim(simIso.x, simIso.y, sim);
+    const isOnPool = house.tiles[Math.floor(sim.gridPos.x)]?.[Math.floor(sim.gridPos.y)]?.type === 'pool';
+    this.drawSim(simIso.x, simIso.y, sim, isOnPool);
 
     ctx.restore();
     this.renderLightingOverlay(timeOfDay);
   }
 
-  private drawTile(isoX: number, isoY: number, color: string, type: string): void {
+  private drawTile(isoX: number, isoY: number, tile: FloorTile): void {
     const ctx = this.ctx;
     const hw = this.tileWidth / 2;
     const hh = this.tileHeight / 2;
@@ -106,12 +122,22 @@ export class IsometricRenderer {
     ctx.lineTo(isoX - hw, isoY + hh);
     ctx.closePath();
 
-    ctx.fillStyle = color;
-    ctx.fill();
-
-    ctx.strokeStyle = type === 'grass' ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.15)';
-    ctx.lineWidth = 1;
-    ctx.stroke();
+    if (tile.type === 'pool') {
+      // Animated Swimming Pool Water
+      const time = Date.now() / 400;
+      const waterBlue = `rgba(0, 180, 255, ${0.75 + Math.sin(time + isoX) * 0.1})`;
+      ctx.fillStyle = waterBlue;
+      ctx.fill();
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = tile.color;
+      ctx.fill();
+      ctx.strokeStyle = tile.type === 'grass' ? 'rgba(0,0,0,0.05)' : 'rgba(0,0,0,0.15)';
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
   }
 
   private drawTileOverlay(isoX: number, isoY: number, color: string): void {
@@ -128,6 +154,70 @@ export class IsometricRenderer {
 
     ctx.fillStyle = color;
     ctx.fill();
+  }
+
+  private drawWallSegment(
+    isoX: number,
+    isoY: number,
+    direction: 'north' | 'west',
+    wallColor: string,
+    opening?: 'door' | 'window'
+  ): void {
+    const ctx = this.ctx;
+    const hw = this.tileWidth / 2;
+    const hh = this.tileHeight / 2;
+    const wallH = 45; // Wall height
+
+    ctx.save();
+
+    if (direction === 'north') {
+      // North Wall Segment
+      ctx.fillStyle = wallColor;
+      ctx.beginPath();
+      ctx.moveTo(isoX - hw, isoY + hh);
+      ctx.lineTo(isoX, isoY);
+      ctx.lineTo(isoX, isoY - wallH);
+      ctx.lineTo(isoX - hw, isoY + hh - wallH);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.stroke();
+
+      // Render Door cutout
+      if (opening === 'door') {
+        ctx.fillStyle = '#8d5524';
+        ctx.fillRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
+        ctx.strokeRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
+      } else if (opening === 'window') {
+        ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
+        ctx.fillRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
+        ctx.strokeRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
+      }
+    } else {
+      // West Wall Segment
+      ctx.fillStyle = this.adjustColorBrightness(wallColor, -25);
+      ctx.beginPath();
+      ctx.moveTo(isoX, isoY);
+      ctx.lineTo(isoX + hw, isoY + hh);
+      ctx.lineTo(isoX + hw, isoY + hh - wallH);
+      ctx.lineTo(isoX, isoY - wallH);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+      ctx.stroke();
+
+      if (opening === 'door') {
+        ctx.fillStyle = '#8d5524';
+        ctx.fillRect(isoX + 8, isoY + hh - 30, 16, 25);
+        ctx.strokeRect(isoX + 8, isoY + hh - 30, 16, 25);
+      } else if (opening === 'window') {
+        ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
+        ctx.fillRect(isoX + 10, isoY + hh - 35, 14, 14);
+        ctx.strokeRect(isoX + 10, isoY + hh - 35, 14, 14);
+      }
+    }
+
+    ctx.restore();
   }
 
   private drawFurnitureBlock(isoX: number, isoY: number, def: typeof FURNITURE_CATALOG[string]): void {
@@ -175,37 +265,41 @@ export class IsometricRenderer {
     ctx.fillText(def.icon, isoX, isoY + (w/2) - h - 5);
   }
 
-  private drawSim(isoX: number, isoY: number, sim: Sim): void {
+  private drawSim(isoX: number, isoY: number, sim: Sim, isSwimming: boolean = false): void {
     const ctx = this.ctx;
     const mood = sim.getCurrentMood();
 
-    // Shadow
-    ctx.beginPath();
-    ctx.ellipse(isoX, isoY + 14, 14, 7, 0, 0, Math.PI * 2);
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
-    ctx.fill();
+    const yOffset = isSwimming ? 10 : 0; // Dip body into water when swimming
+
+    // Shadow (only when not swimming)
+    if (!isSwimming) {
+      ctx.beginPath();
+      ctx.ellipse(isoX, isoY + 14, 14, 7, 0, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.fill();
+    }
 
     // Body
     ctx.fillStyle = sim.customization.outfitColor;
-    ctx.fillRect(isoX - 8, isoY - 26, 16, 26);
+    ctx.fillRect(isoX - 8, isoY - 26 + yOffset, 16, 26 - yOffset);
     ctx.strokeStyle = '#111';
-    ctx.strokeRect(isoX - 8, isoY - 26, 16, 26);
+    ctx.strokeRect(isoX - 8, isoY - 26 + yOffset, 16, 26 - yOffset);
 
     // Head
     ctx.beginPath();
-    ctx.arc(isoX, isoY - 36, 10, 0, Math.PI * 2);
+    ctx.arc(isoX, isoY - 36 + yOffset, 10, 0, Math.PI * 2);
     ctx.fillStyle = sim.customization.skinColor;
     ctx.fill();
     ctx.stroke();
 
     // Hair
     ctx.beginPath();
-    ctx.arc(isoX, isoY - 40, 10, Math.PI, Math.PI * 2);
+    ctx.arc(isoX, isoY - 40 + yOffset, 10, Math.PI, Math.PI * 2);
     ctx.fillStyle = sim.customization.hairColor;
     ctx.fill();
 
     // Floating Plumbob
-    const plumbobY = isoY - 65 + Math.sin(Date.now() / 250) * 4;
+    const plumbobY = isoY - 65 + yOffset + Math.sin(Date.now() / 250) * 4;
     this.drawPlumbob(isoX, plumbobY, mood.plumbobColor);
 
     // Action progress bar
@@ -215,7 +309,7 @@ export class IsometricRenderer {
       const barW = 40;
       const barH = 6;
       const bx = isoX - barW / 2;
-      const by = isoY - 80;
+      const by = isoY - 80 + yOffset;
 
       ctx.fillStyle = 'rgba(0,0,0,0.6)';
       ctx.fillRect(bx - 2, by - 2, barW + 4, barH + 4);
@@ -253,13 +347,12 @@ export class IsometricRenderer {
     ctx.fillStyle = npc.hairColor;
     ctx.fill();
 
-    // Name Label above head
+    // Name Label
     ctx.fillStyle = '#ffffff';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(npc.name, isoX, isoY - 46);
 
-    // Draw active Emote Speech Bubble if active
     if (npc.activeEmote) {
       this.drawEmoteBubble(isoX, isoY - 60, npc.activeEmote.symbol);
     }

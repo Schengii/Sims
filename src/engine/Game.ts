@@ -91,6 +91,47 @@ export class Game {
   private setupEventHandlers(): void {
     // Canvas Tile & NPC Clicks
     this.inputHandler.onTileClick = (gridX, gridY) => {
+      // 0. Check if an active Build Tool is selected
+      const toolMode = this.buildCatalog.activeToolMode;
+      if (toolMode !== 'select') {
+        if (toolMode === 'wall') {
+          if (this.sim.simoleons >= 100) {
+            this.sim.simoleons -= 100;
+            this.house.toggleWallNorth(gridX, gridY, '#2c3e50');
+            this.soundManager.playBuySound();
+          } else {
+            alert('Nicht genügend Simoleons (§ 100 benötigt)!');
+          }
+        } else if (toolMode === 'door') {
+          if (this.sim.simoleons >= 200) {
+            this.sim.simoleons -= 200;
+            this.house.setOpeningNorth(gridX, gridY, 'door');
+            this.soundManager.playBuySound();
+          }
+        } else if (toolMode === 'window') {
+          if (this.sim.simoleons >= 250) {
+            this.sim.simoleons -= 250;
+            this.house.setOpeningNorth(gridX, gridY, 'window');
+            this.soundManager.playBuySound();
+          }
+        } else if (toolMode === 'floor') {
+          if (this.sim.simoleons >= 50) {
+            this.sim.simoleons -= 50;
+            this.house.setFloorStyle(gridX, gridY, this.buildCatalog.activeFloorType, this.buildCatalog.activeFloorColor);
+            this.soundManager.playBuySound();
+          }
+        } else if (toolMode === 'pool') {
+          if (this.sim.simoleons >= 300) {
+            this.sim.simoleons -= 300;
+            this.house.setFloorStyle(gridX, gridY, 'pool', '#00e5ff');
+            this.soundManager.playBuySound();
+          }
+        }
+        // Reset tool mode after placement
+        this.buildCatalog.activeToolMode = 'select';
+        return;
+      }
+
       // 1. Check if clicked an NPC Townie
       const npc = this.npcManager.getNPCAt(gridX, gridY);
       if (npc) {
