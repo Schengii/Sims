@@ -22,9 +22,10 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 ### Core Gameplay Loop
 - **Create-A-Sim (CAS)**: Gestalte deinen Wunsch-Sim (Name, Aussehen, Kleidung, Merkmale).
 - **Bedürfnis- & Stimmungsmanagement**: Halte die 6 Hauptbedürfnisse im grünen Bereich.
+- **Sims Mobile Hauspartys & Events**: Veranstalte Hauspartys (Einweihungsparty, Sommer-Poolparty, Geburtstags-Gala), erfülle Live-Ziele, sammle bis zu 5 Sterne ⭐ und gewinne Simoleons (§) & Trophäen!
 - **Stereoanlage & Radio-Synthesizer**: Höre 4 prozedural erzeugte Simlish-Radiosender (Pop, Retro Synthwave, Lo-Fi, Electro Dance) und tanze allein oder im Paar zu den Beats!
 - **Lebensphasen & Alterungssystem**: Durchlaufe 6 Lebensphasen (🍼 Baby, 🧸 Kleinkind, 🎒 Kind, 🎧 Teenager, 💼 Erwachsener, 👵 Senior). Feiere Geburtstage mit Kerzenauspusten oder gründe eine Familie mit Stammbaum-Übersicht.
-- **Interaktive 2.5D Welt**: Bewege deinen Sim frei im Haus, benutze Möbel (Bett, Dusche, PC, Staffelei, Torte, Wiege, Stereoanlage).
+- **Interaktive 2.5D Welt**: Bewege deinen Sim frei im Haus, benutze Möbel (Bett, Dusche, PC, Staffelei, Torte, Wiege, Stereoanlage, Party-Buffet).
 - **Architekt & Baumodus**: Baue individuelle 3D-Wände, setze Türen & Fenster ein, verlege Parkett, Marmor oder Teppich und hebe kühle Swimmingpools aus!
 - **NPC-Nachbarn & Beziehungs-System**: Interagiere mit Nachbarn über das **Sims 4 Pie-Dialograd** und baue Freundschaften oder Romantik auf.
 - **Aktions-Schlange (Action Queue)**: Staple bis zu 5 Aktionen nacheinander (wie in Sims 4).
@@ -56,17 +57,19 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 
 ## ✨ Features & Highlights
 
-- 📻 **Prozeduraler Radio-Synthesizer**: 4 Simlish-Musiksender (Pop Hits, 80s Synthwave, Lo-Fi Chillbeats, Electro Dance) erzeugt via Web Audio API ohne MP3s.
-- 🕺 **Tanz-System & Paartanzen**: Rhythmische Tanz-Animationen & Musik-Sprechblasen (🎵, 🎶, 🕺, <ctrl42>) beim alleinigen oder gemeinsamen Tanzen mit Nachbarn.
+- 🎉 **Sims Mobile Party-System**: 3 Party-Typen (Einweihungsparty, Sommer-Poolparty, Geburtstags-Gala) mit Ansturm von Partygästen, Live-Ziel-Checkliste, 5-Sterne-Wertung (⭐⭐⭐⭐⭐) und Trophäen-Belohnungen.
+- 🍇 **Party-Buffet & Party-Toast**: Party-Snacks am Buffet servieren & Anstoßen mit Gästen (🥂).
+- 📻 **Prozeduraler Radio-Synthesizer**: 4 Simlish-Musiksender (Pop Hits, 80s Synthwave, Lo-Fi Chillbeats, Electro Dance) erzeugt via Web Audio API.
+- 🕺 **Tanz-System & Paartanzen**: Rhythmische Tanz-Animationen & Musik-Sprechblasen (🎵, 🎶, 🕺, 💃).
 - 🍼 **Lebensphasen & Alterungs-System**: 6 Lebensphasen (Baby bis Senior) mit Größen-Skalierung & Stammbaum.
 - 🎂 **Geburtstagstorte & Kerzen ausblasen**: Kerzen ausblasen für Lebensphasen-Aufstieg.
 - 🧱 **Erweiterter Baumodus & Raum-Editor**: 5 Architektur-Tabs (Möbel, Wände, Türen/Fenster, Bodenbeläge, Pool & Outdoor).
 - 🏊 **Swimmingpool & Schwimm-System**: Ausheben von Pools mit animierter Wasser-Textur & Schwimmen.
-- 💬 **Sims 4 Pie-Dialograd & Emote-Bubbles**: Interaktions-Rad (Freundlich, Lustig, Romantisch, Gemein) mit Emote-Bubbles.
+- 💬 **Sims 4 Pie-Dialograd & Emote-Bubbles**: Interaktions-Rad (Freundlich, Lustig, Romantisch, Gemein) mit Emote-Bubbles (🎉, 🥂, 🎈, ⭐, 🥳).
 - 💕 **Beziehungs-Engine**: Freundschafts- und Romantikbalken mit dynamischen Beziehungs-Titeln.
 - 🟢 **Symbolisches Plumbob-System**: Der schwebende Plumbob-Kristall reagiert dynamisch auf die Stimmung.
 - 🗣️ **Simlish Vocal Synthesizer**: Prozedural generierte Stimmen (Simlish) & UI-Soundeffekte.
-- 💾 **Automatischer Speicherstand**: Automatisches Speichern & Laden im LocalStorage.
+- 💾 **Automatischer Speicherstand**: Automatisches Speichern & Laden im LocalStorage (inklusive Party-Trophäen).
 
 ---
 
@@ -87,29 +90,31 @@ Sims/
     │   ├── SoundManager.ts      # Web Audio API Simlish Chatter, UI & Level-Up Synthesizer
     │   └── RadioManager.ts      # Web Audio API Prozeduraler Radio-Synthesizer (4 Sender)
     ├── engine/                  # Core 2.5D Game Engine
-    │   ├── Game.ts              # Haupt-Gameschleife & Event-Controller
-    │   ├── IsometricRenderer.ts # 2.5D Canvas Grid, Walls, Pools, Dance Animations & Emotes
+    │   ├── Game.ts              # Haupt-Gameschleife & Party-Event Controller
+    │   ├── IsometricRenderer.ts # 2.5D Canvas Grid, Walls, Pools, Dance Animations & Party Emotes
     │   ├── Camera.ts            # Panning, Zooming & Smooth Interpolation
     │   └── Input.ts             # Maus-, Touch- & Tastatur-Eingabeverarbeitung
     ├── entity/                  # Sim Entitäten & Verhalten
     │   ├── Sim.ts               # Player Sim State (Lebensphase, Alterstage, Kinder, Partner, Skills)
     │   ├── LifeStage.ts         # 6 Lebensphasen (Baby bis Senior), Render-Skalierung
-    │   ├── NPCManager.ts        # Besuchende Nachbarn (Mortimer Goth, Penny Pizazz, Bob Pancakes)
+    │   ├── NPCManager.ts        # Besuchende Nachbarn & Party-Gäste (Mortimer Goth, Penny Pizazz, Bob Pancakes)
     │   ├── Relationship.ts      # Beziehungs-Klasse (Freundschaft, Romantik & Status)
     │   ├── ActionQueue.ts       # Sims 4 Aktions-Stapelsystem (max. 5 Aktionen)
     │   ├── Needs.ts             # 6 Hauptbedürfnisse (Hunger, Energie, Hygiene, Blase, Spaß, Sozial)
     │   └── Moods.ts             # Stimmungs-Zustände (Glücklich, Energetisch, Angespannt, Erschöpft)
     ├── world/                   # Spielwelt & Möbel
     │   ├── House.ts             # Raster-Layout, Wände, Türen, Fenster, Böden & Pool-Raster
-    │   ├── Furniture.ts         # Möbel-Katalog (Bett, Dusche, PC, Stereoanlage, Torte, Wiege, Pool-Leiter)
+    │   ├── Furniture.ts         # Möbel-Katalog (Bett, Dusche, PC, Stereo, Torte, Wiege, Party-Buffet)
     │   └── Pathfinding.ts       # A* Pfadfindungs-Algorithmus auf dem Raster
     ├── systems/                 # Spiel-Mechaniken
     │   ├── TimeSystem.ts        # Uhrzeit, Tag/Nacht-Licht & Geschwindigkeits-Regelung
+    │   ├── PartyManager.ts      # Sims Mobile Party-Engine (3 Party-Typen, Ziele, 5 Sterne & Trophäen)
     │   ├── CareerSystem.ts      # Berufe (Tech Guru, Gourmet Chef, Künstler) & Skills
     │   ├── QuestSystem.ts       # Sims Mobile Style Aufgaben & Belohnungen
-    │   └── SaveManager.ts       # Sichere JSON-Speicherung von Sims, Wänden, Böden & Radio-Status
+    │   └── SaveManager.ts       # Sichere JSON-Speicherung von Sims, Wänden, Böden & Party-Trophäen
     ├── ui/                      # Responsive UI Modals & HUD Views
-    │   ├── HUD.ts               # Oberer & unterer UI-Balken, Radio-Widget, Bedürfnisse & Aktionschips
+    │   ├── HUD.ts               # Oberer & unterer UI-Balken, Radio-Widget, Party-Button & Aktionschips
+    │   ├── PartyModal.ts        # Hausparty-Host Dialog (Party-Art, Sterne & Freigeschaltete Trophäen)
     │   ├── FamilyTreePanel.ts   # Stammbaum-Panel (Generationen, Partner, Kinder & Alter)
     │   ├── BuildBuyCatalog.ts   # 5-Tab Architekt-Katalog (Möbel, Wände, Türen, Böden, Pool)
     │   ├── SocialWheel.ts       # Sims 4 Pie-Dialograd für freundliche, lustige, romantische Aktionen
@@ -127,11 +132,10 @@ Sims/
 
 ## ⌨️ Anleitung & Steuerung
 
-### Steuerung für Stereoanlage & Tanzen
-- **Stereoanlage Pro kaufen**: Platziere die Stereoanlage aus dem Katalog (Tab 🛋️ Möbel) im Haus.
-- **Radio einschalten**: Klicke auf die Stereoanlage oder den `📻 Radio`-Button im oberen HUD-Balken.
-- **Sender wechseln**: Schalte zwischen *Simlish Pop*, *80s Synthwave*, *Lo-Fi Chillbeats* und *Electro Dance* um.
-- **Tanzen**: Wähle *"Allein tanzen"* oder *"Paartanzen mit Nachbar"*, um Spaß, Fitness und Sozialpunkte aufzuladen.
+### Steuerung für Hauspartys (Sims Mobile Mode)
+- **Party starten**: Klicke im HUD auf `🎉 Party Host` und wähle den Party-Typ (Einweihungsparty, Sommer-Poolparty, Geburtstags-Gala).
+- **Party-Ziele erfüllen**: Reiche Party-Snacks am Buffet, stoße mit Gästen an (🥂), tanze am Radio oder schwimme im Pool.
+- **Sterne sammeln**: Fülle die Leiste bis auf 5 Sterne ⭐, um hohe Simoleon-Prämien und Gold-Trophäen freizuschalten.
 
 ### Tastatur-Hotkeys (WCAG Barrierefreiheit)
 - `W / A / S / D` oder `Pfeiltasten`: Kamera verschieben.
@@ -171,14 +175,9 @@ Sims/
 
 ## 📝 Changelog & Historie
 
-### Version 1.4.0 (Stereo System & Radio Synthesizer Upgrade)
-- **[Feature] Prozeduraler Radio Synthesizer**: 4 Simlish Radiosender (Pop Hits, 80s Synthwave, Lo-Fi Chillbeats, Electro Dance) erzeugt via Web Audio API.
-- **[Feature] Tanz-System**: Rhythmische Wipp-Animationen und Musik-Sprechblasen beim Allein- oder Paartanzen mit Nachbarn.
-- **[Feature] HiFi-Stereoanlage**: Neues Möbelstück mit Senderauswahl und Radio-Interaktionen.
-- **[Feature] HUD Radio Widget**: Schnelles Umschalten des Radiosenders direkt im oberen HUD-Balken.
-
-### Version 1.3.0 (Life Stages, Aging & Family Tree Upgrade)
-- **[Feature] 6 Lebensphasen**: Baby, Kleinkind, Kind, Teenager, Erwachsener, Senior mit Render-Skalierung.
-- **[Feature] Geburtstagstorte**: Kerzen ausblasen, um Alterungsevent auszulösen.
-- **[Feature] Baby-Erzeugung & Wiege**: Romantische Interaktion "Baby planen (Whahoo)".
-- **[Feature] Familienstammbaum Panel**: Visualisierung der Familie (Partner, Kinder, Generationen).
+### Version 1.5.0 (Sims Mobile Party & Event Engine Upgrade)
+- **[Feature] Hauspartys & Events**: 3 Party-Typen (Einweihungsparty, Sommer-Poolparty, Geburtstags-Gala) mit Ansturm von Party-Gästen.
+- **[Feature] Live 5-Sterne-Wertung**: Live-Punkteberechnung (1-5 ⭐) durch Absolvieren dynamischer Party-Ziele.
+- **[Feature] Gourmet Party-Buffet**: Neues Möbelstück `party_buffet` zum Servieren von Party-Snacks.
+- **[Feature] Trophäen & Prämien**: Freischaltbare Gold- & Silber-Party-Trophäen sowie bis zu § 2.200 Simoleon-Gewinn.
+- **[Feature] Party Modal & HUD Button**: Neuer Dialog zur Ausrichtung von Events & Trophäen-Inspektion.

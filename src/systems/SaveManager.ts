@@ -44,12 +44,13 @@ export interface GameSaveData {
     friendship: number;
     romance: number;
   }>;
+  trophiesUnlocked?: string[];
 }
 
 export class SaveManager {
   private static readonly SAVE_KEY = 'sims_game_save_v1';
 
-  public static saveGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager): boolean {
+  public static saveGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager, partyManager?: import('../systems/PartyManager').PartyManager): boolean {
     try {
       const saveData: GameSaveData = {
         version: '1.0.0',
@@ -86,7 +87,8 @@ export class SaveManager {
           targetSimName: n.name,
           friendship: n.relationship.friendship,
           romance: n.relationship.romance
-        }))
+        })),
+        trophiesUnlocked: partyManager?.trophiesUnlocked
       };
 
       const jsonStr = JSON.stringify(saveData);
@@ -98,7 +100,7 @@ export class SaveManager {
     }
   }
 
-  public static loadGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager): boolean {
+  public static loadGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager, partyManager?: import('../systems/PartyManager').PartyManager): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
       if (!raw) return false;
@@ -182,6 +184,11 @@ export class SaveManager {
             npc.relationship.romance = Sanitizer.clamp(r.romance, 0, 100);
           }
         });
+      }
+
+      // Restore Trophies
+      if (Array.isArray(data.trophiesUnlocked) && partyManager) {
+        partyManager.trophiesUnlocked = data.trophiesUnlocked;
       }
 
       return true;

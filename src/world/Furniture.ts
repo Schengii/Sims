@@ -353,5 +353,27 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         skillGain: { skill: 'charisma', amount: 25 }
       }
     ]
+  },
+
+  party_buffet: {
+    id: 'party_buffet',
+    name: 'Gourmet Party-Buffet',
+    category: 'appliances',
+    price: 500,
+    width: 2,
+    height: 1,
+    color: '#e67e22',
+    accentColor: '#f1c40f',
+    icon: '🍇',
+    description: 'Reichhaltiges Party-Buffet für festliche Anlässe & Hauspartys.',
+    interactions: [
+      {
+        id: 'serve_buffet',
+        label: 'Party-Snacks servieren',
+        icon: '🍱',
+        duration: 6,
+        needEffects: { hunger: 95, fun: 40, social: 50 }
+      }
+    ]
   }
 };

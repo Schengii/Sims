@@ -27,6 +27,8 @@ import { PrivacyModal } from '../ui/PrivacyModal';
 import { SocialWheel } from '../ui/SocialWheel';
 import { RelationshipsPanel } from '../ui/RelationshipsPanel';
 import { FamilyTreePanel } from '../ui/FamilyTreePanel';
+import { PartyManager } from '../systems/PartyManager';
+import { PartyModal } from '../ui/PartyModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -42,6 +44,7 @@ export class Game {
   public timeSystem: TimeSystem;
   public careerManager: CareerManager;
   public questManager: QuestManager;
+  public partyManager: PartyManager;
 
   public hud: HUDManager;
   public casModal: CASModal;
@@ -51,6 +54,7 @@ export class Game {
   public socialWheel: SocialWheel;
   public relationshipsPanel: RelationshipsPanel;
   public familyTreePanel: FamilyTreePanel;
+  public partyModal: PartyModal;
 
   private lastTime: number = 0;
   private isRunning: boolean = false;
@@ -68,6 +72,7 @@ export class Game {
     this.timeSystem = new TimeSystem();
     this.careerManager = new CareerManager();
     this.questManager = new QuestManager();
+    this.partyManager = new PartyManager();
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
@@ -78,6 +83,7 @@ export class Game {
     this.socialWheel = new SocialWheel(uiContainer, this.soundManager);
     this.relationshipsPanel = new RelationshipsPanel(uiContainer);
     this.familyTreePanel = new FamilyTreePanel(uiContainer);
+    this.partyModal = new PartyModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -216,10 +222,18 @@ export class Game {
               }
             }
 
-            if (interaction.id === 'blow_candles') {
+            if (interaction.id === 'serve_buffet') {
+              this.partyManager.triggerGoal('p_buffet');
+              this.partyManager.triggerGoal('p_snack');
+            } else if (interaction.id === 'blow_candles') {
+              this.partyManager.triggerGoal('p_candles');
               const newStage = this.sim.ageUp();
               this.soundManager.playLevelUp();
               alert(`🎉 GEBURTSTAG! ${this.sim.customization.name} ist in die Lebensphase "${newStage.toUpperCase()}" aufgestiegen!`);
+            } else if (interaction.id === 'dance_solo' || interaction.id === 'dance_couple') {
+              this.partyManager.triggerGoal('p_dance');
+            } else if (interaction.id === 'swim') {
+              this.partyManager.triggerGoal('p_swim');
             }
 
             if (interaction.skillGain) {
@@ -256,6 +270,11 @@ export class Game {
     this.socialWheel.onInteractionExecuted = (npc, option) => {
       this.npcManager.triggerEmote(npc.id, option.emoteSymbol, 3000);
 
+      this.partyManager.triggerGoal('p_talk');
+      if (option.id === 'party_toast') {
+        this.partyManager.triggerGoal('p_toast');
+      }
+
       if (option.id === 'make_baby') {
         const babyName = `${this.sim.customization.name.split(' ')[0]} Jr.`;
         this.sim.childrenNames.push(babyName);
@@ -271,7 +290,17 @@ export class Game {
     this.hud.onOpenCareer = () => this.careerPanel.open(this.sim, this.careerManager, this.questManager);
     this.hud.onOpenRelationships = () => this.relationshipsPanel.open(this.npcManager);
     this.hud.onOpenFamilyTree = () => this.familyTreePanel.open(this.sim);
+    this.hud.onOpenParty = () => this.partyModal.open(this.partyManager);
     this.hud.onOpenPrivacy = () => this.privacyModal.open();
+
+    this.partyModal.onPartyStarted = (typeId) => {
+      const party = this.partyManager.startParty(typeId);
+      // Spawn extra party townies with party emotes
+      this.npcManager.npcs.forEach(n => {
+        this.npcManager.triggerEmote(n.id, '🥳', 10000);
+      });
+      alert(`🎉 PARTY GESTARTET! Willkommen zur ${party.title}. Absolviere Party-Ziele für 5 Sterne ⭐!`);
+    };
 
     this.hud.onToggleRadio = () => {
       const next = this.radioManager.cycleNextStation();
@@ -280,9 +309,9 @@ export class Game {
     };
 
     this.hud.onSaveGame = () => {
-      SaveManager.saveGame(this.sim, this.house, this.careerManager, this.npcManager);
+      SaveManager.saveGame(this.sim, this.house, this.careerManager, this.npcManager, this.partyManager);
       this.soundManager.playLevelUp();
-      alert('💾 Spielstand (inklusive Beziehungen & Nachbarn) erfolgreich gespeichert!');
+      alert('💾 Spielstand (inklusive Party-Trophäen & Fortschritten) gespeichert!');
     };
 
     this.hud.onSpeedChange = (speed) => this.timeSystem.setSpeed(speed);
@@ -302,9 +331,9 @@ export class Game {
   }
 
   private attemptLoadSave(): void {
-    const loaded = SaveManager.loadGame(this.sim, this.house, this.careerManager, this.npcManager);
+    const loaded = SaveManager.loadGame(this.sim, this.house, this.careerManager, this.npcManager, this.partyManager);
     if (loaded) {
-      console.log('[Game Engine] Save file & relationships loaded successfully.');
+      console.log('[Game Engine] Save file & party progress loaded successfully.');
     }
   }
 
@@ -324,19 +353,27 @@ export class Game {
     // 1. Time Update
     const timeResult = this.timeSystem.update(deltaSec);
 
-    // 2. Sim Update
+    // 2. Party Update Tick
+    const partyResult = this.partyManager.update(timeResult.deltaMinutes);
+    if (partyResult.partyEnded) {
+      this.sim.simoleons += partyResult.rewardSimoleons || 0;
+      this.soundManager.playLevelUp();
+      alert(`🎉 PARTY BEENDET! Du hast ${partyResult.finalStars} ⭐ Sterne erzielt und § ${partyResult.rewardSimoleons} verdient! ${partyResult.trophyAwarded ? `\n\n🏆 Freigeschaltet: ${partyResult.trophyAwarded}` : ''}`);
+    }
+
+    // 3. Sim Update
     this.sim.update(deltaSec, timeResult.deltaMinutes);
 
-    // 3. NPC Update
+    // 4. NPC Update
     this.npcManager.update(deltaSec);
 
-    // 4. Camera Update
+    // 5. Camera Update
     this.camera.update();
 
-    // 5. Render Scene
+    // 6. Render Scene
     this.renderer.render(this.house, this.sim, this.npcManager, this.camera, this.timeSystem.hour);
 
-    // 6. Update HUD
+    // 7. Update HUD
     this.hud.update(this.sim, this.timeSystem);
 
     requestAnimationFrame(this.loop.bind(this));

@@ -102,6 +102,7 @@ export class SocialWheel {
       { id: 'smalltalk', label: 'Smalltalk halten', category: 'friendly', icon: '💬', friendshipDelta: 8, romanceDelta: 0, emoteSymbol: '💬' },
       { id: 'compliment', label: 'Outfit loben', category: 'friendly', icon: '✨', friendshipDelta: 12, romanceDelta: 2, emoteSymbol: '😀' },
       { id: 'hobbies', label: 'Über Hobbys sprechen', category: 'friendly', icon: '🎨', friendshipDelta: 15, romanceDelta: 0, emoteSymbol: '🎨' },
+      { id: 'party_toast', label: 'Party-Toast anstoßen (🥂)', category: 'friendly', icon: '🥂', friendshipDelta: 18, romanceDelta: 5, emoteSymbol: '🥂' },
       
       // Funny
       { id: 'tell_joke', label: 'Witz erzählen', category: 'funny', icon: '😂', friendshipDelta: 14, romanceDelta: 0, emoteSymbol: '😂' },

@@ -19,6 +19,7 @@ export class HUDManager {
   public onOpenCareer?: () => void;
   public onOpenRelationships?: () => void;
   public onOpenFamilyTree?: () => void;
+  public onOpenParty?: () => void;
   public onOpenPrivacy?: () => void;
   public onToggleRadio?: () => void;
   public onSpeedChange?: (speed: number) => void;
@@ -90,6 +91,7 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-career" aria-label="Karriere & Aufgaben Panel">💼 Karriere</button>
             <button class="btn-hud" id="btn-open-rel" aria-label="Beziehungen & Nachbarn Panel">💕 Beziehungen</button>
             <button class="btn-hud" id="btn-open-family" aria-label="Familienstammbaum Panel">👨‍👩‍👧‍👦 Stammbaum</button>
+            <button class="btn-hud" id="btn-open-party" aria-label="Hausparty Veranstalten">🎉 Party Host</button>
           </div>
         </footer>
       </div>
@@ -120,6 +122,11 @@ export class HUDManager {
     document.getElementById('btn-open-family')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenFamilyTree) this.onOpenFamilyTree();
+    });
+
+    document.getElementById('btn-open-party')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenParty) this.onOpenParty();
     });
 
     document.getElementById('btn-privacy')?.addEventListener('click', () => {
