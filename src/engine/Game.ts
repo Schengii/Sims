@@ -1,6 +1,6 @@
 /**
  * Main Game Controller & Execution Loop
- * Connects Canvas rendering, pathfinding, entity state, action execution,
+ * Connects Canvas rendering, pathfinding, entities, NPC Townies, Social Pie Wheel,
  * HUD updates, and system events.
  */
 
@@ -17,11 +17,14 @@ import { SaveManager } from '../systems/SaveManager';
 import { Pathfinding } from '../world/Pathfinding';
 import { FURNITURE_CATALOG } from '../world/Furniture';
 
+import { NPCManager } from '../entity/NPCManager';
 import { HUDManager } from '../ui/HUD';
 import { CASModal } from '../ui/CASModal';
 import { BuildBuyCatalog } from '../ui/BuildBuyCatalog';
 import { CareerPanel } from '../ui/CareerPanel';
 import { PrivacyModal } from '../ui/PrivacyModal';
+import { SocialWheel } from '../ui/SocialWheel';
+import { RelationshipsPanel } from '../ui/RelationshipsPanel';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -32,6 +35,7 @@ export class Game {
 
   public house: House;
   public sim: Sim;
+  public npcManager: NPCManager;
   public timeSystem: TimeSystem;
   public careerManager: CareerManager;
   public questManager: QuestManager;
@@ -41,6 +45,8 @@ export class Game {
   public buildCatalog: BuildBuyCatalog;
   public careerPanel: CareerPanel;
   public privacyModal: PrivacyModal;
+  public socialWheel: SocialWheel;
+  public relationshipsPanel: RelationshipsPanel;
 
   private lastTime: number = 0;
   private isRunning: boolean = false;
@@ -48,11 +54,12 @@ export class Game {
   constructor(canvas: HTMLCanvasElement, uiContainer: HTMLElement) {
     this.canvas = canvas;
     this.camera = new Camera();
-    this.renderer = IsometricRenderer ? new IsometricRenderer(canvas) : null as any;
+    this.renderer = new IsometricRenderer(canvas);
     this.soundManager = new SoundManager();
 
     this.house = new House();
     this.sim = new Sim();
+    this.npcManager = new NPCManager();
     this.timeSystem = new TimeSystem();
     this.careerManager = new CareerManager();
     this.questManager = new QuestManager();
@@ -63,6 +70,8 @@ export class Game {
     this.buildCatalog = new BuildBuyCatalog(uiContainer, this.soundManager);
     this.careerPanel = new CareerPanel(uiContainer, this.soundManager);
     this.privacyModal = new PrivacyModal(uiContainer, this.soundManager);
+    this.socialWheel = new SocialWheel(uiContainer, this.soundManager);
+    this.relationshipsPanel = new RelationshipsPanel(uiContainer);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -80,17 +89,33 @@ export class Game {
   }
 
   private setupEventHandlers(): void {
-    // Canvas Tile Clicks
+    // Canvas Tile & NPC Clicks
     this.inputHandler.onTileClick = (gridX, gridY) => {
-      const furniture = this.house.getFurnitureAt(gridX, gridY);
+      // 1. Check if clicked an NPC Townie
+      const npc = this.npcManager.getNPCAt(gridX, gridY);
+      if (npc) {
+        // Walk towards NPC
+        const path = Pathfinding.findPath(
+          this.sim.gridPos,
+          { x: Math.floor(npc.gridPos.x), y: Math.floor(npc.gridPos.y) },
+          this.house.width,
+          this.house.height,
+          (x, y) => this.house.isWalkable(x, y)
+        );
+        this.sim.setPath(path);
 
+        // Open Social Pie Wheel
+        this.socialWheel.open(this.sim, npc);
+        return;
+      }
+
+      // 2. Check if clicked furniture
+      const furniture = this.house.getFurnitureAt(gridX, gridY);
       if (furniture) {
-        // Clicked on furniture -> trigger interaction
         const def = FURNITURE_CATALOG[furniture.furnitureId];
         if (!def || def.interactions.length === 0) return;
         const interaction = def.interactions[0];
 
-        // Find path to furniture
         const path = Pathfinding.findPath(
           this.sim.gridPos,
           { x: furniture.gridX, y: furniture.gridY },
@@ -101,7 +126,6 @@ export class Game {
 
         this.sim.setPath(path);
 
-        // Queue action
         this.sim.actionQueue.enqueue({
           id: `act_${Date.now()}`,
           name: `${interaction.label} (${def.name})`,
@@ -109,18 +133,15 @@ export class Game {
           durationSeconds: interaction.duration,
           elapsedSeconds: 0,
           onExecuteTick: () => {
-            // Play Simlish chatter sound occasionally
             if (Math.random() < 0.05) {
               this.soundManager.playSimlish(1.0, 'happy');
             }
           },
           onComplete: () => {
-            // Apply need effects
             Object.entries(interaction.needEffects).forEach(([need, val]) => {
               this.sim.needs.modify(need as any, val!);
             });
 
-            // Apply skill gains
             if (interaction.skillGain) {
               const leveledUp = this.sim.addSkillXP(interaction.skillGain.skill, interaction.skillGain.amount);
               if (leveledUp) {
@@ -129,7 +150,6 @@ export class Game {
               }
             }
 
-            // Trigger Quest progress
             if (interaction.id === 'cook_gourmet' || interaction.id === 'snack') {
               this.questManager.triggerQuestProgress('q_cook');
             } else if (interaction.id === 'code') {
@@ -152,16 +172,23 @@ export class Game {
       }
     };
 
+    // Social Wheel Interaction Callback
+    this.socialWheel.onInteractionExecuted = (npc, option) => {
+      // Trigger Emote Speech Bubble on NPC
+      this.npcManager.triggerEmote(npc.id, option.emoteSymbol, 3000);
+    };
+
     // HUD Handlers
     this.hud.onOpenCAS = () => this.casModal.open(this.sim);
     this.hud.onOpenBuildBuy = () => this.buildCatalog.open(this.sim, this.house);
     this.hud.onOpenCareer = () => this.careerPanel.open(this.sim, this.careerManager, this.questManager);
+    this.hud.onOpenRelationships = () => this.relationshipsPanel.open(this.npcManager);
     this.hud.onOpenPrivacy = () => this.privacyModal.open();
 
     this.hud.onSaveGame = () => {
-      SaveManager.saveGame(this.sim, this.house, this.careerManager);
+      SaveManager.saveGame(this.sim, this.house, this.careerManager, this.npcManager);
       this.soundManager.playLevelUp();
-      alert('💾 Spielstand erfolgreich lokal gespeichert!');
+      alert('💾 Spielstand (inklusive Beziehungen & Nachbarn) erfolgreich gespeichert!');
     };
 
     this.hud.onSpeedChange = (speed) => this.timeSystem.setSpeed(speed);
@@ -172,9 +199,9 @@ export class Game {
   }
 
   private attemptLoadSave(): void {
-    const loaded = SaveManager.loadGame(this.sim, this.house, this.careerManager);
+    const loaded = SaveManager.loadGame(this.sim, this.house, this.careerManager, this.npcManager);
     if (loaded) {
-      console.log('[Game Engine] Save file loaded successfully.');
+      console.log('[Game Engine] Save file & relationships loaded successfully.');
     }
   }
 
@@ -197,13 +224,16 @@ export class Game {
     // 2. Sim Update
     this.sim.update(deltaSec, timeResult.deltaMinutes);
 
-    // 3. Camera Update
+    // 3. NPC Update
+    this.npcManager.update(deltaSec);
+
+    // 4. Camera Update
     this.camera.update();
 
-    // 4. Render Scene
-    this.renderer.render(this.house, this.sim, this.camera, this.timeSystem.hour);
+    // 5. Render Scene
+    this.renderer.render(this.house, this.sim, this.npcManager, this.camera, this.timeSystem.hour);
 
-    // 5. Update HUD
+    // 6. Update HUD
     this.hud.update(this.sim, this.timeSystem);
 
     requestAnimationFrame(this.loop.bind(this));

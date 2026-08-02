@@ -1,13 +1,14 @@
 /**
  * 2.5D Isometric Rendering Engine
- * Renders grid tiles, room walls, furniture objects, Sims characters,
- * action progress bars, and animated floating Plumbobs.
+ * Renders grid tiles, room walls, furniture objects, Player Sim, NPC Townies,
+ * action progress bars, floating Plumbobs, and animated Emote Speech Bubbles.
  */
 
 import { House } from '../world/House';
 import { Sim } from '../entity/Sim';
 import { Camera } from './Camera';
 import { FURNITURE_CATALOG } from '../world/Furniture';
+import { NPCManager, type NPCSim } from '../entity/NPCManager';
 
 export class IsometricRenderer {
   private canvas: HTMLCanvasElement;
@@ -27,20 +28,13 @@ export class IsometricRenderer {
     this.canvas.height = height;
   }
 
-  /**
-   * Converts 2D Grid coordinates to Isometric Screen coordinates
-   */
   public gridToIso(gridX: number, gridY: number): { x: number; y: number } {
     const isoX = (gridX - gridY) * (this.tileWidth / 2);
     const isoY = (gridX + gridY) * (this.tileHeight / 2);
     return { x: isoX, y: isoY };
   }
 
-  /**
-   * Converts Screen Point back to Grid coordinates
-   */
   public screenToGrid(screenX: number, screenY: number, camera: Camera): { x: number; y: number } {
-    // Offset screen coords by canvas center and camera
     const cx = screenX - this.canvas.width / 2 - camera.x;
     const cy = screenY - (this.canvas.height / 2 - 100) - camera.y;
 
@@ -56,12 +50,11 @@ export class IsometricRenderer {
     };
   }
 
-  public render(house: House, sim: Sim, camera: Camera, timeOfDay: number = 12): void {
+  public render(house: House, sim: Sim, npcManager: NPCManager, camera: Camera, timeOfDay: number = 12): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
-    // Center viewport and apply camera transformations
     ctx.translate(this.canvas.width / 2 + camera.x, (this.canvas.height / 2 - 100) + camera.y);
     ctx.scale(camera.zoom, camera.zoom);
 
@@ -73,7 +66,6 @@ export class IsometricRenderer {
 
         this.drawTile(iso.x, iso.y, tile.color, tile.type);
 
-        // Highlight hover tile
         if (this.hoverGrid && this.hoverGrid.x === x && this.hoverGrid.y === y) {
           this.drawTileOverlay(iso.x, iso.y, 'rgba(255, 255, 255, 0.4)');
         }
@@ -88,11 +80,16 @@ export class IsometricRenderer {
       this.drawFurnitureBlock(iso.x, iso.y, def);
     });
 
-    // 3. Render Sim Character
+    // 3. Render NPC Townies
+    npcManager.npcs.forEach(npc => {
+      const npcIso = this.gridToIso(npc.renderPos.x, npc.renderPos.y);
+      this.drawNPCSim(npcIso.x, npcIso.y, npc);
+    });
+
+    // 4. Render Active Player Sim
     const simIso = this.gridToIso(sim.renderPos.x, sim.renderPos.y);
     this.drawSim(simIso.x, simIso.y, sim);
 
-    // 4. Day/Night Ambient Overlay
     ctx.restore();
     this.renderLightingOverlay(timeOfDay);
   }
@@ -136,7 +133,7 @@ export class IsometricRenderer {
   private drawFurnitureBlock(isoX: number, isoY: number, def: typeof FURNITURE_CATALOG[string]): void {
     const ctx = this.ctx;
     const w = def.width * (this.tileWidth / 2);
-    const h = 30; // Block height
+    const h = 30;
 
     // Top face
     ctx.fillStyle = def.color;
@@ -172,7 +169,6 @@ export class IsometricRenderer {
     ctx.fill();
     ctx.stroke();
 
-    // Furniture Icon & Name
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
@@ -189,13 +185,13 @@ export class IsometricRenderer {
     ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
     ctx.fill();
 
-    // Body (Outfit)
+    // Body
     ctx.fillStyle = sim.customization.outfitColor;
     ctx.fillRect(isoX - 8, isoY - 26, 16, 26);
     ctx.strokeStyle = '#111';
     ctx.strokeRect(isoX - 8, isoY - 26, 16, 26);
 
-    // Head (Skin tone)
+    // Head
     ctx.beginPath();
     ctx.arc(isoX, isoY - 36, 10, 0, Math.PI * 2);
     ctx.fillStyle = sim.customization.skinColor;
@@ -208,11 +204,11 @@ export class IsometricRenderer {
     ctx.fillStyle = sim.customization.hairColor;
     ctx.fill();
 
-    // Iconic Floating Plumbob (Sims Crystal)
+    // Floating Plumbob
     const plumbobY = isoY - 65 + Math.sin(Date.now() / 250) * 4;
     this.drawPlumbob(isoX, plumbobY, mood.plumbobColor);
 
-    // Current Action Progress Bar
+    // Action progress bar
     const currentAction = sim.actionQueue.getCurrentAction();
     if (currentAction) {
       const progress = currentAction.elapsedSeconds / currentAction.durationSeconds;
@@ -227,6 +223,66 @@ export class IsometricRenderer {
       ctx.fillStyle = '#2ecc71';
       ctx.fillRect(bx, by, barW * progress, barH);
     }
+  }
+
+  private drawNPCSim(isoX: number, isoY: number, npc: NPCSim): void {
+    const ctx = this.ctx;
+
+    // Shadow
+    ctx.beginPath();
+    ctx.ellipse(isoX, isoY + 14, 12, 6, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fill();
+
+    // Body
+    ctx.fillStyle = npc.outfitColor;
+    ctx.fillRect(isoX - 7, isoY - 24, 14, 24);
+    ctx.strokeStyle = '#222';
+    ctx.strokeRect(isoX - 7, isoY - 24, 14, 24);
+
+    // Head
+    ctx.beginPath();
+    ctx.arc(isoX, isoY - 33, 9, 0, Math.PI * 2);
+    ctx.fillStyle = npc.skinColor;
+    ctx.fill();
+    ctx.stroke();
+
+    // Hair
+    ctx.beginPath();
+    ctx.arc(isoX, isoY - 36, 9, Math.PI, Math.PI * 2);
+    ctx.fillStyle = npc.hairColor;
+    ctx.fill();
+
+    // Name Label above head
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(npc.name, isoX, isoY - 46);
+
+    // Draw active Emote Speech Bubble if active
+    if (npc.activeEmote) {
+      this.drawEmoteBubble(isoX, isoY - 60, npc.activeEmote.symbol);
+    }
+  }
+
+  private drawEmoteBubble(x: number, y: number, symbol: string): void {
+    const ctx = this.ctx;
+    ctx.save();
+
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.arc(x, y, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#333333';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(symbol, x, y + 1);
+
+    ctx.restore();
   }
 
   private drawPlumbob(x: number, y: number, color: string): void {
@@ -248,7 +304,7 @@ export class IsometricRenderer {
     ctx.closePath();
     ctx.fill();
 
-    // Bottom inverted pyramid
+    // Bottom pyramid
     ctx.fillStyle = this.adjustColorBrightness(color, -20);
     ctx.beginPath();
     ctx.moveTo(x, y + 2);
@@ -262,8 +318,6 @@ export class IsometricRenderer {
   }
 
   private renderLightingOverlay(timeOfDay: number): void {
-    // Time ranges: 0..24 hours
-    // Night is 22..6
     let darkness = 0;
     if (timeOfDay >= 22 || timeOfDay <= 5) {
       darkness = 0.45;

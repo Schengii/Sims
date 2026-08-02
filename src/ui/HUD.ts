@@ -16,6 +16,7 @@ export class HUDManager {
   public onOpenCAS?: () => void;
   public onOpenBuildBuy?: () => void;
   public onOpenCareer?: () => void;
+  public onOpenRelationships?: () => void;
   public onOpenPrivacy?: () => void;
   public onSpeedChange?: (speed: number) => void;
   public onTogglePause?: () => void;
@@ -83,6 +84,7 @@ export class HUDManager {
           <div class="hud-actions">
             <button class="btn-hud" id="btn-open-build" aria-label="Bauen & Kaufen Modus">🛋️ Baumodus</button>
             <button class="btn-hud" id="btn-open-career" aria-label="Karriere & Aufgaben Panel">💼 Karriere</button>
+            <button class="btn-hud" id="btn-open-rel" aria-label="Beziehungen & Nachbarn Panel">💕 Beziehungen</button>
           </div>
         </footer>
       </div>
@@ -103,6 +105,11 @@ export class HUDManager {
     document.getElementById('btn-open-career')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenCareer) this.onOpenCareer();
+    });
+
+    document.getElementById('btn-open-rel')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenRelationships) this.onOpenRelationships();
     });
 
     document.getElementById('btn-privacy')?.addEventListener('click', () => {

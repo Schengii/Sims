@@ -25,12 +25,18 @@ export interface GameSaveData {
     careerId: string;
     rank: number;
   };
+  relationships?: Array<{
+    targetSimId: string;
+    targetSimName: string;
+    friendship: number;
+    romance: number;
+  }>;
 }
 
 export class SaveManager {
   private static readonly SAVE_KEY = 'sims_game_save_v1';
 
-  public static saveGame(sim: Sim, house: House, career: CareerManager): boolean {
+  public static saveGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager): boolean {
     try {
       const saveData: GameSaveData = {
         version: '1.0.0',
@@ -48,7 +54,13 @@ export class SaveManager {
         career: {
           careerId: career.currentCareerId,
           rank: career.currentRank
-        }
+        },
+        relationships: npcManager?.npcs.map(n => ({
+          targetSimId: n.id,
+          targetSimName: n.name,
+          friendship: n.relationship.friendship,
+          romance: n.relationship.romance
+        }))
       };
 
       const jsonStr = JSON.stringify(saveData);
@@ -60,7 +72,7 @@ export class SaveManager {
     }
   }
 
-  public static loadGame(sim: Sim, house: House, career: CareerManager): boolean {
+  public static loadGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
       if (!raw) return false;
@@ -102,6 +114,17 @@ export class SaveManager {
       if (data.career) {
         career.currentCareerId = data.career.careerId || 'tech_guru';
         career.currentRank = data.career.rank || 1;
+      }
+
+      // Restore Relationships
+      if (data.relationships && npcManager) {
+        data.relationships.forEach(r => {
+          const npc = npcManager.npcs.find(n => n.id === r.targetSimId);
+          if (npc) {
+            npc.relationship.friendship = Sanitizer.clamp(r.friendship, 0, 100);
+            npc.relationship.romance = Sanitizer.clamp(r.romance, 0, 100);
+          }
+        });
       }
 
       return true;

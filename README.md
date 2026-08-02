@@ -6,7 +6,7 @@ Willkommen zum nächsten Kapitel des Sims-Universums! Dieses Projekt kombiniert 
 
 ## 📌 Inhaltsverzeichnis
 1. [Über das Projekt](#-über-das-projekt)
-2. [Sicherheit, DSGVO & Barrierefreiheit (WCAG)](#-sicherheit-dsgvo--barrierefreiheit-wcag)
+2. [Sicherheit, DSGVO & Barrierefreiheit (WCAG)](#-sicherheit-dsgVO--barrierefreiheit-wcag)
 3. [Features & Highlights](#-features--highlights)
 4. [Ordner- & Projektstruktur](#-ordner--und-projektstruktur)
 5. [Anleitung & Steuerung](#-anleitung--steuerung)
@@ -23,9 +23,10 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 - **Create-A-Sim (CAS)**: Gestalte deinen Wunsch-Sim (Name, Aussehen, Kleidung, Merkmale).
 - **Bedürfnis- & Stimmungsmanagement**: Halte die 6 Hauptbedürfnisse im grünen Bereich.
 - **Interaktive 2.5D Welt**: Bewege deinen Sim frei im Haus, benutze Möbel (Bett, Dusche, Kühlschrank, PC, Staffelei, Sofa, Smart-TV).
+- **NPC-Nachbarn & Beziehungs-System**: Interagiere mit Nachbarn (Mortimer Goth, Penny Pizazz, Bob Pancakes, Eliza Pancakes) über das **Sims 4 Pie-Dialograd** und baue Freundschaften oder Romantik auf.
 - **Aktions-Schlange (Action Queue)**: Staple bis zu 5 Aktionen nacheinander (wie in Sims 4).
 - **Baumodus (Build & Buy)**: Kaufe neue Möbel mit Simoleons (§) und richte dein Haus individuell ein.
-- **Karriere & Sims Mobile Quests**: Steigere Fähigkeiten (Programmieren, Kochen, Malen), schließe tägliche Quests ab und steige auf.
+- **Karriere & Sims Mobile Quests**: Steigere Fähigkeiten (Programmieren, Kochen, Malen, Charisma), schließe tägliche Quests ab und steige auf.
 
 ---
 
@@ -35,7 +36,7 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 > **Production-Ready & Compliance-Vorgaben**: Das Projekt wurde von Grund auf nach höchsten Sicherheits- und Barrierefreiheitsstandards entwickelt.
 
 ### 1. IT-Sicherheit & Data Hygiene (`src/security/Sanitizer.ts`)
-- **XSS Protection**: Alle Texteingaben (z. B. Sim-Namen, Eigenschaften) werden vor der Verarbeitung strikt maskiert.
+- **XSS Protection**: Alle Texteingaben (z. B. Sim-Namen, NPC-Eigenschaften) werden vor der Verarbeitung strikt maskiert.
 - **Safe JSON Parsing**: Schutz gegen Prototype Pollution (`__proto__`, `constructor`) beim Importieren/Laden von Spielständen.
 - **Boundary Checks**: Numerische Werte werden auf gültige Bereiche begrenzt.
 
@@ -53,10 +54,12 @@ Dieses Spiel wurde als moderne Web-Applikation entwickelt. Es basiert auf **HTML
 
 ## ✨ Features & Highlights
 
+- 💬 **Sims 4 Pie-Dialograd & Emote-Bubbles**: Interaktions-Rad mit Kategorien (Freundlich, Lustig, Romantisch, Gemein). Animierte Sprechblasen (❤️, 😀, 💬, 💔, 😡) schweben bei Gesprächen über den Sims.
+- 💕 **Beziehungs-Engine**: Freundschafts- (0-100%) und Romantikbalken (0-100%) mit dynamischen Beziehungs-Titeln ("Bekannter", "Guter Freund", "Schwarm", "Partner", "Erzfeind").
 - 🟢 **Symbolisches Plumbob-System**: Der schwebende Plumbob-Kristall über dem Sim reagiert dynamisch mit leuchtenden Farben auf die aktuelle Stimmung.
 - 🗣️ **Simlish Vocal Synthesizer**: Prozedural generierte Stimmen (Simlish) und Soundeffekte via Web Audio API ohne externe Sounddateien.
 - ⏱️ **Zeit- & Tag/Nacht-Zyklus**: Einstellbare Spielgeschwindigkeit (Pause 0x, 1x, 2x, 3x) mit dynamischem Umgebungslicht.
-- 💾 **Automatischer Speicherstand**: Automatisches Speichern und Laden im LocalStorage.
+- 💾 **Automatischer Speicherstand**: Automatisches Speichern & Laden im LocalStorage (inklusive Beziehungs-Fortschritt).
 
 ---
 
@@ -77,11 +80,13 @@ Sims/
     │   └── SoundManager.ts      # Web Audio API Simlish Chatter, UI & Level-Up Synthesizer
     ├── engine/                  # Core 2.5D Game Engine
     │   ├── Game.ts              # Haupt-Gameschleife (requestAnimationFrame)
-    │   ├── IsometricRenderer.ts # 2.5D Isometric Canvas Grid, Tile & Sprite Renderer
+    │   ├── IsometricRenderer.ts # 2.5D Isometric Canvas Grid, Tile, Sprite & Emote Bubble Renderer
     │   ├── Camera.ts            # Panning, Zooming & Smooth Interpolation
     │   └── Input.ts             # Maus-, Touch- & Tastatur-Eingabeverarbeitung
     ├── entity/                  # Sim Entitäten & Verhalten
-    │   ├── Sim.ts               # Sim State (Merkmale, Position, Skills, Kleidung)
+    │   ├── Sim.ts               # Player Sim State (Merkmale, Position, Skills, Kleidung)
+    │   ├── NPCManager.ts        # Besuchende Nachbarn (Mortimer Goth, Penny Pizazz, Bob Pancakes) & Emotes
+    │   ├── Relationship.ts      # Beziehungs-Klasse (Freundschaft, Romantik & Status)
     │   ├── ActionQueue.ts       # Sims 4 Aktions-Stapelsystem (max. 5 Aktionen)
     │   ├── Needs.ts             # 6 Hauptbedürfnisse (Hunger, Energie, Hygiene, Blase, Spaß, Sozial)
     │   └── Moods.ts             # Stimmungs-Zustände (Glücklich, Energetisch, Angespannt, Erschöpft)
@@ -93,9 +98,11 @@ Sims/
     │   ├── TimeSystem.ts        # Uhrzeit, Tag/Nacht-Licht & Geschwindigkeits-Regelung
     │   ├── CareerSystem.ts      # Berufe (Tech Guru, Gourmet Chef, Künstler) & Skills
     │   ├── QuestSystem.ts       # Sims Mobile Style Aufgaben & Belohnungen
-    │   └── SaveManager.ts       # Sichere JSON-Speicherung & LocalStorage Manager
+    │   └── SaveManager.ts       # Sichere JSON-Speicherung von Sims & Beziehungen
     ├── ui/                      # Responsive UI Modals & HUD Views
     │   ├── HUD.ts               # Oberer & unterer UI-Balken, Bedürfnisse & Aktionschips
+    │   ├── SocialWheel.ts       # Sims 4 Pie-Dialograd für freundliche, lustige, romantische Aktionen
+    │   ├── RelationshipsPanel.ts# Beziehungs-Übersicht (Freundschaft & Romantik Meter)
     │   ├── CASModal.ts          # Create-A-Sim Editor Dialog
     │   ├── BuildBuyCatalog.ts   # Möbel-Kaufmodus mit Simoleon (§) Berechnung
     │   ├── CareerPanel.ts       # Karriere-Übersicht, Skill-Meter & Quests
@@ -111,6 +118,7 @@ Sims/
 ## ⌨️ Anleitung & Steuerung
 
 ### Steuerung mit der Maus / Touch
+- **Linksklick / Touch auf einen NPC-Nachbarn**: Öffnet das **Sims 4 Social Pie Menu** für Interaktionen (Smalltalk, Flirten, Witz erzählen, Beleidigen).
 - **Linksklick / Touch auf ein Möbelstück**: Sim läuft zum Objekt und führt die gewählte Aktion aus (z. B. Schlafen, Kochen, Programmieren).
 - **Linksklick / Touch auf freien Boden**: Sim geht an diese Stelle.
 - **Gedrückte Maustaste (Drag)**: Kamera im Haus frei verschieben.
@@ -154,11 +162,18 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 1.1.0 (Social & Relationship Upgrade)
+- **[Feature] Beziehungs- System**: Implementierung von Freundschafts- und Romantikbalken mit dynamischen Beziehungs-Titeln.
+- **[Feature] Sims 4 Pie-Dialograd**: Interaktions-Menü mit 4 Hauptkategorien (Freundlich, Lustig, Romantisch, Gemein).
+- **[Feature] NPC-Townies**: Spawnen besuchender Nachbarn (Mortimer Goth, Penny Pizazz, Bob Pancakes, Eliza Pancakes) mit Bewegung auf dem Grid.
+- **[Feature] Emote Speech Bubbles**: Animierte Sprechblasen über Sims bei sozialen Interaktionen.
+- **[Feature] Relationships Panel**: Neues HUD-Panel (`💕 Beziehungen`) zur Einsicht aller Bekanntschaften.
+
 ### Version 1.0.0 (Initial Release - Sims 4 / Sims Mobile Hybrid)
 - **[Feature] Create-A-Sim (CAS)**: Vollständige Erstellung von Sims mit Name, Geschlecht, Hauttönen, Haarfarben, Outfit-Styling, Merkmalen und Zielen.
 - **[Feature] 2.5D Isometric Engine**: Hochperformante Canvas-Render-Engine mit dynamischem Kamerasystem (Pan & Zoom) und A* Pfadfindung.
 - **[Feature] Sims 4 Action Queue**: Stapeln von bis zu 5 Aktionen nacheinander.
-- **[Feature] Sims Mobile Quests**: Tägliche Aufgaben mit Simoleon- Belohnung (§).
+- **[Feature] Sims Mobile Quests**: Tägliche Aufgaben mit Simoleon-Belohnung (§).
 - **[Feature] Build & Buy Mode**: Katalog mit Möbeln aus verschiedenen Kategorien (Bett, Dusche, WC, PC-Station, Staffelei, Sofa, TV).
 - **[Feature] Simlish Sound Synthesizer**: Prozedural erzeugte Simlish-Sprache & UI-Sounds über die Web Audio API.
 - **[Security & DSGVO]**: Vollständige Maskierung von Benutzereingaben (XSS Protection), DSGVO-Panel mit Recht auf Löschung (Art. 17) und 100% lokaler Speicherung.
