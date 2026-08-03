@@ -21,6 +21,10 @@ export class HUDManager {
   public onOpenFamilyTree?: () => void;
   public onOpenParty?: () => void;
   public onOpenPrivacy?: () => void;
+  public onOpenInventory?: () => void;
+  public onOpenAudioSettings?: () => void;
+  public onToggleWeather?: () => void;
+  public onToggleWallMode?: () => void;
   public onToggleRadio?: () => void;
   public onSpeedChange?: (speed: number) => void;
   public onTogglePause?: () => void;
@@ -50,12 +54,14 @@ export class HUDManager {
             <button class="btn-speed" id="btn-speed3" aria-label="Dreifache Geschwindigkeit (3)">▶▶▶</button>
           </div>
 
-          <div style="display: flex; align-items: center; gap: 12px;">
+          <div style="display: flex; align-items: center; gap: 8px;">
             <div class="currency-badge" id="hud-simoleons" aria-label="Guthaben in Simoleons">
               § 2,500
             </div>
+            <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
+            <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
             <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
-            <button class="btn-hud" id="btn-sound-toggle" aria-label="Ton umschalten">🔊 Sound</button>
+            <button class="btn-hud" id="btn-audio-settings" aria-label="Audio Einstellungen">🔊 Audio</button>
             <button class="btn-hud" id="btn-save" aria-label="Spielstand speichern">💾 Speichern</button>
             <button class="btn-hud" id="btn-privacy" aria-label="Datenschutz & DSGVO">🛡️ DSGVO</button>
           </div>
@@ -87,6 +93,7 @@ export class HUDManager {
 
           <!-- Main Mode Buttons -->
           <div class="hud-actions">
+            <button class="btn-hud" id="btn-open-inventory" aria-label="Sim Inventar öffnen">🎒 Inventar</button>
             <button class="btn-hud" id="btn-open-build" aria-label="Bauen & Kaufen Modus">🛋️ Baumodus</button>
             <button class="btn-hud" id="btn-open-career" aria-label="Karriere & Aufgaben Panel">💼 Karriere</button>
             <button class="btn-hud" id="btn-open-rel" aria-label="Beziehungen & Nachbarn Panel">💕 Beziehungen</button>
@@ -137,6 +144,26 @@ export class HUDManager {
     document.getElementById('btn-save')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onSaveGame) this.onSaveGame();
+    });
+
+    document.getElementById('btn-open-inventory')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenInventory) this.onOpenInventory();
+    });
+
+    document.getElementById('btn-audio-settings')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenAudioSettings) this.onOpenAudioSettings();
+    });
+
+    document.getElementById('btn-weather-toggle')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onToggleWeather) this.onToggleWeather();
+    });
+
+    document.getElementById('btn-wall-toggle')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onToggleWallMode) this.onToggleWallMode();
     });
 
     document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {

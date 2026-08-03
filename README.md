@@ -175,9 +175,21 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 2.0.0 (Sims 5 Gameplay & World Expansion Upgrade)
+- **[Feature] Sim-Autonomie & KI-Selbstständigkeit**: Untätige Sims suchen sich bei sinkenden Bedürfnissen selbstständig Möbel im Haus (Schlafen, Essen, Sanitär, Unterhaltung).
+- **[Feature] Möbel-Interaktions-Modal**: Auswahl-Modal beim Klick auf Möbelstücke für spezifische Interaktionen (Bett: Schlafen/Nickerchen, PC: Programmieren/Zocken, Kühlschrank: Snack/Gourmet).
+- **[Feature] Sim-Inventar & Staffelei-Gemälde**: Inventar-Panel (🎒) zum Aufbewahren & Verkaufen von gemalten Bildern, Ernteerträgen und Trophäen für Simoleons (§).
+- **[Feature] Möbel Drehen, Verschieben & Verkaufen**: Werkzeuge im Baumodus zum Rotieren (0°/90°/180°/270°), Umstellen oder Verkaufen (80% Simoleon-Rückerstattung).
+- **[Feature] Wand-Ausblendungs-Modus (Cutaway)**: Umschalter (`🧱 Wände`) für Vollwand, Cutaway (abgesenkte Vorderwände) und Wände ausblenden.
+- **[Feature] Wetter- & Jahreszeiten-System**: Dynamisches Wetter (☀️ Sonnig, 🌧️ Regen, ❄️ Schnee, ⛈️ Gewitter) mit 60 FPS Canvas-Partikeleffekten & Umweltlicht.
+- **[Feature] Gartenbau-System**: Beete platzieren, Samen säen (Tomaten, Erdbeeren, Blumen), gießen, ernten & Produkte verkaufen oder nutzen.
+- **[Feature] Prozedurales Ambient-Audio & Sound-Modal**: Vogelgezwitscher, Regenprasseln, Lautstärkeregler für Master, SFX & Radio in neuem Audio-Modal (🔊).
+- **[Feature] Toast-Benachrichtigungssystem**: Animierte Benachrichtigungskarten oben rechts für Ereignisse, Level-Ups, Quests & Bedürfnis-Warnungen.
+
 ### Version 1.5.0 (Sims Mobile Party & Event Engine Upgrade)
 - **[Feature] Hauspartys & Events**: 3 Party-Typen (Einweihungsparty, Sommer-Poolparty, Geburtstags-Gala) mit Ansturm von Party-Gästen.
 - **[Feature] Live 5-Sterne-Wertung**: Live-Punkteberechnung (1-5 ⭐) durch Absolvieren dynamischer Party-Ziele.
 - **[Feature] Gourmet Party-Buffet**: Neues Möbelstück `party_buffet` zum Servieren von Party-Snacks.
 - **[Feature] Trophäen & Prämien**: Freischaltbare Gold- & Silber-Party-Trophäen sowie bis zu § 2.200 Simoleon-Gewinn.
 - **[Feature] Party Modal & HUD Button**: Neuer Dialog zur Ausrichtung von Events & Trophäen-Inspektion.
+

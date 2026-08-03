@@ -21,9 +21,11 @@ export interface GameSaveData {
     ageDays?: number;
     partnerName?: string;
     childrenNames?: string[];
+    inventoryItems?: import('../entity/Inventory').InventoryItem[];
   };
   house: {
     placedFurniture: House['placedFurniture'];
+    wallDisplayMode?: 'full' | 'cutaway' | 'hidden';
     tiles?: Array<Array<{
       type: import('../world/House').FloorType;
       color: string;
@@ -45,12 +47,22 @@ export interface GameSaveData {
     romance: number;
   }>;
   trophiesUnlocked?: string[];
+  gardenPlots?: import('../world/GardenSystem').GardenPlot[];
+  weather?: import('./WeatherSystem').WeatherType;
 }
 
 export class SaveManager {
   private static readonly SAVE_KEY = 'sims_game_save_v1';
 
-  public static saveGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager, partyManager?: import('../systems/PartyManager').PartyManager): boolean {
+  public static saveGame(
+    sim: Sim,
+    house: House,
+    career: CareerManager,
+    npcManager?: import('../entity/NPCManager').NPCManager,
+    partyManager?: import('../systems/PartyManager').PartyManager,
+    gardenSystem?: import('../world/GardenSystem').GardenSystem,
+    weatherSystem?: import('./WeatherSystem').WeatherSystem
+  ): boolean {
     try {
       const saveData: GameSaveData = {
         version: '1.0.0',
@@ -64,10 +76,12 @@ export class SaveManager {
           lifeStage: sim.lifeStage,
           ageDays: sim.ageDays,
           partnerName: sim.partnerName,
-          childrenNames: sim.childrenNames
+          childrenNames: sim.childrenNames,
+          inventoryItems: sim.inventory.items
         },
         house: {
           placedFurniture: house.placedFurniture,
+          wallDisplayMode: house.wallDisplayMode,
           tiles: house.tiles.map(row => row.map(tile => ({
             type: tile.type,
             color: tile.color,
@@ -88,7 +102,9 @@ export class SaveManager {
           friendship: n.relationship.friendship,
           romance: n.relationship.romance
         })),
-        trophiesUnlocked: partyManager?.trophiesUnlocked
+        trophiesUnlocked: partyManager?.trophiesUnlocked,
+        gardenPlots: gardenSystem?.plots,
+        weather: weatherSystem?.currentWeather
       };
 
       const jsonStr = JSON.stringify(saveData);
@@ -100,7 +116,15 @@ export class SaveManager {
     }
   }
 
-  public static loadGame(sim: Sim, house: House, career: CareerManager, npcManager?: import('../entity/NPCManager').NPCManager, partyManager?: import('../systems/PartyManager').PartyManager): boolean {
+  public static loadGame(
+    sim: Sim,
+    house: House,
+    career: CareerManager,
+    npcManager?: import('../entity/NPCManager').NPCManager,
+    partyManager?: import('../systems/PartyManager').PartyManager,
+    gardenSystem?: import('../world/GardenSystem').GardenSystem,
+    weatherSystem?: import('./WeatherSystem').WeatherSystem
+  ): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
       if (!raw) return false;
@@ -145,10 +169,16 @@ export class SaveManager {
       if (Array.isArray(data.sim.childrenNames)) {
         sim.childrenNames = data.sim.childrenNames.map(c => Sanitizer.sanitizeText(c, 24));
       }
+      if (Array.isArray(data.sim.inventoryItems)) {
+        sim.inventory.items = data.sim.inventoryItems;
+      }
 
       // Restore House furniture & tiles
       if (Array.isArray(data.house.placedFurniture)) {
         house.placedFurniture = data.house.placedFurniture;
+      }
+      if (data.house.wallDisplayMode) {
+        house.wallDisplayMode = data.house.wallDisplayMode;
       }
 
       if (Array.isArray(data.house.tiles)) {
@@ -189,6 +219,14 @@ export class SaveManager {
       // Restore Trophies
       if (Array.isArray(data.trophiesUnlocked) && partyManager) {
         partyManager.trophiesUnlocked = data.trophiesUnlocked;
+      }
+
+      // Restore Garden & Weather
+      if (Array.isArray(data.gardenPlots) && gardenSystem) {
+        gardenSystem.plots = data.gardenPlots;
+      }
+      if (data.weather && weatherSystem) {
+        weatherSystem.setWeather(data.weather);
       }
 
       return true;

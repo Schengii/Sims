@@ -120,6 +120,49 @@ export class House {
     return item;
   }
 
+  public wallDisplayMode: 'full' | 'cutaway' | 'hidden' = 'cutaway';
+
+  public rotateFurniture(instanceId: string): boolean {
+    const item = this.placedFurniture.find(f => f.instanceId === instanceId);
+    if (!item) return false;
+    const rotations: Array<0 | 90 | 180 | 270> = [0, 90, 180, 270];
+    const nextIdx = (rotations.indexOf(item.rotation) + 1) % rotations.length;
+    item.rotation = rotations[nextIdx];
+    return true;
+  }
+
+  public sellFurniture(instanceId: string): number {
+    const item = this.placedFurniture.find(f => f.instanceId === instanceId);
+    if (!item) return 0;
+
+    const def = FURNITURE_CATALOG[item.furnitureId];
+    const refund = def ? Math.floor(def.price * 0.8) : 50;
+
+    this.removeFurniture(instanceId);
+    return refund;
+  }
+
+  public moveFurniture(instanceId: string, newX: number, newY: number): boolean {
+    const item = this.placedFurniture.find(f => f.instanceId === instanceId);
+    if (!item) return false;
+
+    // Temporarily remove to check collision
+    const oldX = item.gridX;
+    const oldY = item.gridY;
+    item.gridX = -999;
+    item.gridY = -999;
+
+    if (this.canPlaceFurniture(item.furnitureId, newX, newY)) {
+      item.gridX = newX;
+      item.gridY = newY;
+      return true;
+    } else {
+      item.gridX = oldX;
+      item.gridY = oldY;
+      return false;
+    }
+  }
+
   public removeFurniture(instanceId: string): boolean {
     const idx = this.placedFurniture.findIndex(f => f.instanceId === instanceId);
     if (idx !== -1) {
@@ -180,3 +223,4 @@ export class House {
     return null;
   }
 }
+

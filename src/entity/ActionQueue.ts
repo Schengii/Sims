@@ -39,6 +39,10 @@ export class ActionQueue {
     return [...this.queue];
   }
 
+  public getQueueLength(): number {
+    return this.queue.length;
+  }
+
   public cancelAction(actionId: string): void {
     const idx = this.queue.findIndex(a => a.id === actionId);
     if (idx !== -1) {

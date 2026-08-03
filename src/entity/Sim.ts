@@ -10,6 +10,7 @@ import { ActionQueue } from './ActionQueue';
 import type { Point } from '../world/Pathfinding';
 import { Sanitizer } from '../security/Sanitizer';
 import { LifeStage, type LifeStageType } from './LifeStage';
+import { Inventory } from './Inventory';
 
 export interface SimCustomization {
   name: string;
@@ -42,7 +43,9 @@ export class Sim {
 
   public needs: Needs;
   public actionQueue: ActionQueue;
+  public inventory: Inventory;
   public simoleons: number = 2500;
+
   
   public skills: SimSkills = {
     cooking: 1,
@@ -70,6 +73,7 @@ export class Sim {
 
     this.needs = new Needs();
     this.actionQueue = new ActionQueue();
+    this.inventory = new Inventory();
     this.renderPos = { x: this.gridPos.x, y: this.gridPos.y };
   }
 

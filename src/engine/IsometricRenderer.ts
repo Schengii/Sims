@@ -10,6 +10,8 @@ import { Camera } from './Camera';
 import { FURNITURE_CATALOG } from '../world/Furniture';
 import { NPCManager, type NPCSim } from '../entity/NPCManager';
 import { LifeStage } from '../entity/LifeStage';
+import type { WeatherSystem } from '../systems/WeatherSystem';
+import type { GardenSystem } from '../world/GardenSystem';
 
 export class IsometricRenderer {
   private canvas: HTMLCanvasElement;
@@ -51,7 +53,15 @@ export class IsometricRenderer {
     };
   }
 
-  public render(house: House, sim: Sim, npcManager: NPCManager, camera: Camera, timeOfDay: number = 12): void {
+  public render(
+    house: House,
+    sim: Sim,
+    npcManager: NPCManager,
+    camera: Camera,
+    timeOfDay: number = 12,
+    weatherSystem?: WeatherSystem,
+    gardenSystem?: GardenSystem
+  ): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
@@ -73,17 +83,31 @@ export class IsometricRenderer {
       }
     }
 
-    // 2. Render Walls & Openings (North & West Grid Edges)
-    for (let x = 0; x < house.width; x++) {
-      for (let y = 0; y < house.height; y++) {
-        const tile = house.tiles[x][y];
-        const iso = this.gridToIso(x, y);
+    // 1b. Render Garden Plots
+    if (gardenSystem) {
+      gardenSystem.plots.forEach(plot => {
+        const iso = this.gridToIso(plot.gridX, plot.gridY);
+        this.drawGardenPlot(iso.x, iso.y, plot);
+      });
+    }
 
-        if (tile.hasWallNorth) {
-          this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth);
-        }
-        if (tile.hasWallWest) {
-          this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest);
+    // 2. Render Walls & Openings (respecting house.wallDisplayMode)
+    if (house.wallDisplayMode !== 'hidden') {
+      for (let x = 0; x < house.width; x++) {
+        for (let y = 0; y < house.height; y++) {
+          const tile = house.tiles[x][y];
+          const iso = this.gridToIso(x, y);
+
+          // In cutaway mode, lower front facing walls (x >= 12 or y >= 12)
+          const isFrontWall = x >= 11 || y >= 11;
+          const isCutaway = house.wallDisplayMode === 'cutaway' && isFrontWall;
+
+          if (tile.hasWallNorth) {
+            this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth, isCutaway);
+          }
+          if (tile.hasWallWest) {
+            this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest, isCutaway);
+          }
         }
       }
     }
@@ -93,7 +117,7 @@ export class IsometricRenderer {
       const def = FURNITURE_CATALOG[item.furnitureId];
       if (!def) return;
       const iso = this.gridToIso(item.gridX, item.gridY);
-      this.drawFurnitureBlock(iso.x, iso.y, def);
+      this.drawFurnitureBlock(iso.x, iso.y, def, item.rotation);
     });
 
     // 4. Render NPC Townies
@@ -108,7 +132,12 @@ export class IsometricRenderer {
     this.drawSim(simIso.x, simIso.y, sim, isOnPool);
 
     ctx.restore();
+
+    // 6. Lighting Overlay & Weather Effects
     this.renderLightingOverlay(timeOfDay);
+    if (weatherSystem) {
+      this.renderWeatherParticles(weatherSystem);
+    }
   }
 
   private drawTile(isoX: number, isoY: number, tile: FloorTile): void {
@@ -157,17 +186,48 @@ export class IsometricRenderer {
     ctx.fill();
   }
 
+  private drawGardenPlot(isoX: number, isoY: number, plot: any): void {
+    const ctx = this.ctx;
+    const hw = this.tileWidth / 2 - 4;
+    const hh = this.tileHeight / 2 - 2;
+
+    ctx.save();
+    // Soil mound
+    ctx.fillStyle = '#5d4037';
+    ctx.beginPath();
+    ctx.moveTo(isoX, isoY + 4);
+    ctx.lineTo(isoX + hw, isoY + hh + 4);
+    ctx.lineTo(isoX, isoY + this.tileHeight - 4);
+    ctx.lineTo(isoX - hw, isoY + hh + 4);
+    ctx.closePath();
+    ctx.fill();
+
+    // Plant Icon / Sprout
+    ctx.textAlign = 'center';
+    ctx.font = '16px sans-serif';
+    if (plot.isHarvestable) {
+      const icon = plot.cropType === 'tomatoes' ? '🍅' : plot.cropType === 'strawberries' ? '🍓' : '💐';
+      ctx.fillText(icon, isoX, isoY + hh);
+    } else if (plot.cropType) {
+      ctx.fillText('🌱', isoX, isoY + hh);
+    } else {
+      ctx.fillText('🟫', isoX, isoY + hh);
+    }
+    ctx.restore();
+  }
+
   private drawWallSegment(
     isoX: number,
     isoY: number,
     direction: 'north' | 'west',
     wallColor: string,
-    opening?: 'door' | 'window'
+    opening?: 'door' | 'window',
+    isCutaway: boolean = false
   ): void {
     const ctx = this.ctx;
     const hw = this.tileWidth / 2;
     const hh = this.tileHeight / 2;
-    const wallH = 45; // Wall height
+    const wallH = isCutaway ? 15 : 45; // Wall height lowered for cutaway mode
 
     ctx.save();
 
@@ -184,15 +244,17 @@ export class IsometricRenderer {
       ctx.strokeStyle = 'rgba(0,0,0,0.3)';
       ctx.stroke();
 
-      // Render Door cutout
-      if (opening === 'door') {
-        ctx.fillStyle = '#8d5524';
-        ctx.fillRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
-        ctx.strokeRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
-      } else if (opening === 'window') {
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
-        ctx.fillRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
-        ctx.strokeRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
+      // Render Door cutout if full height wall
+      if (!isCutaway) {
+        if (opening === 'door') {
+          ctx.fillStyle = '#8d5524';
+          ctx.fillRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
+          ctx.strokeRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
+        } else if (opening === 'window') {
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
+          ctx.fillRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
+          ctx.strokeRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
+        }
       }
     } else {
       // West Wall Segment
@@ -207,32 +269,42 @@ export class IsometricRenderer {
       ctx.strokeStyle = 'rgba(0,0,0,0.3)';
       ctx.stroke();
 
-      if (opening === 'door') {
-        ctx.fillStyle = '#8d5524';
-        ctx.fillRect(isoX + 8, isoY + hh - 30, 16, 25);
-        ctx.strokeRect(isoX + 8, isoY + hh - 30, 16, 25);
-      } else if (opening === 'window') {
-        ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
-        ctx.fillRect(isoX + 10, isoY + hh - 35, 14, 14);
-        ctx.strokeRect(isoX + 10, isoY + hh - 35, 14, 14);
+      if (!isCutaway) {
+        if (opening === 'door') {
+          ctx.fillStyle = '#8d5524';
+          ctx.fillRect(isoX + 8, isoY + hh - 30, 16, 25);
+          ctx.strokeRect(isoX + 8, isoY + hh - 30, 16, 25);
+        } else if (opening === 'window') {
+          ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
+          ctx.fillRect(isoX + 10, isoY + hh - 35, 14, 14);
+          ctx.strokeRect(isoX + 10, isoY + hh - 35, 14, 14);
+        }
       }
     }
 
     ctx.restore();
   }
 
-  private drawFurnitureBlock(isoX: number, isoY: number, def: typeof FURNITURE_CATALOG[string]): void {
+  private drawFurnitureBlock(isoX: number, isoY: number, def: typeof FURNITURE_CATALOG[string], rotation: number = 0): void {
     const ctx = this.ctx;
     const w = def.width * (this.tileWidth / 2);
     const h = 30;
 
+    ctx.save();
+    ctx.translate(isoX, isoY);
+
+    // Apply 2D visual offset for rotation
+    if (rotation === 90 || rotation === 270) {
+      ctx.scale(-1, 1);
+    }
+
     // Top face
     ctx.fillStyle = def.color;
     ctx.beginPath();
-    ctx.moveTo(isoX, isoY - h);
-    ctx.lineTo(isoX + w, isoY + (w/2) - h);
-    ctx.lineTo(isoX, isoY + w - h);
-    ctx.lineTo(isoX - w, isoY + (w/2) - h);
+    ctx.moveTo(0, -h);
+    ctx.lineTo(w, (w/2) - h);
+    ctx.lineTo(0, w - h);
+    ctx.lineTo(-w, (w/2) - h);
     ctx.closePath();
     ctx.fill();
     ctx.strokeStyle = 'rgba(0,0,0,0.3)';
@@ -241,10 +313,10 @@ export class IsometricRenderer {
     // Front Left Face
     ctx.fillStyle = this.adjustColorBrightness(def.color, -20);
     ctx.beginPath();
-    ctx.moveTo(isoX - w, isoY + (w/2) - h);
-    ctx.lineTo(isoX, isoY + w - h);
-    ctx.lineTo(isoX, isoY + w);
-    ctx.lineTo(isoX - w, isoY + (w/2));
+    ctx.moveTo(-w, (w/2) - h);
+    ctx.lineTo(0, w - h);
+    ctx.lineTo(0, w);
+    ctx.lineTo(-w, (w/2));
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -252,10 +324,10 @@ export class IsometricRenderer {
     // Front Right Face
     ctx.fillStyle = this.adjustColorBrightness(def.color, -40);
     ctx.beginPath();
-    ctx.moveTo(isoX, isoY + w - h);
-    ctx.lineTo(isoX + w, isoY + (w/2) - h);
-    ctx.lineTo(isoX + w, isoY + (w/2));
-    ctx.lineTo(isoX, isoY + w);
+    ctx.moveTo(0, w - h);
+    ctx.lineTo(w, (w/2) - h);
+    ctx.lineTo(w, (w/2));
+    ctx.lineTo(0, w);
     ctx.closePath();
     ctx.fill();
     ctx.stroke();
@@ -263,7 +335,9 @@ export class IsometricRenderer {
     ctx.fillStyle = '#ffffff';
     ctx.font = '16px sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText(def.icon, isoX, isoY + (w/2) - h - 5);
+    ctx.fillText(def.icon, 0, (w/2) - h - 5);
+
+    ctx.restore();
   }
 
   private drawSim(isoX: number, isoY: number, sim: Sim, isSwimming: boolean = false): void {
@@ -327,6 +401,17 @@ export class IsometricRenderer {
 
       ctx.fillStyle = '#2ecc71';
       ctx.fillRect(bx, by, barW * progress, barH);
+    } else {
+      // Check if low need alert bubble
+      const lowest = sim.needs.getLowestNeed();
+      if (lowest.value < 30) {
+        let alertIcon = '⚠️';
+        if (lowest.need === 'hunger') alertIcon = '🍽️';
+        if (lowest.need === 'energy') alertIcon = '💤';
+        if (lowest.need === 'bladder') alertIcon = '🚽';
+        if (lowest.need === 'hygiene') alertIcon = '🧼';
+        this.drawEmoteBubble(0, -85 + yOffset, alertIcon);
+      }
     }
 
     ctx.restore();
@@ -439,6 +524,45 @@ export class IsometricRenderer {
     }
   }
 
+  private renderWeatherParticles(weatherSystem: WeatherSystem): void {
+    const info = weatherSystem.getWeatherInfo();
+    const ctx = this.ctx;
+
+    if (info.overlayColor) {
+      ctx.fillStyle = info.overlayColor;
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    const time = Date.now() / 10;
+
+    if (weatherSystem.currentWeather === 'rain' || weatherSystem.currentWeather === 'thunderstorm') {
+      ctx.strokeStyle = 'rgba(180, 220, 255, 0.6)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      for (let i = 0; i < 40; i++) {
+        const rx = (i * 47 + time * 8) % this.canvas.width;
+        const ry = (i * 31 + time * 18) % this.canvas.height;
+        ctx.moveTo(rx, ry);
+        ctx.lineTo(rx - 5, ry + 15);
+      }
+      ctx.stroke();
+
+      if (weatherSystem.currentWeather === 'thunderstorm' && Math.random() < 0.02) {
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.4)';
+        ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+      }
+    } else if (weatherSystem.currentWeather === 'snow') {
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+      for (let i = 0; i < 35; i++) {
+        const sx = (i * 53 + Math.sin(time / 20 + i) * 20) % this.canvas.width;
+        const sy = (i * 41 + time * 3) % this.canvas.height;
+        ctx.beginPath();
+        ctx.arc(sx, sy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+  }
+
   private adjustColorBrightness(hex: string, percent: number): string {
     let num = parseInt(hex.replace('#', ''), 16);
     if (isNaN(num)) return hex;
@@ -453,3 +577,4 @@ export class IsometricRenderer {
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   }
 }
+

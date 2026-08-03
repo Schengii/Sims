@@ -375,5 +375,28 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { hunger: 95, fun: 40, social: 50 }
       }
     ]
+  },
+
+  garden_plot: {
+    id: 'garden_plot',
+    name: 'Garten-Pflanzbeet',
+    category: 'decor',
+    price: 100,
+    width: 1,
+    height: 1,
+    color: '#795548',
+    accentColor: '#4caf50',
+    icon: '🌱',
+    description: 'Nährstoffreiches Beet zum Anbauen von Tomaten, Erdbeeren & Blumen.',
+    interactions: [
+      {
+        id: 'interact_garden',
+        label: 'Garten pflegen',
+        icon: '🧑‍🌾',
+        duration: 4,
+        needEffects: { fun: 25, energy: -5 }
+      }
+    ]
   }
 };
+

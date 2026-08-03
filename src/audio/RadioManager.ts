@@ -27,6 +27,12 @@ export class RadioManager {
     electro: { id: 'electro', name: 'Electro & Dance Zone', genre: 'Electronic', icon: '⚡', bpm: 135 }
   };
 
+  public setVolume(vol: number): void {
+    if (this.masterGain && this.ctx) {
+      this.masterGain.gain.setValueAtTime(Math.max(0, Math.min(1, vol)) * 0.25, this.ctx.currentTime);
+    }
+  }
+
   private initContext(): void {
     if (!this.ctx) {
       const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;

@@ -8,7 +8,7 @@ import { House, type FloorType } from '../world/House';
 import { FURNITURE_CATALOG } from '../world/Furniture';
 import { SoundManager } from '../audio/SoundManager';
 
-export type BuildToolMode = 'select' | 'wall' | 'door' | 'window' | 'floor' | 'pool';
+export type BuildToolMode = 'select' | 'wall' | 'door' | 'window' | 'floor' | 'pool' | 'rotate' | 'move' | 'sell' | 'garden';
 
 export class BuildBuyCatalog {
   private container: HTMLElement;
@@ -17,6 +17,7 @@ export class BuildBuyCatalog {
   public activeToolMode: BuildToolMode = 'select';
   public activeFloorType: FloorType = 'wood';
   public activeFloorColor: string = '#8d5524';
+  public selectedInstanceId: string | null = null;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -31,6 +32,14 @@ export class BuildBuyCatalog {
           <div class="modal-header">
             <h2 id="build-title">🛋️ Architekt & Baumodus</h2>
             <button class="btn-close" id="build-btn-close" aria-label="Schließen">&times;</button>
+          </div>
+
+          <!-- Quick Action Toolbar -->
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+            <button class="btn-hud tool-mode-btn" id="btn-tool-rotate" style="font-size: 0.85rem;">🔄 Möbel drehen</button>
+            <button class="btn-hud tool-mode-btn" id="btn-tool-move" style="font-size: 0.85rem;">🚚 Möbel verschieben</button>
+            <button class="btn-hud tool-mode-btn" id="btn-tool-sell" style="font-size: 0.85rem;">💰 Möbel verkaufen</button>
+            <button class="btn-hud tool-mode-btn" id="btn-tool-garden" style="font-size: 0.85rem;">🌱 Gartenbeet (§ 100)</button>
           </div>
 
           <!-- Tab Navigation Bar -->
@@ -66,6 +75,35 @@ export class BuildBuyCatalog {
         const tab = (e.currentTarget as HTMLElement).getAttribute('data-tab') as any;
         this.renderTabContent(sim, house, tab);
       });
+    });
+
+    // Quick Toolbar listeners
+    document.getElementById('btn-tool-rotate')?.addEventListener('click', () => {
+      this.activeToolMode = 'rotate';
+      this.soundManager.playUIClick();
+      alert('🔄 Drehen-Werkzeug aktiviert! Klicke auf ein platziertes Möbelstück im Haus, um es zu drehen.');
+      this.close();
+    });
+
+    document.getElementById('btn-tool-move')?.addEventListener('click', () => {
+      this.activeToolMode = 'move';
+      this.soundManager.playUIClick();
+      alert('🚚 Verschieben-Werkzeug aktiviert! Klicke auf ein Möbelstück und danach auf das Ziel-Feld.');
+      this.close();
+    });
+
+    document.getElementById('btn-tool-sell')?.addEventListener('click', () => {
+      this.activeToolMode = 'sell';
+      this.soundManager.playUIClick();
+      alert('💰 Verkaufen-Werkzeug aktiviert! Klicke auf ein Möbelstück im Haus, um es gegen § Simoleons zu verkaufen.');
+      this.close();
+    });
+
+    document.getElementById('btn-tool-garden')?.addEventListener('click', () => {
+      this.activeToolMode = 'garden';
+      this.soundManager.playUIClick();
+      alert('🌱 Gartenbeet-Werkzeug aktiviert! Klicke auf ein Rasen-Feld draußen, um ein Pflanzbeet (§ 100) anzulegen.');
+      this.close();
     });
 
     // Default to furniture tab
