@@ -1,6 +1,7 @@
 /**
  * House & World Layout Engine
  * Handles floor tiles, wall segments, door/window cutouts, pool tiles,
+ * multi-floor management (Basement, Ground, 1st, 2nd floor),
  * furniture placement, and collision validation.
  */
 
@@ -23,49 +24,96 @@ export interface FloorTile {
 export class House {
   public readonly width: number = 16;
   public readonly height: number = 16;
-  public tiles: FloorTile[][] = [];
-  public placedFurniture: PlacedFurniture[] = [];
+
+  public activeFloor: number = 0; // -1: Keller, 0: EG, 1: 1. OG, 2: 2. OG
+  public floorTilesMap: Record<number, FloorTile[][]> = {};
+  public floorFurnitureMap: Record<number, PlacedFurniture[]> = {};
+  public wallDisplayMode: 'full' | 'cutaway' | 'hidden' = 'cutaway';
 
   constructor() {
+    this.initFloor(0);
     this.initDefaultHouse();
   }
 
-  private initDefaultHouse(): void {
-    // Generate initial floor grid
+  public get tiles(): FloorTile[][] {
+    if (!this.floorTilesMap[this.activeFloor]) {
+      this.initFloor(this.activeFloor);
+    }
+    return this.floorTilesMap[this.activeFloor];
+  }
+
+  public set tiles(val: FloorTile[][]) {
+    this.floorTilesMap[this.activeFloor] = val;
+  }
+
+  public get placedFurniture(): PlacedFurniture[] {
+    if (!this.floorFurnitureMap[this.activeFloor]) {
+      this.floorFurnitureMap[this.activeFloor] = [];
+    }
+    return this.floorFurnitureMap[this.activeFloor];
+  }
+
+  public set placedFurniture(val: PlacedFurniture[]) {
+    this.floorFurnitureMap[this.activeFloor] = val;
+  }
+
+  public setFloor(level: number): void {
+    if (level >= -1 && level <= 2) {
+      this.activeFloor = level;
+      if (!this.floorTilesMap[level]) {
+        this.initFloor(level);
+      }
+    }
+  }
+
+  private initFloor(level: number): void {
+    const grid: FloorTile[][] = [];
     for (let x = 0; x < this.width; x++) {
-      this.tiles[x] = [];
+      grid[x] = [];
       for (let y = 0; y < this.height; y++) {
         const isIndoor = x >= 3 && x <= 12 && y >= 3 && y <= 12;
-        this.tiles[x][y] = {
+        let defaultType: FloorType = level === 0 ? (isIndoor ? 'wood' : 'grass') : (isIndoor ? 'tile' : 'wood');
+        let defaultColor = level === 0 ? (isIndoor ? '#8d5524' : '#27ae60') : (level === -1 ? '#34495e' : '#e67e22');
+
+        grid[x][y] = {
           x,
           y,
-          type: isIndoor ? 'wood' : 'grass',
-          color: isIndoor ? '#8d5524' : '#27ae60',
-          wallColor: '#2c3e50'
+          type: defaultType,
+          color: defaultColor,
+          wallColor: level === -1 ? '#111827' : '#2c3e50'
         };
       }
     }
+    this.floorTilesMap[level] = grid;
+    if (!this.floorFurnitureMap[level]) {
+      this.floorFurnitureMap[level] = [];
+    }
+  }
+
+  private initDefaultHouse(): void {
+    const egTiles = this.floorTilesMap[0];
 
     // Surround indoor room with walls
     for (let x = 3; x <= 12; x++) {
-      this.tiles[x][3].hasWallNorth = true;
-      this.tiles[x][12].hasWallNorth = true;
+      egTiles[x][3].hasWallNorth = true;
+      egTiles[x][12].hasWallNorth = true;
     }
     for (let y = 3; y <= 12; y++) {
-      this.tiles[3][y].hasWallWest = true;
-      this.tiles[12][y].hasWallWest = true;
+      egTiles[3][y].hasWallWest = true;
+      egTiles[12][y].hasWallWest = true;
     }
 
     // Door cutout on south entrance
-    this.tiles[7][12].openingNorth = 'door';
+    egTiles[7][12].openingNorth = 'door';
 
-    // Default starter furniture
+    // Default starter furniture on Ground Floor (0)
     this.addFurniture('bed_basic', 4, 4);
     this.addFurniture('fridge_modern', 10, 4);
     this.addFurniture('shower_glass', 4, 10);
     this.addFurniture('toilet_deluxe', 6, 10);
     this.addFurniture('pc_station', 10, 8);
     this.addFurniture('sofa_luxury', 7, 7);
+    this.addFurniture('stairs_wood', 11, 11);
   }
 
   public setFloorStyle(x: number, y: number, type: FloorType, color: string): void {
@@ -120,8 +168,6 @@ export class House {
     return item;
   }
 
-  public wallDisplayMode: 'full' | 'cutaway' | 'hidden' = 'cutaway';
-
   public rotateFurniture(instanceId: string): boolean {
     const item = this.placedFurniture.find(f => f.instanceId === instanceId);
     if (!item) return false;
@@ -146,7 +192,6 @@ export class House {
     const item = this.placedFurniture.find(f => f.instanceId === instanceId);
     if (!item) return false;
 
-    // Temporarily remove to check collision
     const oldX = item.gridX;
     const oldY = item.gridY;
     item.gridX = -999;
@@ -198,7 +243,6 @@ export class House {
   public isWalkable(x: number, y: number): boolean {
     if (x < 0 || y < 0 || x >= this.width || y >= this.height) return false;
 
-    // Check furniture overlap
     for (const item of this.placedFurniture) {
       const def = FURNITURE_CATALOG[item.furnitureId];
       if (!def) continue;
@@ -223,4 +267,3 @@ export class House {
     return null;
   }
 }
-

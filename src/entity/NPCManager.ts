@@ -52,6 +52,28 @@ export class NPCManager {
     });
   }
 
+  public spawnTownie(name?: string): NPCSim {
+    const names = ['Nancy Landgraab', 'Malcolm Landgraab', 'Judith Ward', 'Dirk Dreamer', 'Akira Kibo'];
+    const randName = name || names[Math.floor(Math.random() * names.length)];
+    const id = `npc_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+    const posX = Math.floor(Math.random() * 10) + 3;
+    const posY = Math.floor(Math.random() * 10) + 3;
+    const townie: NPCSim = {
+      id,
+      name: Sanitizer.sanitizeText(randName, 24),
+      skinColor: '#f1c27d',
+      hairColor: '#34495e',
+      outfitColor: '#e74c3c',
+      trait: 'Freundlich',
+      gridPos: { x: posX, y: posY },
+      renderPos: { x: posX, y: posY },
+      targetPath: [],
+      relationship: new Relationship(id, randName, 30, 0)
+    };
+    this.npcs.push(townie);
+    return townie;
+  }
+
   public update(deltaSec: number): void {
     const now = Date.now();
 

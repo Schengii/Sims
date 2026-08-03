@@ -175,6 +175,12 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 3.0.0 (Aspirations, World Map & Multi-Floor Upgrade)
+- **[Feature] Bestrebungen, Meilensteine & Belohnungs-Shop (`AspirationSystem.ts`, `AspirationModal.ts`)**: 6 Lebensziele (Meisterkoch, Party-Löwe, Computer-Genie, Reich & Berühmt, Pflanzendoktor, Tierfreund) mit 4 Etappen-Meilensteinen & Punkte-Shop für Elixiere & Tränke.
+- **[Feature] Nachbarschafts-Karte & Ausflüge (`WorldMap.ts`, `WorldMapModal.ts`)**: Interaktive Stadtkarte zum Reisen zwischen Wohngrundstück, VIP Club Velvet (DJ-Pult & Bar), Plumbob Fitnesspark & Café Simlish.
+- **[Feature] Mehrstöckiges Bauen & Keller (`House.ts`, `IsometricRenderer.ts`)**: Bauen & Gestalten auf 4 Etagen (-1 Keller, 0 EG, 1. OG, 2. OG) mit platzierten Holz- & Glas-Treppen und Etagen-Umschalter im HUD.
+- **[Feature] Neue Möbel & Katalog-Items (`Furniture.ts`)**: Treppen (`stairs_wood`, `stairs_modern`), DJ-Pult (`dj_booth`), Bar (`bar_counter`), Laufband (`treadmill`) & Espresso-Bar (`coffee_bar`).
+
 ### Version 2.5.0 (Pets & Household Multi-Sim Expansion Upgrade)
 - **[Feature] Pets & Haustier-System**: Hunde 🐕 & Katzen 🐈 als Haushaltsmitglieder mit eigenen Bedürfnissen (Hunger 🦴, Zuneigung ❤️, Energie 💤, Spieltrieb 🎾).
 - **[Feature] Pet-Möbel & Katalog**: Haustierbett (`pet_bed`), Futternapf (`pet_bowl`), Kratzbaum (`cat_tree`) und Spielzeugkiste (`pet_toy`).

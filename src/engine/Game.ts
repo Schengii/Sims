@@ -2,7 +2,7 @@
  * Main Game Controller & Execution Loop
  * Connects Canvas rendering, pathfinding, entities, NPC Townies, Household Multi-Sims,
  * Pet Manager & Autonomy, Social Pie Wheel, Furniture Modal, Inventory Panel, Weather,
- * Garden, Toast Notifications, HUD updates, and system events.
+ * Garden, Toast Notifications, Aspirations, World Map, Multi-Floor House, HUD updates, and system events.
  */
 
 import { Sim } from '../entity/Sim';
@@ -41,6 +41,10 @@ import { ToastManager } from '../ui/ToastManager';
 import { FurnitureModal } from '../ui/FurnitureModal';
 import { InventoryPanel } from '../ui/InventoryPanel';
 import { AudioSettingsModal } from '../ui/AudioSettingsModal';
+import { AspirationModal } from '../ui/AspirationModal';
+import { WorldMapModal } from '../ui/WorldMapModal';
+import { WorldMap } from '../world/WorldMap';
+import { AspirationManager } from '../systems/AspirationSystem';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -61,6 +65,7 @@ export class Game {
   public partyManager: PartyManager;
   public weatherSystem: WeatherSystem;
   public gardenSystem: GardenSystem;
+  public worldMap: WorldMap;
 
   public hud: HUDManager;
   public casModal: CASModal;
@@ -76,6 +81,8 @@ export class Game {
   public furnitureModal: FurnitureModal;
   public inventoryPanel: InventoryPanel;
   public audioSettingsModal: AudioSettingsModal;
+  public aspirationModal: AspirationModal;
+  public worldMapModal: WorldMapModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -99,6 +106,7 @@ export class Game {
     this.partyManager = new PartyManager();
     this.weatherSystem = new WeatherSystem();
     this.gardenSystem = new GardenSystem();
+    this.worldMap = new WorldMap();
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
@@ -115,6 +123,8 @@ export class Game {
     this.furnitureModal = new FurnitureModal(uiContainer, this.soundManager);
     this.inventoryPanel = new InventoryPanel(uiContainer, this.soundManager);
     this.audioSettingsModal = new AudioSettingsModal(uiContainer, this.soundManager, this.radioManager);
+    this.aspirationModal = new AspirationModal(uiContainer, this.soundManager);
+    this.worldMapModal = new WorldMapModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -122,7 +132,7 @@ export class Game {
     this.setupEventHandlers();
     this.attemptLoadSave();
 
-    this.toastManager.showToast('Willkommen bei Sims 5 (v2.5)', 'Mehrpersonen-Haushalt & Pets-System sind jetzt aktiv!', '🐕', 'info');
+    this.toastManager.showToast('Willkommen bei Sims 5 (v3.0)', 'Bestrebungen, Ausflüge & Mehrstöckiges Bauen jetzt aktiv!', '💎', 'info');
   }
 
   private initCanvasSize(): void {
@@ -320,6 +330,18 @@ export class Game {
                 this.sim.needs.modify(need as any, val!);
               });
 
+              if (interaction.id === 'climb_stairs_up') {
+                const next = Math.min(2, this.house.activeFloor + 1);
+                this.house.setFloor(next);
+                this.soundManager.playLevelUp();
+                this.toastManager.showToast('Treppe gestiegen', `Du hast Etage ${next} betreten!`, '🪜', 'info');
+              } else if (interaction.id === 'climb_stairs_down') {
+                const prev = Math.max(-1, this.house.activeFloor - 1);
+                this.house.setFloor(prev);
+                this.soundManager.playUIClick();
+                this.toastManager.showToast('Treppe hinabgestiegen', `Du hast Etage ${prev} betreten!`, '🪜', 'info');
+              }
+
               if (interaction.id === 'paint') {
                 const paintingValue = 150 + Math.floor(this.sim.skills.painting * 50);
                 this.sim.inventory.addItem({
@@ -434,6 +456,12 @@ export class Game {
     this.hud.onOpenPrivacy = () => this.privacyModal.open();
     this.hud.onOpenInventory = () => this.inventoryPanel.open(this.sim, this.toastManager);
     this.hud.onOpenAudioSettings = () => this.audioSettingsModal.open();
+    this.hud.onOpenAspirations = () => this.aspirationModal.open(this.sim, this.toastManager);
+    this.hud.onOpenWorldMap = () => this.worldMapModal.open(this.worldMap, this, this.toastManager);
+    this.hud.onChangeFloor = (level) => {
+      this.house.setFloor(level);
+      this.toastManager.showToast('Etage gewechselt', `Du steuerst jetzt Etage ${level}`, '🏰', 'info');
+    };
 
     this.hud.onToggleWeather = () => {
       this.weatherSystem.cycleNextWeather();
@@ -562,10 +590,17 @@ export class Game {
     }
     this.npcManager.update(deltaSec);
 
-    // 6. Camera Update
+    // 6. Check Aspiration Milestones
+    const newlyCompleted = AspirationManager.checkMilestones(this.sim, this);
+    newlyCompleted.forEach(desc => {
+      this.soundManager.playLevelUp();
+      this.toastManager.showToast('🎯 MEILENSTEIN ERREICHT!', desc, '⭐', 'levelUp');
+    });
+
+    // 7. Camera Update
     this.camera.update();
 
-    // 7. Render Scene
+    // 8. Render Scene
     this.renderer.render(
       this.house,
       this.sim,
@@ -578,7 +613,7 @@ export class Game {
       this.petManager
     );
 
-    // 8. Update HUD
+    // 9. Update HUD
     this.hud.update(this.sim, this.timeSystem, this.household, this.petManager);
 
     requestAnimationFrame(this.loop.bind(this));

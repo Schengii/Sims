@@ -485,7 +485,154 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 65, social: 50 }
       }
     ]
+  },
+
+  // NEW STAIRS & VENUE FURNITURE
+  stairs_wood: {
+    id: 'stairs_wood',
+    name: 'Holztreppe (Klassisch)',
+    category: 'comfort',
+    price: 400,
+    width: 1,
+    height: 1,
+    color: '#8d5524',
+    accentColor: '#d35400',
+    icon: '🪜',
+    description: 'Verbindet Stockwerke. Ermöglicht den Aufstieg ins nächste Geschoss.',
+    interactions: [
+      {
+        id: 'climb_stairs_up',
+        label: 'Etage nach oben steigen',
+        icon: '⬆️',
+        duration: 2,
+        needEffects: { energy: -2 }
+      },
+      {
+        id: 'climb_stairs_down',
+        label: 'Etage nach unten steigen',
+        icon: '⬇️',
+        duration: 2,
+        needEffects: { energy: -2 }
+      }
+    ]
+  },
+
+  stairs_modern: {
+    id: 'stairs_modern',
+    name: 'Design Glas-Metalltreppe',
+    category: 'comfort',
+    price: 750,
+    width: 1,
+    height: 1,
+    color: '#34495e',
+    accentColor: '#00e5ff',
+    icon: '🪜',
+    description: 'Moderne Luxus-Treppe für edle Villen.',
+    interactions: [
+      {
+        id: 'climb_stairs_up',
+        label: 'Etage nach oben steigen',
+        icon: '⬆️',
+        duration: 2,
+        needEffects: { energy: -2 }
+      },
+      {
+        id: 'climb_stairs_down',
+        label: 'Etage nach unten steigen',
+        icon: '⬇️',
+        duration: 2,
+        needEffects: { energy: -2 }
+      }
+    ]
+  },
+
+  dj_booth: {
+    id: 'dj_booth',
+    name: 'Profi DJ-Pult (Club VIP)',
+    category: 'entertainment',
+    price: 1200,
+    width: 2,
+    height: 1,
+    color: '#8e44ad',
+    accentColor: '#00e5ff',
+    icon: '🎧',
+    description: 'Mische Beats auf der Tanzfläche auf!',
+    interactions: [
+      {
+        id: 'dj_mix',
+        label: 'DJ Beats auflegen',
+        icon: '🎛️',
+        duration: 8,
+        needEffects: { fun: 95, social: 60 },
+        skillGain: { skill: 'charisma', amount: 30 }
+      }
+    ]
+  },
+
+  bar_counter: {
+    id: 'bar_counter',
+    name: 'Cocktail-Bar Counter',
+    category: 'appliances',
+    price: 900,
+    width: 2,
+    height: 1,
+    color: '#2c3e50',
+    accentColor: '#e74c3c',
+    icon: '🍸',
+    description: 'Serviere Erfrischungsdrinks an der Club-Bar.',
+    interactions: [
+      {
+        id: 'drink_cocktail',
+        label: 'Cocktail mixen & trinken',
+        icon: '🍹',
+        duration: 5,
+        needEffects: { fun: 80, social: 40 }
+      }
+    ]
+  },
+
+  treadmill: {
+    id: 'treadmill',
+    name: 'Fitness Pro Laufband',
+    category: 'entertainment',
+    price: 850,
+    width: 1,
+    height: 1,
+    color: '#27ae60',
+    accentColor: '#2ecc71',
+    icon: '🏃',
+    description: 'Verbessert die Ausdauer und hält deinen Sim fit.',
+    interactions: [
+      {
+        id: 'run_treadmill',
+        label: 'Laufen gehen',
+        icon: '🏃‍♂️',
+        duration: 8,
+        needEffects: { fun: 60, energy: -20, hygiene: -20 },
+        skillGain: { skill: 'fitness', amount: 35 }
+      }
+    ]
+  },
+
+  coffee_bar: {
+    id: 'coffee_bar',
+    name: 'Espresso Barista Stand',
+    category: 'appliances',
+    price: 650,
+    width: 1,
+    height: 1,
+    color: '#d35400',
+    accentColor: '#f39c12',
+    icon: '☕',
+    description: 'Frisch gemahlener Kaffee für vollen Energieschub.',
+    interactions: [
+      {
+        id: 'drink_espresso',
+        label: 'Espresso trinken',
+        icon: '☕',
+        duration: 3,
+        needEffects: { energy: 50, fun: 30 }
+      }
+    ]
   }
 };
-
-

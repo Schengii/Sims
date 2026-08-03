@@ -1,7 +1,7 @@
 /**
  * Sim Character Entity
  * Represents an active Sim in the game world, including customization options,
- * real-time movement, needs decay, skills, and action queue execution.
+ * real-time movement, needs decay, skills, aspirations, and action queue execution.
  */
 
 import { Needs } from './Needs';
@@ -46,7 +46,10 @@ export class Sim {
   public inventory: Inventory;
   public simoleons: number = 2500;
 
-  
+  public aspirationPoints: number = 250;
+  public aspirationId: string = 'gourmet_chef';
+  public completedMilestones: string[] = [];
+
   public skills: SimSkills = {
     cooking: 1,
     programming: 1,
@@ -60,7 +63,7 @@ export class Sim {
   public facing: 'south' | 'east' | 'north' | 'west' = 'south';
 
   constructor(customization?: Partial<SimCustomization>) {
-    this.id = `sim_${Date.now()}`;
+    this.id = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
     this.customization = {
       name: Sanitizer.sanitizeText(customization?.name || 'Bella Goth', 24),
       gender: customization?.gender || 'female',

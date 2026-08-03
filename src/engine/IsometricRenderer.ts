@@ -63,7 +63,11 @@ export class IsometricRenderer {
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
     ctx.save();
-    ctx.translate(this.canvas.width / 2 + camera.x, (this.canvas.height / 2 - 100) + camera.y);
+
+    // Apply vertical offset based on active floor height
+    const floorYOffset = house.activeFloor * -40;
+
+    ctx.translate(this.canvas.width / 2 + camera.x, (this.canvas.height / 2 - 100) + camera.y + floorYOffset);
     ctx.scale(camera.zoom, camera.zoom);
 
     // 1. Render Floor Grid Tiles & Pools
@@ -80,8 +84,8 @@ export class IsometricRenderer {
       }
     }
 
-    // 1b. Render Garden Plots
-    if (gardenSystem) {
+    // 1b. Render Garden Plots (only on Ground Floor 0)
+    if (gardenSystem && house.activeFloor === 0) {
       gardenSystem.plots.forEach(plot => {
         const iso = this.gridToIso(plot.gridX, plot.gridY);
         this.drawGardenPlot(iso.x, iso.y, plot);
@@ -142,10 +146,13 @@ export class IsometricRenderer {
     ctx.restore();
 
     // 7. Lighting Overlay & Weather Effects
-    this.renderLightingOverlay(timeOfDay);
+    this.renderLightingOverlay(timeOfDay, house.activeFloor);
     if (weatherSystem) {
       this.renderWeatherParticles(weatherSystem);
     }
+
+    // 8. Render Floor Level Badge (Top Left)
+    this.renderFloorBadge(house.activeFloor);
   }
 
   private drawTile(isoX: number, isoY: number, tile: FloorTile): void {
@@ -161,7 +168,6 @@ export class IsometricRenderer {
     ctx.closePath();
 
     if (tile.type === 'pool') {
-      // Animated Swimming Pool Water
       const time = Date.now() / 400;
       const waterBlue = `rgba(0, 180, 255, ${0.75 + Math.sin(time + isoX) * 0.1})`;
       ctx.fillStyle = waterBlue;
@@ -200,7 +206,6 @@ export class IsometricRenderer {
     const hh = this.tileHeight / 2 - 2;
 
     ctx.save();
-    // Soil mound
     ctx.fillStyle = '#5d4037';
     ctx.beginPath();
     ctx.moveTo(isoX, isoY + 4);
@@ -210,7 +215,6 @@ export class IsometricRenderer {
     ctx.closePath();
     ctx.fill();
 
-    // Plant Icon / Sprout
     ctx.textAlign = 'center';
     ctx.font = '16px sans-serif';
     if (plot.isHarvestable) {
@@ -235,12 +239,11 @@ export class IsometricRenderer {
     const ctx = this.ctx;
     const hw = this.tileWidth / 2;
     const hh = this.tileHeight / 2;
-    const wallH = isCutaway ? 15 : 45; // Wall height lowered for cutaway mode
+    const wallH = isCutaway ? 15 : 45;
 
     ctx.save();
 
     if (direction === 'north') {
-      // North Wall Segment
       ctx.fillStyle = wallColor;
       ctx.beginPath();
       ctx.moveTo(isoX - hw, isoY + hh);
@@ -252,7 +255,6 @@ export class IsometricRenderer {
       ctx.strokeStyle = 'rgba(0,0,0,0.3)';
       ctx.stroke();
 
-      // Render Door cutout if full height wall
       if (!isCutaway) {
         if (opening === 'door') {
           ctx.fillStyle = '#8d5524';
@@ -265,7 +267,6 @@ export class IsometricRenderer {
         }
       }
     } else {
-      // West Wall Segment
       ctx.fillStyle = this.adjustColorBrightness(wallColor, -25);
       ctx.beginPath();
       ctx.moveTo(isoX, isoY);
@@ -301,12 +302,10 @@ export class IsometricRenderer {
     ctx.save();
     ctx.translate(isoX, isoY);
 
-    // Apply 2D visual offset for rotation
     if (rotation === 90 || rotation === 270) {
       ctx.scale(-1, 1);
     }
 
-    // Top face
     ctx.fillStyle = def.color;
     ctx.beginPath();
     ctx.moveTo(0, -h);
@@ -318,7 +317,6 @@ export class IsometricRenderer {
     ctx.strokeStyle = 'rgba(0,0,0,0.3)';
     ctx.stroke();
 
-    // Front Left Face
     ctx.fillStyle = this.adjustColorBrightness(def.color, -20);
     ctx.beginPath();
     ctx.moveTo(-w, (w/2) - h);
@@ -329,7 +327,6 @@ export class IsometricRenderer {
     ctx.fill();
     ctx.stroke();
 
-    // Front Right Face
     ctx.fillStyle = this.adjustColorBrightness(def.color, -40);
     ctx.beginPath();
     ctx.moveTo(0, w - h);
@@ -353,13 +350,11 @@ export class IsometricRenderer {
     ctx.save();
     ctx.translate(isoX, isoY);
 
-    // Shadow
     ctx.beginPath();
     ctx.ellipse(0, 8, 10, 5, 0, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
     ctx.fill();
 
-    // Body
     ctx.fillStyle = pet.color;
     ctx.beginPath();
     ctx.ellipse(0, -8, 10, 7, 0, 0, Math.PI * 2);
@@ -367,18 +362,15 @@ export class IsometricRenderer {
     ctx.strokeStyle = '#222';
     ctx.stroke();
 
-    // Head & Ears
     ctx.beginPath();
     ctx.arc(8, -14, 6, 0, Math.PI * 2);
     ctx.fill();
     ctx.stroke();
 
-    // Pet Icon / Species indicator
     ctx.font = '14px sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(pet.species === 'dog' ? '🐕' : '🐈', 0, -20);
 
-    // Name label
     ctx.fillStyle = '#ffffff';
     ctx.font = '9px sans-serif';
     ctx.fillText(pet.name, 0, -34);
@@ -399,7 +391,6 @@ export class IsometricRenderer {
     const currentAction = sim.actionQueue.getCurrentAction();
     const isDancing = currentAction && (currentAction.name.includes('tanzen') || currentAction.name.includes('Dance'));
 
-    // Rhythmic dance bobbing animation
     const danceOffset = isDancing ? Math.sin(Date.now() / 150) * 4 : 0;
     const yOffset = isSwimming ? 10 : danceOffset;
 
@@ -407,7 +398,6 @@ export class IsometricRenderer {
     ctx.translate(isoX, isoY);
     ctx.scale(scale, scale);
 
-    // Shadow (only when not swimming)
     if (!isSwimming) {
       ctx.beginPath();
       ctx.ellipse(0, 14, 14, 7, 0, 0, Math.PI * 2);
@@ -415,31 +405,26 @@ export class IsometricRenderer {
       ctx.fill();
     }
 
-    // Body
     ctx.fillStyle = sim.customization.outfitColor;
     ctx.fillRect(-8, -26 + yOffset, 16, 26 - yOffset);
     ctx.strokeStyle = isActive ? '#00e5ff' : '#111';
     ctx.lineWidth = isActive ? 2 : 1;
     ctx.strokeRect(-8, -26 + yOffset, 16, 26 - yOffset);
 
-    // Head
     ctx.beginPath();
     ctx.arc(0, -36 + yOffset, 10, 0, Math.PI * 2);
     ctx.fillStyle = sim.customization.skinColor;
     ctx.fill();
     ctx.stroke();
 
-    // Hair
     ctx.beginPath();
     ctx.arc(0, -40 + yOffset, 10, Math.PI, Math.PI * 2);
     ctx.fillStyle = sim.customization.hairColor;
     ctx.fill();
 
-    // Floating Plumbob (Only draw active plumbob for active Sim or faint for inactive)
     const plumbobY = -65 + yOffset + Math.sin(Date.now() / 250) * 4;
     this.drawPlumbob(0, plumbobY, isActive ? mood.plumbobColor : 'rgba(200,200,200,0.5)');
 
-    // Action progress bar
     if (currentAction) {
       const progress = currentAction.elapsedSeconds / currentAction.durationSeconds;
       const barW = 40;
@@ -470,32 +455,27 @@ export class IsometricRenderer {
   private drawNPCSim(isoX: number, isoY: number, npc: NPCSim): void {
     const ctx = this.ctx;
 
-    // Shadow
     ctx.beginPath();
     ctx.ellipse(isoX, isoY + 14, 12, 6, 0, 0, Math.PI * 2);
     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
     ctx.fill();
 
-    // Body
     ctx.fillStyle = npc.outfitColor;
     ctx.fillRect(isoX - 7, isoY - 24, 14, 24);
     ctx.strokeStyle = '#222';
     ctx.strokeRect(isoX - 7, isoY - 24, 14, 24);
 
-    // Head
     ctx.beginPath();
     ctx.arc(isoX, isoY - 33, 9, 0, Math.PI * 2);
     ctx.fillStyle = npc.skinColor;
     ctx.fill();
     ctx.stroke();
 
-    // Hair
     ctx.beginPath();
     ctx.arc(isoX, isoY - 36, 9, Math.PI, Math.PI * 2);
     ctx.fillStyle = npc.hairColor;
     ctx.fill();
 
-    // Name Label
     ctx.fillStyle = '#ffffff';
     ctx.font = '10px sans-serif';
     ctx.textAlign = 'center';
@@ -536,7 +516,6 @@ export class IsometricRenderer {
     ctx.shadowColor = color;
     ctx.shadowBlur = 10;
 
-    // Top pyramid
     ctx.beginPath();
     ctx.moveTo(x, y - h);
     ctx.lineTo(x + w, y);
@@ -545,7 +524,6 @@ export class IsometricRenderer {
     ctx.closePath();
     ctx.fill();
 
-    // Bottom pyramid
     ctx.fillStyle = this.adjustColorBrightness(color, -20);
     ctx.beginPath();
     ctx.moveTo(x, y + 2);
@@ -558,18 +536,22 @@ export class IsometricRenderer {
     ctx.restore();
   }
 
-  private renderLightingOverlay(timeOfDay: number): void {
+  private renderLightingOverlay(timeOfDay: number, activeFloor: number = 0): void {
     let darkness = 0;
-    if (timeOfDay >= 22 || timeOfDay <= 5) {
-      darkness = 0.45;
-    } else if (timeOfDay > 5 && timeOfDay < 8) {
-      darkness = 0.45 * (1 - (timeOfDay - 5) / 3);
-    } else if (timeOfDay > 19 && timeOfDay < 22) {
-      darkness = 0.45 * ((timeOfDay - 19) / 3);
+    if (activeFloor === -1) {
+      darkness = 0.55; // Cellar ambient lighting
+    } else {
+      if (timeOfDay >= 22 || timeOfDay <= 5) {
+        darkness = 0.45;
+      } else if (timeOfDay > 5 && timeOfDay < 8) {
+        darkness = 0.45 * (1 - (timeOfDay - 5) / 3);
+      } else if (timeOfDay > 19 && timeOfDay < 22) {
+        darkness = 0.45 * ((timeOfDay - 19) / 3);
+      }
     }
 
     if (darkness > 0) {
-      this.ctx.fillStyle = `rgba(15, 25, 60, ${darkness})`;
+      this.ctx.fillStyle = activeFloor === -1 ? `rgba(10, 15, 30, ${darkness})` : `rgba(15, 25, 60, ${darkness})`;
       this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
     }
   }
@@ -613,6 +595,31 @@ export class IsometricRenderer {
     }
   }
 
+  private renderFloorBadge(floor: number): void {
+    const ctx = this.ctx;
+    ctx.save();
+    const labels: Record<number, string> = {
+      '-1': '🏰 Keller (-1)',
+      '0': '🏠 Erdgeschoss (EG)',
+      '1': '🏢 1. Obergeschoss (1. OG)',
+      '2': '🏰 2. Obergeschoss (2. OG)'
+    };
+
+    const text = labels[floor] || `Etage ${floor}`;
+    ctx.font = 'bold 13px sans-serif';
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    ctx.fillRect(20, 20, 180, 28);
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(20, 20, 180, 28);
+
+    ctx.fillStyle = '#00e5ff';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(text, 110, 34);
+    ctx.restore();
+  }
+
   private adjustColorBrightness(hex: string, percent: number): string {
     let num = parseInt(hex.replace('#', ''), 16);
     if (isNaN(num)) return hex;
@@ -627,4 +634,3 @@ export class IsometricRenderer {
     return `#${((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1)}`;
   }
 }
-

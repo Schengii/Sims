@@ -23,6 +23,9 @@ export interface GameSaveData {
     partnerName?: string;
     childrenNames?: string[];
     inventoryItems?: import('../entity/Inventory').InventoryItem[];
+    aspirationPoints?: number;
+    aspirationId?: string;
+    completedMilestones?: string[];
   };
   householdSims?: Array<{
     customization: Sim['customization'];
@@ -35,6 +38,9 @@ export interface GameSaveData {
     partnerName?: string;
     childrenNames?: string[];
     inventoryItems?: import('../entity/Inventory').InventoryItem[];
+    aspirationPoints?: number;
+    aspirationId?: string;
+    completedMilestones?: string[];
   }>;
   activeSimIndex?: number;
   petsData?: Array<{
@@ -47,6 +53,8 @@ export interface GameSaveData {
   house: {
     placedFurniture: House['placedFurniture'];
     wallDisplayMode?: 'full' | 'cutaway' | 'hidden';
+    activeFloor?: number;
+    floorFurnitureMap?: Record<number, House['placedFurniture']>;
     tiles?: Array<Array<{
       type: import('../world/House').FloorType;
       color: string;
@@ -100,7 +108,10 @@ export class SaveManager {
           ageDays: sim.ageDays,
           partnerName: sim.partnerName,
           childrenNames: sim.childrenNames,
-          inventoryItems: sim.inventory.items
+          inventoryItems: sim.inventory.items,
+          aspirationPoints: sim.aspirationPoints,
+          aspirationId: sim.aspirationId,
+          completedMilestones: sim.completedMilestones
         },
         householdSims: household?.sims.map(s => ({
           customization: s.customization,
@@ -112,7 +123,10 @@ export class SaveManager {
           ageDays: s.ageDays,
           partnerName: s.partnerName,
           childrenNames: s.childrenNames,
-          inventoryItems: s.inventory.items
+          inventoryItems: s.inventory.items,
+          aspirationPoints: s.aspirationPoints,
+          aspirationId: s.aspirationId,
+          completedMilestones: s.completedMilestones
         })),
         activeSimIndex: household?.activeSimIndex || 0,
         petsData: petManager?.pets.map(p => ({
@@ -130,6 +144,8 @@ export class SaveManager {
         house: {
           placedFurniture: house.placedFurniture,
           wallDisplayMode: house.wallDisplayMode,
+          activeFloor: house.activeFloor,
+          floorFurnitureMap: house.floorFurnitureMap,
           tiles: house.tiles.map(row => row.map(tile => ({
             type: tile.type,
             color: tile.color,
@@ -200,6 +216,9 @@ export class SaveManager {
           if (savedSim.partnerName) s.partnerName = Sanitizer.sanitizeText(savedSim.partnerName, 24);
           if (Array.isArray(savedSim.childrenNames)) s.childrenNames = savedSim.childrenNames;
           if (Array.isArray(savedSim.inventoryItems)) s.inventory.items = savedSim.inventoryItems;
+          if (typeof savedSim.aspirationPoints === 'number') s.aspirationPoints = savedSim.aspirationPoints;
+          if (savedSim.aspirationId) s.aspirationId = savedSim.aspirationId;
+          if (Array.isArray(savedSim.completedMilestones)) s.completedMilestones = savedSim.completedMilestones;
           return s;
         });
         household.activeSimIndex = data.activeSimIndex || 0;
@@ -227,6 +246,9 @@ export class SaveManager {
         if (data.sim.partnerName) sim.partnerName = Sanitizer.sanitizeText(data.sim.partnerName, 24);
         if (Array.isArray(data.sim.childrenNames)) sim.childrenNames = data.sim.childrenNames.map(c => Sanitizer.sanitizeText(c, 24));
         if (Array.isArray(data.sim.inventoryItems)) sim.inventory.items = data.sim.inventoryItems;
+        if (typeof data.sim.aspirationPoints === 'number') sim.aspirationPoints = data.sim.aspirationPoints;
+        if (data.sim.aspirationId) sim.aspirationId = data.sim.aspirationId;
+        if (Array.isArray(data.sim.completedMilestones)) sim.completedMilestones = data.sim.completedMilestones;
       }
 
       // Restore Pets
@@ -245,10 +267,16 @@ export class SaveManager {
         });
       }
 
-      // Restore House furniture & tiles
-      if (Array.isArray(data.house.placedFurniture)) {
+      // Restore House furniture & tiles & multi-floors
+      if (typeof data.house.activeFloor === 'number') {
+        house.activeFloor = data.house.activeFloor;
+      }
+      if (data.house.floorFurnitureMap) {
+        house.floorFurnitureMap = data.house.floorFurnitureMap;
+      } else if (Array.isArray(data.house.placedFurniture)) {
         house.placedFurniture = data.house.placedFurniture;
       }
+
       if (data.house.wallDisplayMode) {
         house.wallDisplayMode = data.house.wallDisplayMode;
       }

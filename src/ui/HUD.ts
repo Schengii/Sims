@@ -1,7 +1,7 @@
 /**
  * Main HUD Overlay UI Manager
- * Handles top bar (Clock, Speed, Simoleons, Privacy, Mute), Bottom Bar (Sim Profile, Needs, Actions),
- * and ARIA accessibility labels.
+ * Handles top bar (Clock, Speed, Simoleons, Floor Switcher, Map, Aspirations),
+ * Bottom Bar (Sim Profile, Needs, Actions), and WCAG ARIA accessibility labels.
  */
 
 import { Sim } from '../entity/Sim';
@@ -23,6 +23,10 @@ export class HUDManager {
   public onOpenPrivacy?: () => void;
   public onOpenInventory?: () => void;
   public onOpenAudioSettings?: () => void;
+  public onOpenAspirations?: () => void;
+  public onOpenWorldMap?: () => void;
+  public onChangeFloor?: (level: number) => void;
+
   public onToggleWeather?: () => void;
   public onToggleWallMode?: () => void;
   public onToggleRadio?: () => void;
@@ -58,10 +62,21 @@ export class HUDManager {
             <button class="btn-speed" id="btn-speed3" aria-label="Dreifache Geschwindigkeit (3)">▶▶▶</button>
           </div>
 
+          <!-- Floor Switcher Bar -->
+          <div style="display: flex; gap: 4px; background: rgba(0,0,0,0.3); padding: 3px 6px; border-radius: 8px; border: 1px solid rgba(255,255,255,0.1);">
+            <span style="font-size: 11px; font-weight: bold; color: #bdc3c7; margin-right: 4px; display: flex; align-items: center;">🏰 Etage:</span>
+            <button class="btn-hud" id="btn-floor-keller" style="padding: 2px 6px; font-size: 11px;" title="Keller (-1)">⬇️ Keller</button>
+            <button class="btn-hud active" id="btn-floor-eg" style="padding: 2px 6px; font-size: 11px;" title="Erdgeschoss (0)">0 EG</button>
+            <button class="btn-hud" id="btn-floor-1og" style="padding: 2px 6px; font-size: 11px;" title="1. Obergeschoss (1)">1 OG</button>
+            <button class="btn-hud" id="btn-floor-2og" style="padding: 2px 6px; font-size: 11px;" title="2. Obergeschoss (2)">2 OG</button>
+          </div>
+
           <div style="display: flex; align-items: center; gap: 8px;">
             <div class="currency-badge" id="hud-simoleons" aria-label="Guthaben in Simoleons">
               § 2,500
             </div>
+            <button class="btn-hud" id="btn-open-map" title="Nachbarschafts-Karte & Ausflüge">🗺️ Karte</button>
+            <button class="btn-hud" id="btn-open-asp" title="Bestrebungen & Belohnungs-Shop">🎯 Bestrebungen</button>
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
             <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
             <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
@@ -146,6 +161,33 @@ export class HUDManager {
       if (this.onOpenParty) this.onOpenParty();
     });
 
+    document.getElementById('btn-open-asp')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenAspirations) this.onOpenAspirations();
+    });
+
+    document.getElementById('btn-open-map')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenWorldMap) this.onOpenWorldMap();
+    });
+
+    // Floor Switcher Listeners
+    const floorBtns = [
+      { id: 'btn-floor-keller', level: -1 },
+      { id: 'btn-floor-eg', level: 0 },
+      { id: 'btn-floor-1og', level: 1 },
+      { id: 'btn-floor-2og', level: 2 }
+    ];
+
+    floorBtns.forEach(b => {
+      document.getElementById(b.id)?.addEventListener('click', () => {
+        this.soundManager.playUIClick();
+        floorBtns.forEach(other => document.getElementById(other.id)?.classList.remove('active'));
+        document.getElementById(b.id)?.classList.add('active');
+        if (this.onChangeFloor) this.onChangeFloor(b.level);
+      });
+    });
+
     document.getElementById('btn-privacy')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenPrivacy) this.onOpenPrivacy();
@@ -179,11 +221,6 @@ export class HUDManager {
     document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onToggleRadio) this.onToggleRadio();
-    });
-
-    document.getElementById('btn-sound-toggle')?.addEventListener('click', (e) => {
-      const isMuted = this.soundManager.toggleMute();
-      (e.currentTarget as HTMLElement).innerText = isMuted ? '🔇 Stumm' : '🔊 Sound';
     });
 
     // Speed Controls
