@@ -3,7 +3,8 @@
  * Connects Canvas rendering, pathfinding, entities, NPC Townies, Household Multi-Sims,
  * Pet Manager & Autonomy, Social Pie Wheel, Furniture Modal, Inventory Panel, Weather,
  * Garden, Toast Notifications, Aspirations, World Map, Multi-Floor House, Calendar & Holidays,
- * Bills & Utility, Magic & Alchemie, HUD updates, and system events.
+ * Bills & Utility, Magic & Alchemie, Vehicles & Garage, Retail Business, Photos & Memories,
+ * HUD updates, and system events.
  */
 
 import { Sim } from '../entity/Sim';
@@ -53,6 +54,13 @@ import { BillsModal } from '../ui/BillsModal';
 import { MagicManager } from '../systems/MagicSystem';
 import { MagicModal } from '../ui/MagicModal';
 
+import { VehicleManager } from '../systems/VehicleSystem';
+import { VehicleModal } from '../ui/VehicleModal';
+import { BusinessManager } from '../systems/BusinessSystem';
+import { BusinessModal } from '../ui/BusinessModal';
+import { PhotoManager } from '../systems/PhotoSystem';
+import { PhotoModal } from '../ui/PhotoModal';
+
 export class Game {
   private canvas: HTMLCanvasElement;
   private camera: Camera;
@@ -76,6 +84,9 @@ export class Game {
   public calendarManager: CalendarManager;
   public billsManager: BillsManager;
   public magicManager: MagicManager;
+  public vehicleManager: VehicleManager;
+  public businessManager: BusinessManager;
+  public photoManager: PhotoManager;
 
   public hud: HUDManager;
   public casModal: CASModal;
@@ -96,6 +107,9 @@ export class Game {
   public calendarModal: CalendarModal;
   public billsModal: BillsModal;
   public magicModal: MagicModal;
+  public vehicleModal: VehicleModal;
+  public businessModal: BusinessModal;
+  public photoModal: PhotoModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -123,6 +137,9 @@ export class Game {
     this.calendarManager = new CalendarManager();
     this.billsManager = new BillsManager();
     this.magicManager = new MagicManager();
+    this.vehicleManager = new VehicleManager();
+    this.businessManager = new BusinessManager();
+    this.photoManager = new PhotoManager();
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
@@ -144,6 +161,9 @@ export class Game {
     this.calendarModal = new CalendarModal(uiContainer, this.soundManager);
     this.billsModal = new BillsModal(uiContainer, this.soundManager);
     this.magicModal = new MagicModal(uiContainer, this.soundManager);
+    this.vehicleModal = new VehicleModal(uiContainer, this.soundManager);
+    this.businessModal = new BusinessModal(uiContainer, this.soundManager);
+    this.photoModal = new PhotoModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -151,7 +171,7 @@ export class Game {
     this.setupEventHandlers();
     this.attemptLoadSave();
 
-    this.toastManager.showToast('Willkommen bei Sims 5 (v3.5)', 'Feiertags-Kalender, Rechnungen & Magie-System sind jetzt aktiv!', '✨', 'info');
+    this.toastManager.showToast('Willkommen bei Sims 5 (v4.0)', 'Garage, Eigenes Gewerbe & Smartphone-Kamera sind aktiv!', '🚗', 'info');
   }
 
   private initCanvasSize(): void {
@@ -488,6 +508,9 @@ export class Game {
     this.hud.onOpenCalendar = () => this.calendarModal.open(this.calendarManager, this, this.toastManager);
     this.hud.onOpenBills = () => this.billsModal.open(this.billsManager, this.house, this, this.toastManager);
     this.hud.onOpenMagic = () => this.magicModal.open(this.magicManager, this, this.toastManager);
+    this.hud.onOpenVehicle = () => this.vehicleModal.open(this.vehicleManager, this, this.toastManager);
+    this.hud.onOpenBusiness = () => this.businessModal.open(this.businessManager, this, this.toastManager);
+    this.hud.onOpenPhoto = () => this.photoModal.open(this.photoManager, this, this.toastManager);
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
@@ -592,12 +615,17 @@ export class Game {
     // 1. Time Update
     const timeResult = this.timeSystem.update(deltaSec);
 
-    // 2. Weather, Garden, Calendar, Bills, Magic Updates
+    // 2. Weather, Garden, Calendar, Bills, Magic, Business Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
     this.calendarManager.updateTime(this.timeSystem.day);
     this.billsManager.updateTime(this.timeSystem.day, this.house);
     this.magicManager.updateTime(timeResult.deltaMinutes);
+
+    // Simulate business sales tick
+    if (Math.random() < 0.005) {
+      this.businessManager.simulateCustomerTick();
+    }
 
     if (this.weatherSystem.currentWeather === 'sunny' && Math.random() < 0.002) {
       this.soundManager.playBirdChirp();

@@ -92,6 +92,22 @@ export interface GameSaveData {
     manaPoints: number;
     unlockedSpells: string[];
   };
+  vehicleData?: {
+    ownedVehicleIds: string[];
+    activeVehicleId: string;
+  };
+  businessData?: {
+    storeId: string;
+    isStoreOpen: boolean;
+    marginSetting: 'fair' | 'premium' | 'luxury';
+    dailyRevenue: number;
+    customerSatisfaction: number;
+    totalSalesCount: number;
+  };
+  photoData?: {
+    photos: import('./PhotoSystem').PhotoItem[];
+    memories: import('./PhotoSystem').MemoryEntry[];
+  };
   trophiesUnlocked?: string[];
   gardenPlots?: import('../world/GardenSystem').GardenPlot[];
   weather?: import('./WeatherSystem').WeatherType;
@@ -112,7 +128,10 @@ export class SaveManager {
     petManager?: import('../entity/PetManager').PetManager,
     calendarManager?: import('../systems/CalendarSystem').CalendarManager,
     billsManager?: import('../systems/BillsSystem').BillsManager,
-    magicManager?: import('../systems/MagicSystem').MagicManager
+    magicManager?: import('../systems/MagicSystem').MagicManager,
+    vehicleManager?: import('../systems/VehicleSystem').VehicleManager,
+    businessManager?: import('../systems/BusinessSystem').BusinessManager,
+    photoManager?: import('../systems/PhotoSystem').PhotoManager
   ): boolean {
     try {
       const saveData: GameSaveData = {
@@ -203,6 +222,22 @@ export class SaveManager {
           manaPoints: magicManager.manaPoints,
           unlockedSpells: magicManager.unlockedSpells
         } : undefined,
+        vehicleData: vehicleManager ? {
+          ownedVehicleIds: vehicleManager.ownedVehicleIds,
+          activeVehicleId: vehicleManager.activeVehicleId
+        } : undefined,
+        businessData: businessManager ? {
+          storeId: businessManager.storeId,
+          isStoreOpen: businessManager.isStoreOpen,
+          marginSetting: businessManager.marginSetting,
+          dailyRevenue: businessManager.dailyRevenue,
+          customerSatisfaction: businessManager.customerSatisfaction,
+          totalSalesCount: businessManager.totalSalesCount
+        } : undefined,
+        photoData: photoManager ? {
+          photos: photoManager.photos,
+          memories: photoManager.memories
+        } : undefined,
         trophiesUnlocked: partyManager?.trophiesUnlocked,
         gardenPlots: gardenSystem?.plots,
         weather: weatherSystem?.currentWeather
@@ -224,12 +259,15 @@ export class SaveManager {
     npcManager?: import('../entity/NPCManager').NPCManager,
     partyManager?: import('../systems/PartyManager').PartyManager,
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
-    weatherSystem?: import('./WeatherSystem').WeatherSystem,
+    weatherSystem?: import('./WeatherSystem').WeatherType | any,
     household?: import('../entity/Household').Household,
     petManager?: import('../entity/PetManager').PetManager,
     calendarManager?: import('../systems/CalendarSystem').CalendarManager,
     billsManager?: import('../systems/BillsSystem').BillsManager,
-    magicManager?: import('../systems/MagicSystem').MagicManager
+    magicManager?: import('../systems/MagicSystem').MagicManager,
+    vehicleManager?: import('../systems/VehicleSystem').VehicleManager,
+    businessManager?: import('../systems/BusinessSystem').BusinessManager,
+    photoManager?: import('../systems/PhotoSystem').PhotoManager
   ): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
@@ -339,7 +377,7 @@ export class SaveManager {
         });
       }
 
-      // Restore Calendar, Bills, Magic
+      // Restore Calendar, Bills, Magic, Vehicles, Business, Photos
       if (data.calendarData && calendarManager) {
         calendarManager.currentSeason = data.calendarData.currentSeason;
         calendarManager.dayOfSeason = data.calendarData.dayOfSeason;
@@ -358,6 +396,25 @@ export class SaveManager {
         magicManager.magicXP = data.magicData.magicXP;
         magicManager.manaPoints = data.magicData.manaPoints;
         magicManager.unlockedSpells = data.magicData.unlockedSpells;
+      }
+
+      if (data.vehicleData && vehicleManager) {
+        vehicleManager.ownedVehicleIds = data.vehicleData.ownedVehicleIds;
+        vehicleManager.activeVehicleId = data.vehicleData.activeVehicleId;
+      }
+
+      if (data.businessData && businessManager) {
+        businessManager.storeId = data.businessData.storeId;
+        businessManager.isStoreOpen = data.businessData.isStoreOpen;
+        businessManager.marginSetting = data.businessData.marginSetting;
+        businessManager.dailyRevenue = data.businessData.dailyRevenue;
+        businessManager.customerSatisfaction = data.businessData.customerSatisfaction;
+        businessManager.totalSalesCount = data.businessData.totalSalesCount;
+      }
+
+      if (data.photoData && photoManager) {
+        photoManager.photos = data.photoData.photos;
+        photoManager.memories = data.photoData.memories;
       }
 
       // Restore Career
@@ -387,7 +444,9 @@ export class SaveManager {
         gardenSystem.plots = data.gardenPlots;
       }
       if (data.weather && weatherSystem) {
-        weatherSystem.setWeather(data.weather);
+        if (typeof weatherSystem.setWeather === 'function') {
+          weatherSystem.setWeather(data.weather);
+        }
       }
 
       return true;

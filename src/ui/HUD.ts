@@ -1,6 +1,6 @@
 /**
  * Main HUD Overlay UI Manager
- * Handles top bar (Clock, Speed, Simoleons, Floor Switcher, Map, Aspirations, Calendar, Bills, Magic),
+ * Handles top bar (Clock, Speed, Simoleons, Floor Switcher, Map, Aspirations, Calendar, Bills, Magic, Garage, Business, Camera),
  * Bottom Bar (Sim Profile, Needs, Actions), and WCAG ARIA accessibility labels.
  */
 
@@ -28,6 +28,9 @@ export class HUDManager {
   public onOpenCalendar?: () => void;
   public onOpenBills?: () => void;
   public onOpenMagic?: () => void;
+  public onOpenVehicle?: () => void;
+  public onOpenBusiness?: () => void;
+  public onOpenPhoto?: () => void;
   public onChangeFloor?: (level: number) => void;
 
   public onToggleWeather?: () => void;
@@ -83,6 +86,9 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-cal" title="Kalender & Feiertage">📅 Kalender</button>
             <button class="btn-hud" id="btn-open-bills" title="Rechnungen & Stromkonto">📮 Rechnungen</button>
             <button class="btn-hud" id="btn-open-magic" title="Zauberbuch & Alchemie">🪄 Magie</button>
+            <button class="btn-hud" id="btn-open-veh" title="Garage & Fuhrpark">🚗 Garage</button>
+            <button class="btn-hud" id="btn-open-biz" title="Eigenes Gewerbe & Laden">🏪 Gewerbe</button>
+            <button class="btn-hud" id="btn-open-cam" title="Kamera & Fotoalbum">📸 Kamera</button>
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
             <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
             <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
@@ -190,6 +196,21 @@ export class HUDManager {
     document.getElementById('btn-open-magic')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenMagic) this.onOpenMagic();
+    });
+
+    document.getElementById('btn-open-veh')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenVehicle) this.onOpenVehicle();
+    });
+
+    document.getElementById('btn-open-biz')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenBusiness) this.onOpenBusiness();
+    });
+
+    document.getElementById('btn-open-cam')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenPhoto) this.onOpenPhoto();
     });
 
     // Floor Switcher Listeners

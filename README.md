@@ -175,6 +175,11 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 4.0.0 (Vehicles, Retail Store & Smartphone Camera Upgrade)
+- **[Feature] Fahrzeuge, Garagen & Spritzfahrten (`VehicleSystem.ts`, `VehicleModal.ts`)**: Fuhrpark mit Fahrrädern 🚲, E-Rollern 🛵, Familienkombis 🚗 & Supersportwagen 🏎️ für Ausflüge & Spritzfahrten mit Spaß- & Komfort-Bonus.
+- **[Feature] Eigenes Geschäft & Laden-Management (`BusinessSystem.ts`, `BusinessModal.ts`)**: Eröffnung eigener Bäckereien 🥐, Kunstgalerien 🎨 oder Pet-Shops 🐕 mit Preisaufschlag-Margen (Fair, Premium, Luxus) & Tagesgewinn-Auszahlung.
+- **[Feature] Smartphone-Kamera & Erinnerungs-Tagebuch (`PhotoSystem.ts`, `PhotoModal.ts`)**: Knipsen von Schnappschuss-Fotos 📱 für gerahmte Wandbilder im Inventar & automatisches Führen einer Meilenstein-Lebenschronik.
+
 ### Version 3.5.0 (Calendar, Bills & Magic Supernatural Upgrade)
 - **[Feature] Feiertage, Kalender & Saisonale Events (`CalendarSystem.ts`, `CalendarModal.ts`)**: 4 Jahreszeiten-Feiertage (Winterfest ❄️, Tag der Liebe 💘, Sommerfest ☀️, Gruselnacht 🎃) mit Traditionen-Checklisten & Simoleon-Belohnungen.
 - **[Feature] Rechnungen, Solarenergie & Stromkonto (`BillsSystem.ts`, `BillsModal.ts`)**: Wöchentliche Nebenkosten-Abrechnung mit Grundsteuer, Möbelsteuer, Rabatten für Solarpanels & Windräder sowie Stromsperren-Warnungen bei Nichtzahlung.
