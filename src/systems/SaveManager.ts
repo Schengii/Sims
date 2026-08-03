@@ -75,6 +75,23 @@ export interface GameSaveData {
     friendship: number;
     romance: number;
   }>;
+  calendarData?: {
+    currentSeason: 'spring' | 'summer' | 'autumn' | 'winter';
+    dayOfSeason: number;
+    completedTraditions: string[];
+  };
+  billsData?: {
+    dueDay: number;
+    pendingBillAmount: number;
+    isBillDue: boolean;
+    isPowerCutoff: boolean;
+  };
+  magicData?: {
+    magicLevel: number;
+    magicXP: number;
+    manaPoints: number;
+    unlockedSpells: string[];
+  };
   trophiesUnlocked?: string[];
   gardenPlots?: import('../world/GardenSystem').GardenPlot[];
   weather?: import('./WeatherSystem').WeatherType;
@@ -92,7 +109,10 @@ export class SaveManager {
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
     weatherSystem?: import('./WeatherSystem').WeatherSystem,
     household?: import('../entity/Household').Household,
-    petManager?: import('../entity/PetManager').PetManager
+    petManager?: import('../entity/PetManager').PetManager,
+    calendarManager?: import('../systems/CalendarSystem').CalendarManager,
+    billsManager?: import('../systems/BillsSystem').BillsManager,
+    magicManager?: import('../systems/MagicSystem').MagicManager
   ): boolean {
     try {
       const saveData: GameSaveData = {
@@ -166,6 +186,23 @@ export class SaveManager {
           friendship: n.relationship.friendship,
           romance: n.relationship.romance
         })),
+        calendarData: calendarManager ? {
+          currentSeason: calendarManager.currentSeason,
+          dayOfSeason: calendarManager.dayOfSeason,
+          completedTraditions: calendarManager.completedTraditions
+        } : undefined,
+        billsData: billsManager ? {
+          dueDay: billsManager.dueDay,
+          pendingBillAmount: billsManager.pendingBillAmount,
+          isBillDue: billsManager.isBillDue,
+          isPowerCutoff: billsManager.isPowerCutoff
+        } : undefined,
+        magicData: magicManager ? {
+          magicLevel: magicManager.magicLevel,
+          magicXP: magicManager.magicXP,
+          manaPoints: magicManager.manaPoints,
+          unlockedSpells: magicManager.unlockedSpells
+        } : undefined,
         trophiesUnlocked: partyManager?.trophiesUnlocked,
         gardenPlots: gardenSystem?.plots,
         weather: weatherSystem?.currentWeather
@@ -189,7 +226,10 @@ export class SaveManager {
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
     weatherSystem?: import('./WeatherSystem').WeatherSystem,
     household?: import('../entity/Household').Household,
-    petManager?: import('../entity/PetManager').PetManager
+    petManager?: import('../entity/PetManager').PetManager,
+    calendarManager?: import('../systems/CalendarSystem').CalendarManager,
+    billsManager?: import('../systems/BillsSystem').BillsManager,
+    magicManager?: import('../systems/MagicSystem').MagicManager
   ): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
@@ -297,6 +337,27 @@ export class SaveManager {
             });
           }
         });
+      }
+
+      // Restore Calendar, Bills, Magic
+      if (data.calendarData && calendarManager) {
+        calendarManager.currentSeason = data.calendarData.currentSeason;
+        calendarManager.dayOfSeason = data.calendarData.dayOfSeason;
+        calendarManager.completedTraditions = data.calendarData.completedTraditions;
+      }
+
+      if (data.billsData && billsManager) {
+        billsManager.dueDay = data.billsData.dueDay;
+        billsManager.pendingBillAmount = data.billsData.pendingBillAmount;
+        billsManager.isBillDue = data.billsData.isBillDue;
+        billsManager.isPowerCutoff = data.billsData.isPowerCutoff;
+      }
+
+      if (data.magicData && magicManager) {
+        magicManager.magicLevel = data.magicData.magicLevel;
+        magicManager.magicXP = data.magicData.magicXP;
+        magicManager.manaPoints = data.magicData.manaPoints;
+        magicManager.unlockedSpells = data.magicData.unlockedSpells;
       }
 
       // Restore Career

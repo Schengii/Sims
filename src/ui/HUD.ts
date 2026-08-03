@@ -1,6 +1,6 @@
 /**
  * Main HUD Overlay UI Manager
- * Handles top bar (Clock, Speed, Simoleons, Floor Switcher, Map, Aspirations),
+ * Handles top bar (Clock, Speed, Simoleons, Floor Switcher, Map, Aspirations, Calendar, Bills, Magic),
  * Bottom Bar (Sim Profile, Needs, Actions), and WCAG ARIA accessibility labels.
  */
 
@@ -25,6 +25,9 @@ export class HUDManager {
   public onOpenAudioSettings?: () => void;
   public onOpenAspirations?: () => void;
   public onOpenWorldMap?: () => void;
+  public onOpenCalendar?: () => void;
+  public onOpenBills?: () => void;
+  public onOpenMagic?: () => void;
   public onChangeFloor?: (level: number) => void;
 
   public onToggleWeather?: () => void;
@@ -77,6 +80,9 @@ export class HUDManager {
             </div>
             <button class="btn-hud" id="btn-open-map" title="Nachbarschafts-Karte & Ausflüge">🗺️ Karte</button>
             <button class="btn-hud" id="btn-open-asp" title="Bestrebungen & Belohnungs-Shop">🎯 Bestrebungen</button>
+            <button class="btn-hud" id="btn-open-cal" title="Kalender & Feiertage">📅 Kalender</button>
+            <button class="btn-hud" id="btn-open-bills" title="Rechnungen & Stromkonto">📮 Rechnungen</button>
+            <button class="btn-hud" id="btn-open-magic" title="Zauberbuch & Alchemie">🪄 Magie</button>
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
             <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
             <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
@@ -169,6 +175,21 @@ export class HUDManager {
     document.getElementById('btn-open-map')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenWorldMap) this.onOpenWorldMap();
+    });
+
+    document.getElementById('btn-open-cal')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenCalendar) this.onOpenCalendar();
+    });
+
+    document.getElementById('btn-open-bills')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenBills) this.onOpenBills();
+    });
+
+    document.getElementById('btn-open-magic')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenMagic) this.onOpenMagic();
     });
 
     // Floor Switcher Listeners

@@ -175,6 +175,12 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 3.5.0 (Calendar, Bills & Magic Supernatural Upgrade)
+- **[Feature] Feiertage, Kalender & Saisonale Events (`CalendarSystem.ts`, `CalendarModal.ts`)**: 4 Jahreszeiten-Feiertage (Winterfest ❄️, Tag der Liebe 💘, Sommerfest ☀️, Gruselnacht 🎃) mit Traditionen-Checklisten & Simoleon-Belohnungen.
+- **[Feature] Rechnungen, Solarenergie & Stromkonto (`BillsSystem.ts`, `BillsModal.ts`)**: Wöchentliche Nebenkosten-Abrechnung mit Grundsteuer, Möbelsteuer, Rabatten für Solarpanels & Windräder sowie Stromsperren-Warnungen bei Nichtzahlung.
+- **[Feature] Magie, Zauberei & Alchemie (`MagicSystem.ts`, `MagicModal.ts`)**: Zauberbuch mit Magie-Level 1-5, Mana-Auffüllung, Zaubersprüchen (Blitzsauber 🧹, Gourmet-Food 🍕, Midas-Glanz 🪙, Glitzer-Segen 🔮).
+- **[Feature] Neue Eco- & Magie-Objekte (`Furniture.ts`)**: Solarpanels (`solar_panel`), Windräder (`wind_turbine`), Zauberkessel (`magic_cauldron`), Zauberbuch-Pult (`spell_book`).
+
 ### Version 3.0.0 (Aspirations, World Map & Multi-Floor Upgrade)
 - **[Feature] Bestrebungen, Meilensteine & Belohnungs-Shop (`AspirationSystem.ts`, `AspirationModal.ts`)**: 6 Lebensziele (Meisterkoch, Party-Löwe, Computer-Genie, Reich & Berühmt, Pflanzendoktor, Tierfreund) mit 4 Etappen-Meilensteinen & Punkte-Shop für Elixiere & Tränke.
 - **[Feature] Nachbarschafts-Karte & Ausflüge (`WorldMap.ts`, `WorldMapModal.ts`)**: Interaktive Stadtkarte zum Reisen zwischen Wohngrundstück, VIP Club Velvet (DJ-Pult & Bar), Plumbob Fitnesspark & Café Simlish.

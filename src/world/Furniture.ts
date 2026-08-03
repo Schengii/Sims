@@ -487,7 +487,6 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
     ]
   },
 
-  // NEW STAIRS & VENUE FURNITURE
   stairs_wood: {
     id: 'stairs_wood',
     name: 'Holztreppe (Klassisch)',
@@ -632,6 +631,95 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         icon: '☕',
         duration: 3,
         needEffects: { energy: 50, fun: 30 }
+      }
+    ]
+  },
+
+  // NEW ECO & MAGIC FURNITURE
+  solar_panel: {
+    id: 'solar_panel',
+    name: 'Solarpanel XL',
+    category: 'decor',
+    price: 800,
+    width: 1,
+    height: 1,
+    color: '#2980b9',
+    accentColor: '#f1c40f',
+    icon: '☀️',
+    description: 'Erzeugt sauberen Solarstrom & spart § 50 auf jeder Nebenkosten-Rechnung!',
+    interactions: [
+      {
+        id: 'inspect_solar',
+        label: 'Solarertrag prüfen',
+        icon: '🔋',
+        duration: 2,
+        needEffects: { fun: 15 }
+      }
+    ]
+  },
+
+  wind_turbine: {
+    id: 'wind_turbine',
+    name: 'Mini Windkraftanlage',
+    category: 'decor',
+    price: 1200,
+    width: 1,
+    height: 1,
+    color: '#bdc3c7',
+    accentColor: '#00e5ff',
+    icon: '🌀',
+    description: 'Nutzt die Kraft des Windes & spart § 75 auf jeder Nebenkosten-Rechnung!',
+    interactions: [
+      {
+        id: 'inspect_wind',
+        label: 'Windrad inspecten',
+        icon: '💨',
+        duration: 2,
+        needEffects: { fun: 15 }
+      }
+    ]
+  },
+
+  magic_cauldron: {
+    id: 'magic_cauldron',
+    name: 'Alchemie Zauberkessel',
+    category: 'appliances',
+    price: 600,
+    width: 1,
+    height: 1,
+    color: '#8e44ad',
+    accentColor: '#2ecc71',
+    icon: '🧪',
+    description: 'Braue magische Elixiere und steigere deine Magie-Stufe.',
+    interactions: [
+      {
+        id: 'brew_potion',
+        label: 'Elixier brauen',
+        icon: '✨',
+        duration: 6,
+        needEffects: { fun: 40, energy: -10 }
+      }
+    ]
+  },
+
+  spell_book: {
+    id: 'spell_book',
+    name: 'Historisches Zauberbuch-Pult',
+    category: 'entertainment',
+    price: 450,
+    width: 1,
+    height: 1,
+    color: '#d35400',
+    accentColor: '#f1c40f',
+    icon: '📜',
+    description: 'Studiere alte Zaubersprüche & sammle Magie-Erfahrung.',
+    interactions: [
+      {
+        id: 'study_spells',
+        label: 'Zaubersprüche studieren',
+        icon: '📖',
+        duration: 5,
+        needEffects: { fun: 50, energy: -10 }
       }
     ]
   }

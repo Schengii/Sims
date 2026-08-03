@@ -2,7 +2,8 @@
  * Main Game Controller & Execution Loop
  * Connects Canvas rendering, pathfinding, entities, NPC Townies, Household Multi-Sims,
  * Pet Manager & Autonomy, Social Pie Wheel, Furniture Modal, Inventory Panel, Weather,
- * Garden, Toast Notifications, Aspirations, World Map, Multi-Floor House, HUD updates, and system events.
+ * Garden, Toast Notifications, Aspirations, World Map, Multi-Floor House, Calendar & Holidays,
+ * Bills & Utility, Magic & Alchemie, HUD updates, and system events.
  */
 
 import { Sim } from '../entity/Sim';
@@ -45,6 +46,12 @@ import { AspirationModal } from '../ui/AspirationModal';
 import { WorldMapModal } from '../ui/WorldMapModal';
 import { WorldMap } from '../world/WorldMap';
 import { AspirationManager } from '../systems/AspirationSystem';
+import { CalendarManager } from '../systems/CalendarSystem';
+import { CalendarModal } from '../ui/CalendarModal';
+import { BillsManager } from '../systems/BillsSystem';
+import { BillsModal } from '../ui/BillsModal';
+import { MagicManager } from '../systems/MagicSystem';
+import { MagicModal } from '../ui/MagicModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -66,6 +73,9 @@ export class Game {
   public weatherSystem: WeatherSystem;
   public gardenSystem: GardenSystem;
   public worldMap: WorldMap;
+  public calendarManager: CalendarManager;
+  public billsManager: BillsManager;
+  public magicManager: MagicManager;
 
   public hud: HUDManager;
   public casModal: CASModal;
@@ -83,6 +93,9 @@ export class Game {
   public audioSettingsModal: AudioSettingsModal;
   public aspirationModal: AspirationModal;
   public worldMapModal: WorldMapModal;
+  public calendarModal: CalendarModal;
+  public billsModal: BillsModal;
+  public magicModal: MagicModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -107,6 +120,9 @@ export class Game {
     this.weatherSystem = new WeatherSystem();
     this.gardenSystem = new GardenSystem();
     this.worldMap = new WorldMap();
+    this.calendarManager = new CalendarManager();
+    this.billsManager = new BillsManager();
+    this.magicManager = new MagicManager();
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
@@ -125,6 +141,9 @@ export class Game {
     this.audioSettingsModal = new AudioSettingsModal(uiContainer, this.soundManager, this.radioManager);
     this.aspirationModal = new AspirationModal(uiContainer, this.soundManager);
     this.worldMapModal = new WorldMapModal(uiContainer, this.soundManager);
+    this.calendarModal = new CalendarModal(uiContainer, this.soundManager);
+    this.billsModal = new BillsModal(uiContainer, this.soundManager);
+    this.magicModal = new MagicModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -132,7 +151,7 @@ export class Game {
     this.setupEventHandlers();
     this.attemptLoadSave();
 
-    this.toastManager.showToast('Willkommen bei Sims 5 (v3.0)', 'Bestrebungen, Ausflüge & Mehrstöckiges Bauen jetzt aktiv!', '💎', 'info');
+    this.toastManager.showToast('Willkommen bei Sims 5 (v3.5)', 'Feiertags-Kalender, Rechnungen & Magie-System sind jetzt aktiv!', '✨', 'info');
   }
 
   private initCanvasSize(): void {
@@ -342,6 +361,14 @@ export class Game {
                 this.toastManager.showToast('Treppe hinabgestiegen', `Du hast Etage ${prev} betreten!`, '🪜', 'info');
               }
 
+              if (interaction.id === 'brew_potion' || interaction.id === 'study_spells') {
+                const leveledUp = this.magicManager.addMagicXP(20);
+                if (leveledUp) {
+                  this.soundManager.playLevelUp();
+                  this.toastManager.showToast('✨ MAGIE STUFE ERHÖHT!', `Du hast Magie-Stufe ${this.magicManager.magicLevel} erreicht & neue Zaubersprüche freigeschaltet!`, '🔮', 'levelUp');
+                }
+              }
+
               if (interaction.id === 'paint') {
                 const paintingValue = 150 + Math.floor(this.sim.skills.painting * 50);
                 this.sim.inventory.addItem({
@@ -458,6 +485,10 @@ export class Game {
     this.hud.onOpenAudioSettings = () => this.audioSettingsModal.open();
     this.hud.onOpenAspirations = () => this.aspirationModal.open(this.sim, this.toastManager);
     this.hud.onOpenWorldMap = () => this.worldMapModal.open(this.worldMap, this, this.toastManager);
+    this.hud.onOpenCalendar = () => this.calendarModal.open(this.calendarManager, this, this.toastManager);
+    this.hud.onOpenBills = () => this.billsModal.open(this.billsManager, this.house, this, this.toastManager);
+    this.hud.onOpenMagic = () => this.magicModal.open(this.magicManager, this, this.toastManager);
+
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
       this.toastManager.showToast('Etage gewechselt', `Du steuerst jetzt Etage ${level}`, '🏰', 'info');
@@ -561,9 +592,12 @@ export class Game {
     // 1. Time Update
     const timeResult = this.timeSystem.update(deltaSec);
 
-    // 2. Weather & Garden Updates
+    // 2. Weather, Garden, Calendar, Bills, Magic Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
+    this.calendarManager.updateTime(this.timeSystem.day);
+    this.billsManager.updateTime(this.timeSystem.day, this.house);
+    this.magicManager.updateTime(timeResult.deltaMinutes);
 
     if (this.weatherSystem.currentWeather === 'sunny' && Math.random() < 0.002) {
       this.soundManager.playBirdChirp();
