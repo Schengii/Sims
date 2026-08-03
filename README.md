@@ -175,6 +175,15 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 2.5.0 (Pets & Household Multi-Sim Expansion Upgrade)
+- **[Feature] Pets & Haustier-System**: Hunde 🐕 & Katzen 🐈 als Haushaltsmitglieder mit eigenen Bedürfnissen (Hunger 🦴, Zuneigung ❤️, Energie 💤, Spieltrieb 🎾).
+- **[Feature] Pet-Möbel & Katalog**: Haustierbett (`pet_bed`), Futternapf (`pet_bowl`), Kratzbaum (`cat_tree`) und Spielzeugkiste (`pet_toy`).
+- **[Feature] Pet-Interaktionen & Autonomie**: Füttern, Streicheln, Stöckchen werfen & Kunststücke beibringen. Freie Pet-KI (`PetAutonomy.ts`) sucht Napf & Bett selbstständig.
+- **[Feature] Mehrpersonen-Haushalt (`Household.ts`)**: Steuerung mehrerer Familienmitglieder im selben Haushalt mit unabhängigen Bedürfnissen, Inventaren & Skills.
+- **[Feature] Sim-Avatar Switcher Bar**: Interaktive Sim-Porträtleiste unten links im HUD zum nahtlosen Wechseln des aktiven Sims per Klick oder `Tab`.
+- **[Feature] Haushalts-Erweiterung (`+ Sim` & `+ Pet`)**: Buttons zum Erstellen neuer Haushaltsmitglieder oder Adoptieren neuer Pets direkt im laufenden Spiel.
+- **[Feature] Vollständige Persistenz**: Automatische Speicherung aller Haushalts-Sims und Pets inklusive Bedürfnissen im `SaveManager.ts`.
+
 ### Version 2.0.0 (Sims 5 Gameplay & World Expansion Upgrade)
 - **[Feature] Sim-Autonomie & KI-Selbstständigkeit**: Untätige Sims suchen sich bei sinkenden Bedürfnissen selbstständig Möbel im Haus (Schlafen, Essen, Sanitär, Unterhaltung).
 - **[Feature] Möbel-Interaktions-Modal**: Auswahl-Modal beim Klick auf Möbelstücke für spezifische Interaktionen (Bett: Schlafen/Nickerchen, PC: Programmieren/Zocken, Kühlschrank: Snack/Gourmet).

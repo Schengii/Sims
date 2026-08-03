@@ -7,6 +7,7 @@ import { Sim } from '../entity/Sim';
 import { House } from '../world/House';
 import { CareerManager } from './CareerSystem';
 import { Sanitizer } from '../security/Sanitizer';
+import { Pet } from '../entity/Pet';
 
 export interface GameSaveData {
   version: string;
@@ -23,6 +24,26 @@ export interface GameSaveData {
     childrenNames?: string[];
     inventoryItems?: import('../entity/Inventory').InventoryItem[];
   };
+  householdSims?: Array<{
+    customization: Sim['customization'];
+    gridPos: { x: number; y: number };
+    needs: ReturnType<Sim['needs']['getValues']>;
+    simoleons: number;
+    skills: Sim['skills'];
+    lifeStage?: import('../entity/LifeStage').LifeStageType;
+    ageDays?: number;
+    partnerName?: string;
+    childrenNames?: string[];
+    inventoryItems?: import('../entity/Inventory').InventoryItem[];
+  }>;
+  activeSimIndex?: number;
+  petsData?: Array<{
+    name: string;
+    species: import('../entity/Pet').PetSpecies;
+    color: string;
+    gridPos: { x: number; y: number };
+    needs: { hunger: number; affection: number; energy: number; play: number };
+  }>;
   house: {
     placedFurniture: House['placedFurniture'];
     wallDisplayMode?: 'full' | 'cutaway' | 'hidden';
@@ -61,7 +82,9 @@ export class SaveManager {
     npcManager?: import('../entity/NPCManager').NPCManager,
     partyManager?: import('../systems/PartyManager').PartyManager,
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
-    weatherSystem?: import('./WeatherSystem').WeatherSystem
+    weatherSystem?: import('./WeatherSystem').WeatherSystem,
+    household?: import('../entity/Household').Household,
+    petManager?: import('../entity/PetManager').PetManager
   ): boolean {
     try {
       const saveData: GameSaveData = {
@@ -79,6 +102,31 @@ export class SaveManager {
           childrenNames: sim.childrenNames,
           inventoryItems: sim.inventory.items
         },
+        householdSims: household?.sims.map(s => ({
+          customization: s.customization,
+          gridPos: s.gridPos,
+          needs: s.needs.getValues(),
+          simoleons: s.simoleons,
+          skills: s.skills,
+          lifeStage: s.lifeStage,
+          ageDays: s.ageDays,
+          partnerName: s.partnerName,
+          childrenNames: s.childrenNames,
+          inventoryItems: s.inventory.items
+        })),
+        activeSimIndex: household?.activeSimIndex || 0,
+        petsData: petManager?.pets.map(p => ({
+          name: p.name,
+          species: p.species,
+          color: p.color,
+          gridPos: p.gridPos,
+          needs: {
+            hunger: p.needs.hunger,
+            affection: p.needs.affection,
+            energy: p.needs.energy,
+            play: p.needs.play
+          }
+        })),
         house: {
           placedFurniture: house.placedFurniture,
           wallDisplayMode: house.wallDisplayMode,
@@ -123,7 +171,9 @@ export class SaveManager {
     npcManager?: import('../entity/NPCManager').NPCManager,
     partyManager?: import('../systems/PartyManager').PartyManager,
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
-    weatherSystem?: import('./WeatherSystem').WeatherSystem
+    weatherSystem?: import('./WeatherSystem').WeatherSystem,
+    household?: import('../entity/Household').Household,
+    petManager?: import('../entity/PetManager').PetManager
   ): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
@@ -132,45 +182,67 @@ export class SaveManager {
       const data = Sanitizer.safeJSONParse<GameSaveData | null>(raw, null);
       if (!data || !data.sim || !data.house) return false;
 
-      // Restore Sim
-      sim.customization = {
-        name: Sanitizer.sanitizeText(data.sim.customization.name, 24),
-        gender: data.sim.customization.gender,
-        skinColor: data.sim.customization.skinColor,
-        hairColor: data.sim.customization.hairColor,
-        outfitColor: data.sim.customization.outfitColor,
-        trait: Sanitizer.sanitizeText(data.sim.customization.trait, 30),
-        aspiration: Sanitizer.sanitizeText(data.sim.customization.aspiration, 30)
-      };
-
-      sim.gridPos = data.sim.gridPos || { x: 5, y: 5 };
-      sim.renderPos = { x: sim.gridPos.x, y: sim.gridPos.y };
-      sim.simoleons = Sanitizer.clamp(data.sim.simoleons, 0, 999999);
-
-      if (data.sim.needs) {
-        Object.entries(data.sim.needs).forEach(([k, val]) => {
-          sim.needs.modify(k as any, val - sim.needs.getValues()[k as keyof typeof data.sim.needs]);
+      // Restore Sim / Household
+      if (Array.isArray(data.householdSims) && data.householdSims.length > 0 && household) {
+        household.sims = data.householdSims.map(savedSim => {
+          const s = new Sim(savedSim.customization);
+          s.gridPos = savedSim.gridPos || { x: 5, y: 5 };
+          s.renderPos = { x: s.gridPos.x, y: s.gridPos.y };
+          s.simoleons = Sanitizer.clamp(savedSim.simoleons, 0, 999999);
+          if (savedSim.needs) {
+            Object.entries(savedSim.needs).forEach(([k, val]) => {
+              s.needs.modify(k as any, val - s.needs.getValues()[k as keyof typeof savedSim.needs]);
+            });
+          }
+          if (savedSim.skills) s.skills = savedSim.skills;
+          if (savedSim.lifeStage) s.lifeStage = savedSim.lifeStage;
+          if (typeof savedSim.ageDays === 'number') s.ageDays = savedSim.ageDays;
+          if (savedSim.partnerName) s.partnerName = Sanitizer.sanitizeText(savedSim.partnerName, 24);
+          if (Array.isArray(savedSim.childrenNames)) s.childrenNames = savedSim.childrenNames;
+          if (Array.isArray(savedSim.inventoryItems)) s.inventory.items = savedSim.inventoryItems;
+          return s;
         });
+        household.activeSimIndex = data.activeSimIndex || 0;
+      } else {
+        sim.customization = {
+          name: Sanitizer.sanitizeText(data.sim.customization.name, 24),
+          gender: data.sim.customization.gender,
+          skinColor: data.sim.customization.skinColor,
+          hairColor: data.sim.customization.hairColor,
+          outfitColor: data.sim.customization.outfitColor,
+          trait: Sanitizer.sanitizeText(data.sim.customization.trait, 30),
+          aspiration: Sanitizer.sanitizeText(data.sim.customization.aspiration, 30)
+        };
+        sim.gridPos = data.sim.gridPos || { x: 5, y: 5 };
+        sim.renderPos = { x: sim.gridPos.x, y: sim.gridPos.y };
+        sim.simoleons = Sanitizer.clamp(data.sim.simoleons, 0, 999999);
+        if (data.sim.needs) {
+          Object.entries(data.sim.needs).forEach(([k, val]) => {
+            sim.needs.modify(k as any, val - sim.needs.getValues()[k as keyof typeof data.sim.needs]);
+          });
+        }
+        if (data.sim.skills) sim.skills = data.sim.skills;
+        if (data.sim.lifeStage) sim.lifeStage = data.sim.lifeStage;
+        if (typeof data.sim.ageDays === 'number') sim.ageDays = data.sim.ageDays;
+        if (data.sim.partnerName) sim.partnerName = Sanitizer.sanitizeText(data.sim.partnerName, 24);
+        if (Array.isArray(data.sim.childrenNames)) sim.childrenNames = data.sim.childrenNames.map(c => Sanitizer.sanitizeText(c, 24));
+        if (Array.isArray(data.sim.inventoryItems)) sim.inventory.items = data.sim.inventoryItems;
       }
 
-      if (data.sim.skills) {
-        sim.skills = data.sim.skills;
-      }
-
-      if (data.sim.lifeStage) {
-        sim.lifeStage = data.sim.lifeStage;
-      }
-      if (typeof data.sim.ageDays === 'number') {
-        sim.ageDays = data.sim.ageDays;
-      }
-      if (data.sim.partnerName) {
-        sim.partnerName = Sanitizer.sanitizeText(data.sim.partnerName, 24);
-      }
-      if (Array.isArray(data.sim.childrenNames)) {
-        sim.childrenNames = data.sim.childrenNames.map(c => Sanitizer.sanitizeText(c, 24));
-      }
-      if (Array.isArray(data.sim.inventoryItems)) {
-        sim.inventory.items = data.sim.inventoryItems;
+      // Restore Pets
+      if (Array.isArray(data.petsData) && petManager) {
+        petManager.pets = data.petsData.map(pData => {
+          const pet = new Pet(pData.name, pData.species, pData.color);
+          pet.gridPos = pData.gridPos || { x: 7, y: 7 };
+          pet.renderPos = { x: pet.gridPos.x, y: pet.gridPos.y };
+          if (pData.needs) {
+            pet.needs.hunger = pData.needs.hunger;
+            pet.needs.affection = pData.needs.affection;
+            pet.needs.energy = pData.needs.energy;
+            pet.needs.play = pData.needs.play;
+          }
+          return pet;
+        });
       }
 
       // Restore House furniture & tiles

@@ -30,6 +30,10 @@ export class HUDManager {
   public onTogglePause?: () => void;
   public onSaveGame?: () => void;
 
+  public onSwitchSim?: (index: number) => void;
+  public onAddSim?: () => void;
+  public onAddPet?: () => void;
+
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
     this.soundManager = soundManager;
@@ -69,16 +73,22 @@ export class HUDManager {
 
         <!-- Bottom Bar -->
         <footer class="bottom-bar hud-interactive" role="contentinfo">
-          <!-- Sim Profile & Plumbob Mood -->
-          <div class="sim-profile-card glass-panel" id="hud-sim-profile">
-            <div class="plumbob-icon" id="hud-plumbob-badge" style="color: #2ecc71; background: rgba(46,204,113,0.2)">
-              💎
+          <!-- Household Sims Switcher & Sim Profile -->
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <div class="glass-panel" id="hud-household-switcher" style="display: flex; gap: 6px; padding: 6px 10px; align-items: center;">
+              <!-- Household Sim avatars dynamically populated -->
             </div>
-            <div class="sim-info">
-              <h3 id="hud-sim-name">Bella Goth</h3>
-              <p id="hud-sim-mood">Stimmung: Glücklich</p>
+
+            <div class="sim-profile-card glass-panel" id="hud-sim-profile">
+              <div class="plumbob-icon" id="hud-plumbob-badge" style="color: #2ecc71; background: rgba(46,204,113,0.2)">
+                💎
+              </div>
+              <div class="sim-info">
+                <h3 id="hud-sim-name">Bella Goth</h3>
+                <p id="hud-sim-mood">Stimmung: Glücklich</p>
+              </div>
+              <button class="btn-hud" id="btn-open-cas" aria-label="Create-A-Sim Editor öffnen">✏️ Edit</button>
             </div>
-            <button class="btn-hud" id="btn-open-cas" aria-label="Create-A-Sim Editor öffnen">✏️ Edit</button>
           </div>
 
           <!-- Action Queue Bar -->
@@ -192,7 +202,57 @@ export class HUDManager {
     document.getElementById('btn-speed3')?.addEventListener('click', () => setSpeed(3));
   }
 
-  public update(sim: Sim, timeSystem: TimeSystem): void {
+  public update(
+    sim: Sim,
+    timeSystem: TimeSystem,
+    household?: import('../entity/Household').Household,
+    petManager?: import('../entity/PetManager').PetManager
+  ): void {
+    // 0. Household Switcher Chips
+    const switcherEl = document.getElementById('hud-household-switcher');
+    if (switcherEl && household) {
+      switcherEl.innerHTML = `
+        <span style="font-size: 0.8rem; font-weight: 700; color: rgba(255,255,255,0.7); margin-right: 4px;">👨‍👩‍👧‍👦 Haushalt:</span>
+        ${household.sims.map((s, idx) => {
+          const isActive = idx === household.activeSimIndex;
+          const sMood = s.getCurrentMood();
+          return `
+            <button class="btn-hud sim-avatar-btn" data-idx="${idx}" style="padding: 4px 10px; font-size: 0.8rem; border-color: ${isActive ? '#00e5ff' : 'rgba(255,255,255,0.1)'}; background: ${isActive ? 'rgba(0,229,255,0.2)' : 'rgba(0,0,0,0.3)'};">
+              <span style="color: ${sMood.plumbobColor};">💎</span>
+              <span>${Sanitizer.sanitizeText(s.customization.name.split(' ')[0], 10)}</span>
+            </button>
+          `;
+        }).join('')}
+        ${petManager ? petManager.pets.map(p => `
+          <div class="glass-panel" style="padding: 3px 8px; font-size: 0.75rem; display: flex; align-items: center; gap: 4px; background: rgba(0,0,0,0.3);">
+            <span>${p.species === 'dog' ? '🐕' : '🐈'}</span>
+            <span>${p.name}</span>
+          </div>
+        `).join('') : ''}
+        <button class="btn-hud" id="btn-add-sim" style="padding: 4px 8px; font-size: 0.8rem; background: #27ae60;" title="Neues Haushaltsmitglied erstellen">+ Sim</button>
+        <button class="btn-hud" id="btn-add-pet" style="padding: 4px 8px; font-size: 0.8rem; background: #e67e22;" title="Haustier adoptieren">+ Pet</button>
+      `;
+
+      switcherEl.querySelectorAll('.sim-avatar-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.currentTarget as HTMLElement;
+          const idx = parseInt(target.getAttribute('data-idx') || '0', 10);
+          this.soundManager.playUIClick();
+          if (this.onSwitchSim) this.onSwitchSim(idx);
+        });
+      });
+
+      document.getElementById('btn-add-sim')?.addEventListener('click', () => {
+        this.soundManager.playUIClick();
+        if (this.onAddSim) this.onAddSim();
+      });
+
+      document.getElementById('btn-add-pet')?.addEventListener('click', () => {
+        this.soundManager.playUIClick();
+        if (this.onAddPet) this.onAddPet();
+      });
+    }
+
     // 1. Clock & Simoleons
     const clockEl = document.getElementById('hud-clock');
     if (clockEl) {

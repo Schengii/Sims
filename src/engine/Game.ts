@@ -1,11 +1,14 @@
 /**
  * Main Game Controller & Execution Loop
- * Connects Canvas rendering, pathfinding, entities, NPC Townies, Social Pie Wheel,
- * Furniture Modal, Inventory Panel, Weather, Garden, Toast Notifications,
- * HUD updates, and system events.
+ * Connects Canvas rendering, pathfinding, entities, NPC Townies, Household Multi-Sims,
+ * Pet Manager & Autonomy, Social Pie Wheel, Furniture Modal, Inventory Panel, Weather,
+ * Garden, Toast Notifications, HUD updates, and system events.
  */
 
 import { Sim } from '../entity/Sim';
+import { Household } from '../entity/Household';
+import { PetManager } from '../entity/PetManager';
+import { PetAutonomy } from '../entity/PetAutonomy';
 import { House } from '../world/House';
 import { Camera } from './Camera';
 import { IsometricRenderer } from './IsometricRenderer';
@@ -48,7 +51,9 @@ export class Game {
   private inputHandler: InputHandler;
 
   public house: House;
-  public sim: Sim;
+  public household: Household;
+  public sim: Sim; // Active controlled Sim
+  public petManager: PetManager;
   public npcManager: NPCManager;
   public timeSystem: TimeSystem;
   public careerManager: CareerManager;
@@ -84,7 +89,9 @@ export class Game {
     this.radioManager = new RadioManager();
 
     this.house = new House();
-    this.sim = new Sim();
+    this.household = new Household();
+    this.sim = this.household.getActiveSim();
+    this.petManager = new PetManager();
     this.npcManager = new NPCManager();
     this.timeSystem = new TimeSystem();
     this.careerManager = new CareerManager();
@@ -115,7 +122,7 @@ export class Game {
     this.setupEventHandlers();
     this.attemptLoadSave();
 
-    this.toastManager.showToast('Willkommen bei Sims 5', 'Entdecke das neue Wetter-, Garten- & Autonomie-System!', '💎', 'info');
+    this.toastManager.showToast('Willkommen bei Sims 5 (v2.5)', 'Mehrpersonen-Haushalt & Pets-System sind jetzt aktiv!', '🐕', 'info');
   }
 
   private initCanvasSize(): void {
@@ -127,7 +134,7 @@ export class Game {
   }
 
   private setupEventHandlers(): void {
-    // Canvas Tile & NPC Clicks
+    // Canvas Tile Clicks & Entity Interactions
     this.inputHandler.onTileClick = (gridX, gridY) => {
       const toolMode = this.buildCatalog.activeToolMode;
 
@@ -215,7 +222,27 @@ export class Game {
         return;
       }
 
-      // 1. Check if clicked an NPC Townie
+      // 1. Check if clicked a Pet (Dog / Cat)
+      const pet = this.petManager.getPetAt(gridX, gridY);
+      if (pet) {
+        const path = Pathfinding.findPath(
+          this.sim.gridPos,
+          { x: Math.floor(pet.gridPos.x), y: Math.floor(pet.gridPos.y) },
+          this.house.width,
+          this.house.height,
+          (x, y) => this.house.isWalkable(x, y)
+        );
+        this.sim.setPath(path);
+
+        pet.needs.modify('affection', 25);
+        pet.needs.modify('hunger', 15);
+        pet.triggerEmote('❤️', 3000);
+        this.soundManager.playSimlish(1.3, 'happy');
+        this.toastManager.showToast(`Haustier Interaktion`, `Du hast ${pet.name} geknuddelt & gefüttert! ❤️`, pet.species === 'dog' ? '🐕' : '🐈', 'success');
+        return;
+      }
+
+      // 2. Check if clicked an NPC Townie
       const npc = this.npcManager.getNPCAt(gridX, gridY);
       if (npc) {
         const path = Pathfinding.findPath(
@@ -230,7 +257,7 @@ export class Game {
         return;
       }
 
-      // 2. Check if clicked a Garden Plot
+      // 3. Check if clicked a Garden Plot
       const gardenPlot = this.gardenSystem.plots.find(p => p.gridX === gridX && p.gridY === gridY);
       if (gardenPlot) {
         if (gardenPlot.isHarvestable) {
@@ -258,13 +285,12 @@ export class Game {
         return;
       }
 
-      // 3. Check if clicked furniture
+      // 4. Check if clicked furniture
       const furniture = this.house.getFurnitureAt(gridX, gridY);
       if (furniture) {
         const def = FURNITURE_CATALOG[furniture.furnitureId];
         if (!def || def.interactions.length === 0) return;
 
-        // Open Furniture Interaction Modal if object has multiple interactions
         this.furnitureModal.open(def, furniture.instanceId);
         this.furnitureModal.onSelectInteraction = (interactionId) => {
           const interaction = def.interactions.find(i => i.id === interactionId) || def.interactions[0];
@@ -315,12 +341,6 @@ export class Game {
                 const next = this.radioManager.cycleNextStation();
                 this.updateRadioHUD();
                 this.toastManager.showToast('Radiosender', `Gewechselt zu: ${next.icon} ${next.name}`, '🎛️', 'info');
-              } else if (interaction.id === 'dance_solo') {
-                if (!this.radioManager.getIsPlaying()) {
-                  this.radioManager.playStation('pop');
-                  this.updateRadioHUD();
-                }
-                this.soundManager.playSimlish(1.2, 'happy');
               }
 
               if (interaction.id === 'serve_buffet') {
@@ -331,10 +351,6 @@ export class Game {
                 const newStage = this.sim.ageUp();
                 this.soundManager.playLevelUp();
                 this.toastManager.showToast('🎉 GEBURTSTAG!', `${this.sim.customization.name} ist in die Lebensphase "${newStage.toUpperCase()}" aufgestiegen!`, '🎂', 'levelUp');
-              } else if (interaction.id === 'dance_solo' || interaction.id === 'dance_couple') {
-                this.partyManager.triggerGoal('p_dance');
-              } else if (interaction.id === 'swim') {
-                this.partyManager.triggerGoal('p_swim');
               }
 
               if (interaction.skillGain) {
@@ -344,19 +360,11 @@ export class Game {
                   this.toastManager.showToast('✨ LEVEL UP!', `Stufe ${Math.floor(this.sim.skills[interaction.skillGain.skill])} in ${interaction.skillGain.skill.toUpperCase()} erreicht!`, '⭐', 'levelUp');
                 }
               }
-
-              if (interaction.id === 'cook_gourmet' || interaction.id === 'snack') {
-                this.questManager.triggerQuestProgress('q_cook');
-              } else if (interaction.id === 'code') {
-                this.questManager.triggerQuestProgress('q_code');
-              } else if (interaction.id === 'sleep') {
-                this.questManager.triggerQuestProgress('q_sleep');
-              }
             }
           });
         };
       } else {
-        // Walk to tile
+        // Walk active Sim to clicked tile
         const path = Pathfinding.findPath(
           this.sim.gridPos,
           { x: gridX, y: gridY },
@@ -381,9 +389,39 @@ export class Game {
         const babyName = `${this.sim.customization.name.split(' ')[0]} Jr.`;
         this.sim.childrenNames.push(babyName);
         this.sim.partnerName = npc.name;
+
+        // Add child as a new household Sim!
+        const childSim = new Sim({ name: babyName, skinColor: this.sim.customization.skinColor });
+        childSim.lifeStage = 'baby';
+        this.household.addSim(childSim);
+
         this.soundManager.playLevelUp();
-        this.toastManager.showToast('👶 GLÜCKWUNSCH!', `Baby "${babyName}" wurde geboren!`, '🍼', 'levelUp');
+        this.toastManager.showToast('👶 GLÜCKWUNSCH!', `Baby "${babyName}" wurde geboren und dem Haushalt hinzugefügt!`, '🍼', 'levelUp');
       }
+    };
+
+    // Household Sim Switcher Handlers
+    this.hud.onSwitchSim = (index) => {
+      this.sim = this.household.setActiveSim(index);
+      this.toastManager.showToast('Sim gewechselt', `Du steuerst jetzt ${this.sim.customization.name}`, '💎', 'info');
+    };
+
+    this.hud.onAddSim = () => {
+      const names = ['Alexander Goth', 'Mortimer Jr.', 'Cassandra Goth', 'Penny Pizazz', 'Bob Pancakes'];
+      const randName = names[Math.floor(Math.random() * names.length)];
+      const newSim = new Sim({ name: randName });
+      this.household.addSim(newSim);
+      this.soundManager.playLevelUp();
+      this.toastManager.showToast('Neues Haushaltsmitglied', `${newSim.customization.name} zieht im Haushalt ein!`, '👨‍👩‍👧‍👦', 'success');
+    };
+
+    this.hud.onAddPet = () => {
+      const isDog = Math.random() < 0.5;
+      const petNames = isDog ? ['Rocky', 'Barnaby', 'Charlie', 'Max'] : ['Mimi', 'Cleo', 'Felix', 'Nala'];
+      const randName = petNames[Math.floor(Math.random() * petNames.length)];
+      const pet = this.petManager.addPet(randName, isDog ? 'dog' : 'cat');
+      this.soundManager.playLevelUp();
+      this.toastManager.showToast('Haustier adoptiert', `${pet.name} (${isDog ? 'Hund 🐕' : 'Katze 🐈'}) zieht bei euch ein!`, isDog ? '🐕' : '🐈', 'success');
     };
 
     // HUD Handlers
@@ -430,9 +468,19 @@ export class Game {
     };
 
     this.hud.onSaveGame = () => {
-      SaveManager.saveGame(this.sim, this.house, this.careerManager, this.npcManager, this.partyManager, this.gardenSystem, this.weatherSystem);
+      SaveManager.saveGame(
+        this.sim,
+        this.house,
+        this.careerManager,
+        this.npcManager,
+        this.partyManager,
+        this.gardenSystem,
+        this.weatherSystem,
+        this.household,
+        this.petManager
+      );
       this.soundManager.playLevelUp();
-      this.toastManager.showToast('Speicherstand gesichert', 'Spielstand inklusive Inventar, Garten & Wetter gespeichert!', '💾', 'success');
+      this.toastManager.showToast('Speicherstand gesichert', 'Spielstand inklusive Haushalt, Pets, Inventar & Garten gespeichert!', '💾', 'success');
     };
 
     this.hud.onSpeedChange = (speed) => this.timeSystem.setSpeed(speed);
@@ -452,9 +500,20 @@ export class Game {
   }
 
   private attemptLoadSave(): void {
-    const loaded = SaveManager.loadGame(this.sim, this.house, this.careerManager, this.npcManager, this.partyManager, this.gardenSystem, this.weatherSystem);
+    const loaded = SaveManager.loadGame(
+      this.sim,
+      this.house,
+      this.careerManager,
+      this.npcManager,
+      this.partyManager,
+      this.gardenSystem,
+      this.weatherSystem,
+      this.household,
+      this.petManager
+    );
     if (loaded) {
-      console.log('[Game Engine] Save file, inventory, garden & weather progress loaded successfully.');
+      this.sim = this.household.getActiveSim();
+      console.log('[Game Engine] Save file, household sims & pets loaded successfully.');
     }
   }
 
@@ -478,24 +537,29 @@ export class Game {
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
 
-    // Play bird chirp sound on sunny day periodically
     if (this.weatherSystem.currentWeather === 'sunny' && Math.random() < 0.002) {
       this.soundManager.playBirdChirp();
     }
 
-    // 3. Autonomy Update for idle Sim
-    SimAutonomy.update(this.sim, this.house, deltaSec);
+    // 3. Autonomy Update for all Household Sims (active & inactive)
+    this.household.sims.forEach(hSim => {
+      hSim.update(deltaSec, timeResult.deltaMinutes);
+      SimAutonomy.update(hSim, this.house, deltaSec);
+    });
 
-    // 4. Party Update Tick
+    // 4. Pet Manager & Autonomy Update
+    this.petManager.update(deltaSec, timeResult.deltaMinutes);
+    this.petManager.pets.forEach(pet => {
+      PetAutonomy.update(pet, this.house, deltaSec);
+    });
+
+    // 5. Party & NPC Updates
     const partyResult = this.partyManager.update(timeResult.deltaMinutes);
     if (partyResult.partyEnded) {
       this.sim.simoleons += partyResult.rewardSimoleons || 0;
       this.soundManager.playLevelUp();
       this.toastManager.showToast('🎉 PARTY BEENDET!', `${partyResult.finalStars} ⭐ Sterne erzielt! Gewinn: § ${partyResult.rewardSimoleons}`, '🏆', 'levelUp');
     }
-
-    // 5. Sim & NPC Update
-    this.sim.update(deltaSec, timeResult.deltaMinutes);
     this.npcManager.update(deltaSec);
 
     // 6. Camera Update
@@ -509,11 +573,13 @@ export class Game {
       this.camera,
       this.timeSystem.hour,
       this.weatherSystem,
-      this.gardenSystem
+      this.gardenSystem,
+      this.household.sims,
+      this.petManager
     );
 
     // 8. Update HUD
-    this.hud.update(this.sim, this.timeSystem);
+    this.hud.update(this.sim, this.timeSystem, this.household, this.petManager);
 
     requestAnimationFrame(this.loop.bind(this));
   }

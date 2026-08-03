@@ -1,9 +1,3 @@
-/**
- * 2.5D Isometric Rendering Engine
- * Renders floor tiles, animated pool water, room walls, door/window cutouts,
- * furniture blocks, Sims sprites, and emote speech bubbles.
- */
-
 import { House, type FloorTile } from '../world/House';
 import { Sim } from '../entity/Sim';
 import { Camera } from './Camera';
@@ -12,6 +6,7 @@ import { NPCManager, type NPCSim } from '../entity/NPCManager';
 import { LifeStage } from '../entity/LifeStage';
 import type { WeatherSystem } from '../systems/WeatherSystem';
 import type { GardenSystem } from '../world/GardenSystem';
+import type { PetManager } from '../entity/PetManager';
 
 export class IsometricRenderer {
   private canvas: HTMLCanvasElement;
@@ -60,7 +55,9 @@ export class IsometricRenderer {
     camera: Camera,
     timeOfDay: number = 12,
     weatherSystem?: WeatherSystem,
-    gardenSystem?: GardenSystem
+    gardenSystem?: GardenSystem,
+    householdSims?: Sim[],
+    petManager?: PetManager
   ): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -98,7 +95,6 @@ export class IsometricRenderer {
           const tile = house.tiles[x][y];
           const iso = this.gridToIso(x, y);
 
-          // In cutaway mode, lower front facing walls (x >= 12 or y >= 12)
           const isFrontWall = x >= 11 || y >= 11;
           const isCutaway = house.wallDisplayMode === 'cutaway' && isFrontWall;
 
@@ -120,20 +116,32 @@ export class IsometricRenderer {
       this.drawFurnitureBlock(iso.x, iso.y, def, item.rotation);
     });
 
-    // 4. Render NPC Townies
+    // 4. Render Pets (Dogs & Cats)
+    if (petManager) {
+      petManager.pets.forEach(pet => {
+        const petIso = this.gridToIso(pet.renderPos.x, pet.renderPos.y);
+        this.drawPet(petIso.x, petIso.y, pet);
+      });
+    }
+
+    // 5. Render NPC Townies
     npcManager.npcs.forEach(npc => {
       const npcIso = this.gridToIso(npc.renderPos.x, npc.renderPos.y);
       this.drawNPCSim(npcIso.x, npcIso.y, npc);
     });
 
-    // 5. Render Active Player Sim
-    const simIso = this.gridToIso(sim.renderPos.x, sim.renderPos.y);
-    const isOnPool = house.tiles[Math.floor(sim.gridPos.x)]?.[Math.floor(sim.gridPos.y)]?.type === 'pool';
-    this.drawSim(simIso.x, simIso.y, sim, isOnPool);
+    // 6. Render Household Sims (or single sim)
+    const simsToRender = (householdSims && householdSims.length > 0) ? householdSims : [sim];
+    simsToRender.forEach(hSim => {
+      const simIso = this.gridToIso(hSim.renderPos.x, hSim.renderPos.y);
+      const isOnPool = house.tiles[Math.floor(hSim.gridPos.x)]?.[Math.floor(hSim.gridPos.y)]?.type === 'pool';
+      const isActive = hSim.id === sim.id;
+      this.drawSim(simIso.x, simIso.y, hSim, isOnPool, isActive);
+    });
 
     ctx.restore();
 
-    // 6. Lighting Overlay & Weather Effects
+    // 7. Lighting Overlay & Weather Effects
     this.renderLightingOverlay(timeOfDay);
     if (weatherSystem) {
       this.renderWeatherParticles(weatherSystem);
@@ -340,7 +348,49 @@ export class IsometricRenderer {
     ctx.restore();
   }
 
-  private drawSim(isoX: number, isoY: number, sim: Sim, isSwimming: boolean = false): void {
+  private drawPet(isoX: number, isoY: number, pet: any): void {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.translate(isoX, isoY);
+
+    // Shadow
+    ctx.beginPath();
+    ctx.ellipse(0, 8, 10, 5, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
+    ctx.fill();
+
+    // Body
+    ctx.fillStyle = pet.color;
+    ctx.beginPath();
+    ctx.ellipse(0, -8, 10, 7, 0, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.strokeStyle = '#222';
+    ctx.stroke();
+
+    // Head & Ears
+    ctx.beginPath();
+    ctx.arc(8, -14, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+
+    // Pet Icon / Species indicator
+    ctx.font = '14px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(pet.species === 'dog' ? '🐕' : '🐈', 0, -20);
+
+    // Name label
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '9px sans-serif';
+    ctx.fillText(pet.name, 0, -34);
+
+    if (pet.activeEmote) {
+      this.drawEmoteBubble(0, -48, pet.activeEmote.symbol);
+    }
+
+    ctx.restore();
+  }
+
+  private drawSim(isoX: number, isoY: number, sim: Sim, isSwimming: boolean = false, isActive: boolean = true): void {
     const ctx = this.ctx;
     const mood = sim.getCurrentMood();
     const stageInfo = LifeStage.getInfo(sim.lifeStage);
@@ -368,7 +418,8 @@ export class IsometricRenderer {
     // Body
     ctx.fillStyle = sim.customization.outfitColor;
     ctx.fillRect(-8, -26 + yOffset, 16, 26 - yOffset);
-    ctx.strokeStyle = '#111';
+    ctx.strokeStyle = isActive ? '#00e5ff' : '#111';
+    ctx.lineWidth = isActive ? 2 : 1;
     ctx.strokeRect(-8, -26 + yOffset, 16, 26 - yOffset);
 
     // Head
@@ -384,9 +435,9 @@ export class IsometricRenderer {
     ctx.fillStyle = sim.customization.hairColor;
     ctx.fill();
 
-    // Floating Plumbob
+    // Floating Plumbob (Only draw active plumbob for active Sim or faint for inactive)
     const plumbobY = -65 + yOffset + Math.sin(Date.now() / 250) * 4;
-    this.drawPlumbob(0, plumbobY, mood.plumbobColor);
+    this.drawPlumbob(0, plumbobY, isActive ? mood.plumbobColor : 'rgba(200,200,200,0.5)');
 
     // Action progress bar
     if (currentAction) {
@@ -402,7 +453,6 @@ export class IsometricRenderer {
       ctx.fillStyle = '#2ecc71';
       ctx.fillRect(bx, by, barW * progress, barH);
     } else {
-      // Check if low need alert bubble
       const lowest = sim.needs.getLowestNeed();
       if (lowest.value < 30) {
         let alertIcon = '⚠️';

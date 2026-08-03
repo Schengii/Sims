@@ -397,6 +397,95 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 25, energy: -5 }
       }
     ]
+  },
+
+  pet_bed: {
+    id: 'pet_bed',
+    name: 'Orthopädisches Pet-Bett',
+    category: 'comfort',
+    price: 180,
+    width: 1,
+    height: 1,
+    color: '#e74c3c',
+    accentColor: '#f39c12',
+    icon: '🛋️',
+    description: 'Weiches Kissen für Hunde und Katzen zum Schlafen.',
+    interactions: [
+      {
+        id: 'cuddle_pet_bed',
+        label: 'Haustier zum Schlafen bringen',
+        icon: '🐶',
+        duration: 3,
+        needEffects: { social: 30, fun: 20 }
+      }
+    ]
+  },
+
+  pet_bowl: {
+    id: 'pet_bowl',
+    name: 'Futternapf "Gourmet"',
+    category: 'appliances',
+    price: 90,
+    width: 1,
+    height: 1,
+    color: '#34495e',
+    accentColor: '#e67e22',
+    icon: '🦴',
+    description: 'Befülle den Napf mit Futter für Hunde & Katzen.',
+    interactions: [
+      {
+        id: 'fill_pet_bowl',
+        label: 'Futternapf auffüllen (§ 20)',
+        icon: '🥩',
+        duration: 2,
+        needEffects: { social: 25 }
+      }
+    ]
+  },
+
+  cat_tree: {
+    id: 'cat_tree',
+    name: 'Kletter- & Kratzbaum XL',
+    category: 'entertainment',
+    price: 240,
+    width: 1,
+    height: 1,
+    color: '#d35400',
+    accentColor: '#ecf0f1',
+    icon: '🐱',
+    description: 'Mehrstöckiger Kratzbaum für Katzen zum Klettern und Spielen.',
+    interactions: [
+      {
+        id: 'play_cat_tree',
+        label: 'Mit Katze am Kratzbaum spielen',
+        icon: '🧶',
+        duration: 5,
+        needEffects: { fun: 45, social: 35 }
+      }
+    ]
+  },
+
+  pet_toy: {
+    id: 'pet_toy',
+    name: 'Pet Spielzeugkiste',
+    category: 'entertainment',
+    price: 120,
+    width: 1,
+    height: 1,
+    color: '#f1c40f',
+    accentColor: '#9b59b6',
+    icon: '🎾',
+    description: 'Bälle, Kauknochen & Maussuch-Spiele für Haustiere.',
+    interactions: [
+      {
+        id: 'play_pet_fetch',
+        label: 'Stöckchen & Ball werfen',
+        icon: '🎾',
+        duration: 6,
+        needEffects: { fun: 65, social: 50 }
+      }
+    ]
   }
 };
+
 
