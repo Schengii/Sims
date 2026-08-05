@@ -175,6 +175,12 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 6.0.0 (Weddings, Hobbies, Disasters & Thought FX Expansion)
+- **[Feature] Hochzeit & Verlobung (`WeddingSystem.ts`, `WeddingModal.ts`)**: Antrag machen mit Verlobungsring (💍 § 500), Platzieren des Blumen-Hochzeitsbogens (`wedding_arch`) & unvergessliche Ja-Wort Zeremonie.
+- **[Feature] Hobbys, Handwerken & Freelance-Karrieren (`HobbySystem.ts`, `HobbyModal.ts`)**: Akustik-Gitarre (`guitar_acoustic`), Großmeister Schach-Tisch (`chess_table`), Handwerker-Werkbank (`wood_bench`) & Ausführen von Freelance-Aufträgen.
+- **[Feature] Notfälle, Schicksal & Geister-Spuk (`EventSystem.ts`, `EventModal.ts`)**: Küchenbrände (🔥), Einbrecher (🥷) & Geister-Spuk um Grabsteine (`gravestone`). Notfall-Eingreifen & Polizei-Belohnungen.
+- **[Feature] Gedankenblasen & Emote FX Engine (`ThoughtBubbleSystem.ts`, `IsometricRenderer.ts`)**: Dynamische Gedankenblasen (🍕 Hunger, 💤 Energie, 🎮 Spaß, 🪙 Simoleons, 💖 Romantik) über den Köpfen der Sims.
+
 ### Version 5.0.0 (University, Renters, Traits, Outfits, Blueprints & Gallery Expansion)
 - **[Feature] Schule & Universitäts-System (`EducationSystem.ts`, `EducationModal.ts`)**: Schulnoten-Verwaltung (1.0 bis 6.0), Hausaufgaben machen sowie Einschreiben in Studiengänge (Informatik, Gourmet-Kochkunst, Bildende Kunst) mit Karrierestufe-3-Bonus.
 - **[Feature] Vermietung & Mitbewohner (`RentersSystem.ts`, `RentersModal.ts`)**: Vermietung von Räumen/Etagen an NPC-Untermieter (Mortimer Goth, Summer Holiday), wöchentliche Mieteinnahmen & Mieter-Kündigung.

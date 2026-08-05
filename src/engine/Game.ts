@@ -69,6 +69,12 @@ import { MemoryModal } from '../ui/MemoryModal';
 import { WardrobeManager } from '../systems/WardrobeSystem';
 import { WardrobeModal } from '../ui/WardrobeModal';
 import { GalleryModal } from '../ui/GalleryModal';
+import { WeddingManager } from '../systems/WeddingSystem';
+import { WeddingModal } from '../ui/WeddingModal';
+import { HobbyManager } from '../systems/HobbySystem';
+import { HobbyModal } from '../ui/HobbyModal';
+import { EventManager } from '../systems/EventSystem';
+import { EventModal } from '../ui/EventModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -100,6 +106,9 @@ export class Game {
   public rentersManager: RentersManager;
   public memoryManager: MemoryManager;
   public wardrobeManager: WardrobeManager;
+  public weddingManager: WeddingManager;
+  public hobbyManager: HobbyManager;
+  public eventManager: EventManager;
 
   public hud: HUDManager;
   public casModal: CASModal;
@@ -128,6 +137,9 @@ export class Game {
   public memoryModal: MemoryModal;
   public wardrobeModal: WardrobeModal;
   public galleryModal: GalleryModal;
+  public weddingModal: WeddingModal;
+  public hobbyModal: HobbyModal;
+  public eventModal: EventModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -162,6 +174,9 @@ export class Game {
     this.rentersManager = new RentersManager();
     this.memoryManager = new MemoryManager();
     this.wardrobeManager = new WardrobeManager();
+    this.weddingManager = new WeddingManager();
+    this.hobbyManager = new HobbyManager();
+    this.eventManager = new EventManager();
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
@@ -191,6 +206,9 @@ export class Game {
     this.memoryModal = new MemoryModal(uiContainer, this.soundManager);
     this.wardrobeModal = new WardrobeModal(uiContainer, this.soundManager);
     this.galleryModal = new GalleryModal(uiContainer, this.soundManager);
+    this.weddingModal = new WeddingModal(uiContainer, this.soundManager);
+    this.hobbyModal = new HobbyModal(uiContainer, this.soundManager);
+    this.eventModal = new EventModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -439,6 +457,36 @@ export class Game {
                 this.toastManager.showToast('Radiosender', `Gewechselt zu: ${next.icon} ${next.name}`, '🎛️', 'info');
               }
 
+              if (interaction.id === 'hold_wedding') {
+                const res = this.weddingManager.holdCeremony(this.sim);
+                if (res.success) {
+                  this.soundManager.playLevelUp();
+                  this.toastManager.showToast('💒 Hochzeit', res.message, '💒', 'levelUp');
+                } else {
+                  this.toastManager.showToast('⚠️ Hochzeit', res.message, '💍', 'warning');
+                }
+              } else if (interaction.id === 'play_guitar') {
+                this.sim.simoleons += 80;
+                this.soundManager.playSimlish(1.2, 'happy');
+                this.toastManager.showToast('🎸 Gitarre', 'Gitarre gespielt & Straßenmusik-Trinkgeld kassiert: +§ 80', '🎵', 'success');
+              } else if (interaction.id === 'play_chess') {
+                this.sim.addSkillXP('programming', 15);
+                this.soundManager.playUIClick();
+                this.toastManager.showToast('♟️ Schach', 'Schachpartie gewonnen & Logik geschärft!', '🧠', 'info');
+              } else if (interaction.id === 'carve_wood') {
+                this.hobbyManager.addHandinessXP(30);
+                this.sim.inventory.addItem({
+                  name: 'Geschnitzte Holzfigur',
+                  type: 'painting',
+                  icon: '🪵',
+                  value: 120,
+                  description: 'Eine in Handarbeit gefertigte Skulptur.'
+                });
+                this.toastManager.showToast('🔨 Werkbank', 'Holzskulptur fertiggestellt! (+§ 120 Wert)', '🪚', 'success');
+              } else if (interaction.id === 'mourn_ghost') {
+                this.toastManager.showToast('🪦 Grabstein', 'Am Grabstein getrauert & Ahnen geehrt.', '👻', 'info');
+              }
+
               if (interaction.id === 'collect_eggs') {
                 this.sim.inventory.addItem({
                   name: 'Frische Landeier',
@@ -565,6 +613,9 @@ export class Game {
     this.hud.onOpenMemory = () => this.memoryModal.open(this.sim, this.memoryManager);
     this.hud.onOpenWardrobe = () => this.wardrobeModal.open(this.sim, this.wardrobeManager);
     this.hud.onOpenGallery = () => this.galleryModal.open(this);
+    this.hud.onOpenWedding = () => this.weddingModal.open(this.sim, this.weddingManager);
+    this.hud.onOpenHobby = () => this.hobbyModal.open(this.sim, this.hobbyManager);
+    this.hud.onOpenEvent = () => this.eventModal.open(this.sim, this.eventManager);
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);

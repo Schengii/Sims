@@ -36,6 +36,9 @@ export class HUDManager {
   public onOpenMemory?: () => void;
   public onOpenWardrobe?: () => void;
   public onOpenGallery?: () => void;
+  public onOpenWedding?: () => void;
+  public onOpenHobby?: () => void;
+  public onOpenEvent?: () => void;
   public onChangeFloor?: (level: number) => void;
 
   public onToggleWeather?: () => void;
@@ -93,6 +96,9 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-mem" title="Lebenschronik & Erinnerungen">📖 Erinnerungen</button>
             <button class="btn-hud" id="btn-open-wardrobe" title="Kleiderschrank & Outfits">👗 Outfits</button>
             <button class="btn-hud" id="btn-open-gal" title="Sims Galerie & Import/Export">🌐 Galerie</button>
+            <button class="btn-hud" id="btn-open-wed" title="Hochzeit & Familie">💒 Hochzeit</button>
+            <button class="btn-hud" id="btn-open-hobby" title="Hobbys & Freelance">🎸 Hobbys</button>
+            <button class="btn-hud" id="btn-open-event" title="Notfälle & Schicksal">⚡ Notfälle</button>
             <button class="btn-hud" id="btn-open-cal" title="Kalender & Feiertage">📅 Kalender</button>
             <button class="btn-hud" id="btn-open-bills" title="Rechnungen & Stromkonto">📮 Rechnungen</button>
             <button class="btn-hud" id="btn-open-magic" title="Zauberbuch & Alchemie">🪄 Magie</button>
@@ -246,6 +252,21 @@ export class HUDManager {
     document.getElementById('btn-open-gal')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenGallery) this.onOpenGallery();
+    });
+
+    document.getElementById('btn-open-wed')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenWedding) this.onOpenWedding();
+    });
+
+    document.getElementById('btn-open-hobby')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenHobby) this.onOpenHobby();
+    });
+
+    document.getElementById('btn-open-event')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenEvent) this.onOpenEvent();
     });
 
     // Floor Switcher Listeners

@@ -439,13 +439,17 @@ export class IsometricRenderer {
       ctx.fillRect(bx, by, barW * progress, barH);
     } else {
       const lowest = sim.needs.getLowestNeed();
-      if (lowest.value < 30) {
-        let alertIcon = '⚠️';
-        if (lowest.need === 'hunger') alertIcon = '🍽️';
+      if (lowest.value < 40) {
+        let alertIcon = '🍕';
+        if (lowest.need === 'hunger') alertIcon = '🍕';
         if (lowest.need === 'energy') alertIcon = '💤';
         if (lowest.need === 'bladder') alertIcon = '🚽';
         if (lowest.need === 'hygiene') alertIcon = '🧼';
+        if (lowest.need === 'fun') alertIcon = '🎮';
+        if (lowest.need === 'social') alertIcon = '💬';
         this.drawEmoteBubble(0, -85 + yOffset, alertIcon);
+      } else {
+        this.drawEmoteBubble(0, -85 + yOffset, '✨');
       }
     }
 

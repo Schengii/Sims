@@ -766,5 +766,115 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { hunger: 15, fun: 20 }
       }
     ]
+  },
+
+  wedding_arch: {
+    id: 'wedding_arch',
+    name: 'Blumen-Hochzeitsbogen',
+    category: 'decor',
+    price: 750,
+    width: 2,
+    height: 1,
+    color: '#ecf0f1',
+    accentColor: '#e84393',
+    icon: '💒',
+    description: 'Bogen für Romantik & unvergessliche Hochzeits-Zeremonien.',
+    interactions: [
+      {
+        id: 'hold_wedding',
+        label: 'Ja-Wort geben & Heiraten',
+        icon: '💍',
+        duration: 8,
+        needEffects: { social: 60, fun: 50 }
+      }
+    ]
+  },
+
+  guitar_acoustic: {
+    id: 'guitar_acoustic',
+    name: 'Akustik-Gitarre',
+    category: 'entertainment',
+    price: 450,
+    width: 1,
+    height: 1,
+    color: '#d35400',
+    accentColor: '#f39c12',
+    icon: '🎸',
+    description: 'Spiele romantische Balladen oder Straßenmusik für Simoleons.',
+    interactions: [
+      {
+        id: 'play_guitar',
+        label: 'Gitarre spielen',
+        icon: '🎵',
+        duration: 6,
+        needEffects: { fun: 45, social: 15 }
+      }
+    ]
+  },
+
+  chess_table: {
+    id: 'chess_table',
+    name: 'Großmeister Schach-Tisch',
+    category: 'entertainment',
+    price: 550,
+    width: 1,
+    height: 1,
+    color: '#2c3e50',
+    accentColor: '#ecf0f1',
+    icon: '♟️',
+    description: 'Fördert den Logik-Skill und bringt Spaß.',
+    interactions: [
+      {
+        id: 'play_chess',
+        label: 'Schach spielen',
+        icon: '🧠',
+        duration: 8,
+        needEffects: { fun: 50 }
+      }
+    ]
+  },
+
+  wood_bench: {
+    id: 'wood_bench',
+    name: 'Handwerker-Werkbank',
+    category: 'surfaces',
+    price: 650,
+    width: 2,
+    height: 1,
+    color: '#795548',
+    accentColor: '#8d6e63',
+    icon: '🔨',
+    description: 'Repariere kaputte Geräte oder schnitze Holzskulpturen.',
+    interactions: [
+      {
+        id: 'carve_wood',
+        label: 'Holzskulptur schnitzen',
+        icon: '🪚',
+        duration: 8,
+        needEffects: { fun: 40, energy: -10 }
+      }
+    ]
+  },
+
+  gravestone: {
+    id: 'gravestone',
+    name: 'Historischer Grabstein',
+    category: 'decor',
+    price: 200,
+    width: 1,
+    height: 1,
+    color: '#7f8c8d',
+    accentColor: '#34495e',
+    icon: '🪦',
+    description: 'Erinnert an vergangene Ahnengenerationen. Geister spuken nachts um ihn herum.',
+    interactions: [
+      {
+        id: 'mourn_ghost',
+        label: 'Trauern & Geist besänftigen',
+        icon: '👻',
+        duration: 5,
+        needEffects: { social: 20, fun: -10 }
+      }
+    ]
   }
 };
