@@ -45,6 +45,7 @@ export class BuildBuyCatalog {
           <!-- Tab Navigation Bar -->
           <div style="display: flex; gap: 8px; margin-bottom: 16px; overflow-x: auto; padding-bottom: 4px;">
             <button class="btn-hud build-tab-btn active" data-tab="furniture">🛋️ Möbel</button>
+            <button class="btn-hud build-tab-btn" data-tab="blueprints">📐 Blaupausen-Räume</button>
             <button class="btn-hud build-tab-btn" data-tab="walls">🧱 Wände</button>
             <button class="btn-hud build-tab-btn" data-tab="openings">🚪 Türen & Fenster</button>
             <button class="btn-hud build-tab-btn" data-tab="floors">🎨 Bodenbeläge</button>

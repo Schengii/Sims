@@ -60,6 +60,15 @@ import { BusinessManager } from '../systems/BusinessSystem';
 import { BusinessModal } from '../ui/BusinessModal';
 import { PhotoManager } from '../systems/PhotoSystem';
 import { PhotoModal } from '../ui/PhotoModal';
+import { EducationManager } from '../systems/EducationSystem';
+import { EducationModal } from '../ui/EducationModal';
+import { RentersManager } from '../systems/RentersSystem';
+import { RentersModal } from '../ui/RentersModal';
+import { MemoryManager } from '../systems/MemorySystem';
+import { MemoryModal } from '../ui/MemoryModal';
+import { WardrobeManager } from '../systems/WardrobeSystem';
+import { WardrobeModal } from '../ui/WardrobeModal';
+import { GalleryModal } from '../ui/GalleryModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -87,6 +96,10 @@ export class Game {
   public vehicleManager: VehicleManager;
   public businessManager: BusinessManager;
   public photoManager: PhotoManager;
+  public educationManager: EducationManager;
+  public rentersManager: RentersManager;
+  public memoryManager: MemoryManager;
+  public wardrobeManager: WardrobeManager;
 
   public hud: HUDManager;
   public casModal: CASModal;
@@ -110,6 +123,11 @@ export class Game {
   public vehicleModal: VehicleModal;
   public businessModal: BusinessModal;
   public photoModal: PhotoModal;
+  public educationModal: EducationModal;
+  public rentersModal: RentersModal;
+  public memoryModal: MemoryModal;
+  public wardrobeModal: WardrobeModal;
+  public galleryModal: GalleryModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -140,6 +158,10 @@ export class Game {
     this.vehicleManager = new VehicleManager();
     this.businessManager = new BusinessManager();
     this.photoManager = new PhotoManager();
+    this.educationManager = new EducationManager();
+    this.rentersManager = new RentersManager();
+    this.memoryManager = new MemoryManager();
+    this.wardrobeManager = new WardrobeManager();
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
@@ -164,6 +186,11 @@ export class Game {
     this.vehicleModal = new VehicleModal(uiContainer, this.soundManager);
     this.businessModal = new BusinessModal(uiContainer, this.soundManager);
     this.photoModal = new PhotoModal(uiContainer, this.soundManager);
+    this.educationModal = new EducationModal(uiContainer, this.soundManager);
+    this.rentersModal = new RentersModal(uiContainer, this.soundManager);
+    this.memoryModal = new MemoryModal(uiContainer, this.soundManager);
+    this.wardrobeModal = new WardrobeModal(uiContainer, this.soundManager);
+    this.galleryModal = new GalleryModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
 
@@ -171,7 +198,7 @@ export class Game {
     this.setupEventHandlers();
     this.attemptLoadSave();
 
-    this.toastManager.showToast('Willkommen bei Sims 5 (v4.0)', 'Garage, Eigenes Gewerbe & Smartphone-Kamera sind aktiv!', '🚗', 'info');
+    this.toastManager.showToast('Willkommen bei Sims 5 (v5.0)', 'Universität, Vermietung, Merkmale, Outfits & Galerie sind aktiv!', '💎', 'info');
   }
 
   private initCanvasSize(): void {
@@ -412,6 +439,28 @@ export class Game {
                 this.toastManager.showToast('Radiosender', `Gewechselt zu: ${next.icon} ${next.name}`, '🎛️', 'info');
               }
 
+              if (interaction.id === 'collect_eggs') {
+                this.sim.inventory.addItem({
+                  name: 'Frische Landeier',
+                  type: 'crop',
+                  icon: '🥚',
+                  value: 40,
+                  description: 'Frisch von den Landhaus-Hühnern gelegte Eier.'
+                });
+                this.soundManager.playLevelUp();
+                this.toastManager.showToast('Hühnerstall', 'Frische Landeier eingesammelt! (+§ 40 Wert)', '🥚', 'success');
+              } else if (interaction.id === 'harvest_honey') {
+                this.sim.inventory.addItem({
+                  name: 'Süßer Bio-Honig',
+                  type: 'crop',
+                  icon: '🍯',
+                  value: 60,
+                  description: 'Reiner, biologischer Honig aus dem eigenen Bienenstock.'
+                });
+                this.soundManager.playLevelUp();
+                this.toastManager.showToast('Bienenstock', 'Süßen Bio-Honig geerntet! (+§ 60 Wert)', '🍯', 'success');
+              }
+
               if (interaction.id === 'serve_buffet') {
                 this.partyManager.triggerGoal('p_buffet');
                 this.partyManager.triggerGoal('p_snack');
@@ -511,6 +560,11 @@ export class Game {
     this.hud.onOpenVehicle = () => this.vehicleModal.open(this.vehicleManager, this, this.toastManager);
     this.hud.onOpenBusiness = () => this.businessModal.open(this.businessManager, this, this.toastManager);
     this.hud.onOpenPhoto = () => this.photoModal.open(this.photoManager, this, this.toastManager);
+    this.hud.onOpenEducation = () => this.educationModal.open(this.sim, this.educationManager, (amt) => this.sim.simoleons += amt);
+    this.hud.onOpenRenters = () => this.rentersModal.open(this.sim, this.rentersManager, (amt) => this.sim.simoleons += amt);
+    this.hud.onOpenMemory = () => this.memoryModal.open(this.sim, this.memoryManager);
+    this.hud.onOpenWardrobe = () => this.wardrobeModal.open(this.sim, this.wardrobeManager);
+    this.hud.onOpenGallery = () => this.galleryModal.open(this);
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);

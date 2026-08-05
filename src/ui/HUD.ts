@@ -31,6 +31,11 @@ export class HUDManager {
   public onOpenVehicle?: () => void;
   public onOpenBusiness?: () => void;
   public onOpenPhoto?: () => void;
+  public onOpenEducation?: () => void;
+  public onOpenRenters?: () => void;
+  public onOpenMemory?: () => void;
+  public onOpenWardrobe?: () => void;
+  public onOpenGallery?: () => void;
   public onChangeFloor?: (level: number) => void;
 
   public onToggleWeather?: () => void;
@@ -83,6 +88,11 @@ export class HUDManager {
             </div>
             <button class="btn-hud" id="btn-open-map" title="Nachbarschafts-Karte & Ausflüge">🗺️ Karte</button>
             <button class="btn-hud" id="btn-open-asp" title="Bestrebungen & Belohnungs-Shop">🎯 Bestrebungen</button>
+            <button class="btn-hud" id="btn-open-edu" title="Bildung & Universität">🎓 Bildung</button>
+            <button class="btn-hud" id="btn-open-rent" title="Vermietung & Mitbewohner">🏢 Vermietung</button>
+            <button class="btn-hud" id="btn-open-mem" title="Lebenschronik & Erinnerungen">📖 Erinnerungen</button>
+            <button class="btn-hud" id="btn-open-wardrobe" title="Kleiderschrank & Outfits">👗 Outfits</button>
+            <button class="btn-hud" id="btn-open-gal" title="Sims Galerie & Import/Export">🌐 Galerie</button>
             <button class="btn-hud" id="btn-open-cal" title="Kalender & Feiertage">📅 Kalender</button>
             <button class="btn-hud" id="btn-open-bills" title="Rechnungen & Stromkonto">📮 Rechnungen</button>
             <button class="btn-hud" id="btn-open-magic" title="Zauberbuch & Alchemie">🪄 Magie</button>
@@ -211,6 +221,31 @@ export class HUDManager {
     document.getElementById('btn-open-cam')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenPhoto) this.onOpenPhoto();
+    });
+
+    document.getElementById('btn-open-edu')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenEducation) this.onOpenEducation();
+    });
+
+    document.getElementById('btn-open-rent')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenRenters) this.onOpenRenters();
+    });
+
+    document.getElementById('btn-open-mem')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenMemory) this.onOpenMemory();
+    });
+
+    document.getElementById('btn-open-wardrobe')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenWardrobe) this.onOpenWardrobe();
+    });
+
+    document.getElementById('btn-open-gal')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenGallery) this.onOpenGallery();
     });
 
     // Floor Switcher Listeners

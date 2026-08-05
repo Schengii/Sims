@@ -175,6 +175,16 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 5.0.0 (University, Renters, Traits, Outfits, Blueprints & Gallery Expansion)
+- **[Feature] Schule & Universitäts-System (`EducationSystem.ts`, `EducationModal.ts`)**: Schulnoten-Verwaltung (1.0 bis 6.0), Hausaufgaben machen sowie Einschreiben in Studiengänge (Informatik, Gourmet-Kochkunst, Bildende Kunst) mit Karrierestufe-3-Bonus.
+- **[Feature] Vermietung & Mitbewohner (`RentersSystem.ts`, `RentersModal.ts`)**: Vermietung von Räumen/Etagen an NPC-Untermieter (Mortimer Goth, Summer Holiday), wöchentliche Mieteinnahmen & Mieter-Kündigung.
+- **[Feature] Charakter-Merkmale & Persönlichkeit (`TraitSystem.ts`)**: 10 Merkmale (Genial, Romantisch, Aktiv, Partylöwe, Kreativ, Perfektionist, Chaot, Einsamer Wolf, Tech-Geek, Tierliebhaber) mit Auswirkungen auf Bedürfnissenkung & Skill-Geschwindigkeiten.
+- **[Feature] Lebenschronik & Erinnerungslog (`MemorySystem.ts`, `MemoryModal.ts`)**: Automatische Erfassung von Lebens-Meilensteinen (Erster Einzug, Uni-Abschluss, Hochzeit, Job-Beförderung) & in Erinnerungen schwelgen für Stimmungsboni.
+- **[Feature] Architekt Blaupausen-Räume (`BlueprintSystem.ts`, `BuildBuyCatalog.ts`)**: 1-Klick-Platzierung vorgefertigter Zimmer-Templates (Starter-Schlafzimmer, Wellness-Badezimmer, High-Tech Büro) im Baumodus.
+- **[Feature] Kleiderschrank & Outfits (`WardrobeSystem.ts`, `WardrobeModal.ts`)**: 5 Outfit-Kategorien (Alltag, Abendgarderobe, Schlafanzug, Party, Swimwear) mit instant visuellem Canvas-Kleidungs-Farbwechsel.
+- **[Feature] Sims Galerie & Import/Export (`GallerySystem.ts`, `GalleryModal.ts`)**: Exportieren und Importieren von Häusern und Haushalten als kompakte Base64-Codes zum einfachen Teilen mit Freunden.
+- **[Feature] Viehzucht & Bauernhof-Erweiterung (`Furniture.ts`, `Game.ts`)**: Hühnerstall (`chicken_coop`) zum Eier einsammeln (🥚) & Bio-Bienenstock (`beehive`) zur Honigernte (🍯).
+
 ### Version 4.0.0 (Vehicles, Retail Store & Smartphone Camera Upgrade)
 - **[Feature] Fahrzeuge, Garagen & Spritzfahrten (`VehicleSystem.ts`, `VehicleModal.ts`)**: Fuhrpark mit Fahrrädern 🚲, E-Rollern 🛵, Familienkombis 🚗 & Supersportwagen 🏎️ für Ausflüge & Spritzfahrten mit Spaß- & Komfort-Bonus.
 - **[Feature] Eigenes Geschäft & Laden-Management (`BusinessSystem.ts`, `BusinessModal.ts`)**: Eröffnung eigener Bäckereien 🥐, Kunstgalerien 🎨 oder Pet-Shops 🐕 mit Preisaufschlag-Margen (Fair, Premium, Luxus) & Tagesgewinn-Auszahlung.

@@ -108,6 +108,16 @@ export interface GameSaveData {
     photos: import('./PhotoSystem').PhotoItem[];
     memories: import('./PhotoSystem').MemoryEntry[];
   };
+  educationData?: {
+    grade: number;
+    homeworkDone: boolean;
+    enrolledDegree?: string;
+    degreeProgress: number;
+    completedDegrees: string[];
+  };
+  rentersData?: {
+    tenants: import('./RentersSystem').Tenant[];
+  };
   trophiesUnlocked?: string[];
   gardenPlots?: import('../world/GardenSystem').GardenPlot[];
   weather?: import('./WeatherSystem').WeatherType;
@@ -131,7 +141,9 @@ export class SaveManager {
     magicManager?: import('../systems/MagicSystem').MagicManager,
     vehicleManager?: import('../systems/VehicleSystem').VehicleManager,
     businessManager?: import('../systems/BusinessSystem').BusinessManager,
-    photoManager?: import('../systems/PhotoSystem').PhotoManager
+    photoManager?: import('../systems/PhotoSystem').PhotoManager,
+    educationManager?: import('./EducationSystem').EducationManager,
+    rentersManager?: import('./RentersSystem').RentersManager
   ): boolean {
     try {
       const saveData: GameSaveData = {
@@ -238,6 +250,16 @@ export class SaveManager {
           photos: photoManager.photos,
           memories: photoManager.memories
         } : undefined,
+        educationData: educationManager ? {
+          grade: educationManager.grade,
+          homeworkDone: educationManager.homeworkDone,
+          enrolledDegree: educationManager.enrolledDegree,
+          degreeProgress: educationManager.degreeProgress,
+          completedDegrees: educationManager.completedDegrees
+        } : undefined,
+        rentersData: rentersManager ? {
+          tenants: rentersManager.tenants
+        } : undefined,
         trophiesUnlocked: partyManager?.trophiesUnlocked,
         gardenPlots: gardenSystem?.plots,
         weather: weatherSystem?.currentWeather
@@ -267,7 +289,9 @@ export class SaveManager {
     magicManager?: import('../systems/MagicSystem').MagicManager,
     vehicleManager?: import('../systems/VehicleSystem').VehicleManager,
     businessManager?: import('../systems/BusinessSystem').BusinessManager,
-    photoManager?: import('../systems/PhotoSystem').PhotoManager
+    photoManager?: import('../systems/PhotoSystem').PhotoManager,
+    educationManager?: import('./EducationSystem').EducationManager,
+    rentersManager?: import('./RentersSystem').RentersManager
   ): boolean {
     try {
       const raw = localStorage.getItem(this.SAVE_KEY);
@@ -415,6 +439,18 @@ export class SaveManager {
       if (data.photoData && photoManager) {
         photoManager.photos = data.photoData.photos;
         photoManager.memories = data.photoData.memories;
+      }
+
+      if (data.educationData && educationManager) {
+        educationManager.grade = data.educationData.grade;
+        educationManager.homeworkDone = data.educationData.homeworkDone;
+        educationManager.enrolledDegree = data.educationData.enrolledDegree;
+        educationManager.degreeProgress = data.educationData.degreeProgress;
+        educationManager.completedDegrees = data.educationData.completedDegrees;
+      }
+
+      if (data.rentersData && rentersManager) {
+        rentersManager.tenants = data.rentersData.tenants;
       }
 
       // Restore Career

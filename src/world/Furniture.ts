@@ -722,5 +722,49 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 50, energy: -10 }
       }
     ]
+  },
+
+  chicken_coop: {
+    id: 'chicken_coop',
+    name: 'Landhaus Hühnerstall',
+    category: 'decor',
+    price: 500,
+    width: 2,
+    height: 1,
+    color: '#d35400',
+    accentColor: '#f1c40f',
+    icon: '🐔',
+    description: 'Bietet glücklichen Hühnern ein Zuhause. Frische Landeier ernten!',
+    interactions: [
+      {
+        id: 'collect_eggs',
+        label: 'Frische Eier einsammeln',
+        icon: '🥚',
+        duration: 4,
+        needEffects: { hunger: 20, fun: 15 }
+      }
+    ]
+  },
+
+  beehive: {
+    id: 'beehive',
+    name: 'Bio-Bienenstock',
+    category: 'decor',
+    price: 350,
+    width: 1,
+    height: 1,
+    color: '#f39c12',
+    accentColor: '#f1c40f',
+    icon: '🐝',
+    description: 'Fleißige Bienen produzieren süßen Bio-Honig im Garten.',
+    interactions: [
+      {
+        id: 'harvest_honey',
+        label: 'Bio-Honig ernten',
+        icon: '🍯',
+        duration: 3,
+        needEffects: { hunger: 15, fun: 20 }
+      }
+    ]
   }
 };

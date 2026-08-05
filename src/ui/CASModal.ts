@@ -48,10 +48,16 @@ export class CASModal {
               <div>
                 <label for="cas-trait" style="display: block; margin-bottom: 6px; font-weight: 600;">Hauptmerkmal</label>
                 <select id="cas-trait" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white;">
-                  <option value="Genial">Genial (Lerne-Bonus)</option>
-                  <option value="Kreativ">Kreativ (Malen & Spaß)</option>
-                  <option value="Romantisch">Romantisch (Sozial-Bonus)</option>
-                  <option value="Aktiv">Aktiv (Fitness)</option>
+                  <option value="Genial">🧠 Genial (Skill-Lernbonus)</option>
+                  <option value="Romantisch">💖 Romantisch (Doppelter Romantik-Zuwachs)</option>
+                  <option value="Aktiv">🏃 Aktiv & Sportlich (Verlangsamter Energieabbau)</option>
+                  <option value="Partylöwe">🥳 Partylöwe (Doppelte Party-Punkte)</option>
+                  <option value="Kreativ">🎨 Kreativ (+50% Gemälde-Wert)</option>
+                  <option value="Perfektionist">⭐ Perfektionist (Beförderungs-Bonus)</option>
+                  <option value="Chaotisch">🍕 Chaotisch (Halber Hygieneabbau)</option>
+                  <option value="Einsamer Wolf">🐺 Einsamer Wolf (Minimales Sozialbedürfnis)</option>
+                  <option value="Tech-Geek">💻 Tech-Geek (Doppelter Spaß am PC)</option>
+                  <option value="Tierliebhaber">🐾 Tierliebhaber (Maximale Pet-Bindung)</option>
                 </select>
               </div>
             </div>
