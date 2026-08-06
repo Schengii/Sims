@@ -425,6 +425,24 @@ export class IsometricRenderer {
     const plumbobY = -65 + yOffset + Math.sin(Date.now() / 250) * 4;
     this.drawPlumbob(0, plumbobY, isActive ? mood.plumbobColor : 'rgba(200,200,200,0.5)');
 
+    // Render Action Item Prop in hand
+    if (currentAction) {
+      let propSymbol = '';
+      const actName = currentAction.name.toLowerCase();
+      if (actName.includes('malen') || actName.includes('paint') || actName.includes('staffelei')) propSymbol = '🎨';
+      else if (actName.includes('gitarre') || actName.includes('guitar') || actName.includes('musik')) propSymbol = '🎸';
+      else if (actName.includes('kochen') || actName.includes('essen') || actName.includes('cook')) propSymbol = '🍳';
+      else if (actName.includes('buch') || actName.includes('lesen') || actName.includes('read')) propSymbol = '📖';
+      else if (actName.includes('zauber') || actName.includes('magic') || actName.includes('wand')) propSymbol = '🪄';
+      else if (actName.includes('kaffee') || actName.includes('tee') || actName.includes('drink')) propSymbol = '☕';
+
+      if (propSymbol) {
+        ctx.font = '16px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(propSymbol, 14, -20 + yOffset);
+      }
+    }
+
     if (currentAction) {
       const progress = currentAction.elapsedSeconds / currentAction.durationSeconds;
       const barW = 40;
@@ -438,6 +456,7 @@ export class IsometricRenderer {
       ctx.fillStyle = '#2ecc71';
       ctx.fillRect(bx, by, barW * progress, barH);
     } else {
+
       const lowest = sim.needs.getLowestNeed();
       if (lowest.value < 40) {
         let alertIcon = '🍕';

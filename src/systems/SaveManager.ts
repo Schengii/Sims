@@ -65,7 +65,7 @@ export interface GameSaveData {
       openingWest?: 'door' | 'window';
     }>>;
   };
-  career: {
+  career?: {
     careerId: string;
     rank: number;
   };
@@ -127,9 +127,9 @@ export class SaveManager {
   private static readonly SAVE_KEY = 'sims_game_save_v1';
 
   public static saveGame(
-    sim: Sim,
-    house: House,
-    career: CareerManager,
+    simOrGame: Sim | any,
+    houseOrSlotKey?: House | string,
+    career?: CareerManager,
     npcManager?: import('../entity/NPCManager').NPCManager,
     partyManager?: import('../systems/PartyManager').PartyManager,
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
@@ -146,6 +146,18 @@ export class SaveManager {
     rentersManager?: import('./RentersSystem').RentersManager
   ): boolean {
     try {
+      let key = this.SAVE_KEY;
+      let sim = simOrGame as Sim;
+      let house = houseOrSlotKey as House;
+
+      if (simOrGame && simOrGame.sim && simOrGame.house) {
+        sim = simOrGame.sim;
+        house = simOrGame.house;
+        if (typeof houseOrSlotKey === 'string') {
+          key = houseOrSlotKey;
+        }
+      }
+
       const saveData: GameSaveData = {
         version: '1.0.0',
         timestamp: Date.now(),
@@ -207,10 +219,10 @@ export class SaveManager {
             openingWest: tile.openingWest
           })))
         },
-        career: {
+        career: career ? {
           careerId: career.currentCareerId,
           rank: career.currentRank
-        },
+        } : undefined,
         relationships: npcManager?.npcs.map(n => ({
           targetSimId: n.id,
           targetSimName: n.name,
@@ -266,7 +278,7 @@ export class SaveManager {
       };
 
       const jsonStr = JSON.stringify(saveData);
-      localStorage.setItem(this.SAVE_KEY, jsonStr);
+      localStorage.setItem(key, jsonStr);
       return true;
     } catch (e) {
       console.error('[SaveManager] Error saving game:', e);
@@ -274,10 +286,51 @@ export class SaveManager {
     }
   }
 
+  public static serializeGame(gameInstance: any): GameSaveData {
+    return {
+      version: '1.0.0',
+      timestamp: Date.now(),
+      sim: {
+        customization: gameInstance.sim.customization,
+        gridPos: gameInstance.sim.gridPos,
+        needs: gameInstance.sim.needs.getValues(),
+        simoleons: gameInstance.sim.simoleons,
+        skills: gameInstance.sim.skills,
+        lifeStage: gameInstance.sim.lifeStage,
+        ageDays: gameInstance.sim.ageDays,
+        partnerName: gameInstance.sim.partnerName,
+        childrenNames: gameInstance.sim.childrenNames,
+        inventoryItems: gameInstance.sim.inventory.items,
+        aspirationPoints: gameInstance.sim.aspirationPoints,
+        aspirationId: gameInstance.sim.aspirationId,
+        completedMilestones: gameInstance.sim.completedMilestones
+      },
+      house: {
+        placedFurniture: gameInstance.house.placedFurniture,
+        wallDisplayMode: gameInstance.house.wallDisplayMode,
+        activeFloor: gameInstance.house.activeFloor
+      }
+    };
+  }
+
+  public static applySaveData(gameInstance: any, data: any): boolean {
+    if (!data || !data.sim) return false;
+    try {
+      if (data.sim.customization) gameInstance.sim.customization = data.sim.customization;
+      if (data.sim.simoleons) gameInstance.sim.simoleons = data.sim.simoleons;
+      if (data.sim.skills) gameInstance.sim.skills = data.sim.skills;
+      if (data.house && data.house.placedFurniture) gameInstance.house.placedFurniture = data.house.placedFurniture;
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+
   public static loadGame(
-    sim: Sim,
-    house: House,
-    career: CareerManager,
+    simOrGame: Sim | any,
+    houseOrSlotKey?: House | string,
+    career?: CareerManager,
     npcManager?: import('../entity/NPCManager').NPCManager,
     partyManager?: import('../systems/PartyManager').PartyManager,
     gardenSystem?: import('../world/GardenSystem').GardenSystem,
@@ -294,8 +347,21 @@ export class SaveManager {
     rentersManager?: import('./RentersSystem').RentersManager
   ): boolean {
     try {
-      const raw = localStorage.getItem(this.SAVE_KEY);
+      let key = this.SAVE_KEY;
+      let sim = simOrGame as Sim;
+      let house = houseOrSlotKey as House;
+
+      if (simOrGame && simOrGame.sim && simOrGame.house) {
+        sim = simOrGame.sim;
+        house = simOrGame.house;
+        if (typeof houseOrSlotKey === 'string') {
+          key = houseOrSlotKey;
+        }
+      }
+
+      const raw = localStorage.getItem(key);
       if (!raw) return false;
+
 
       const data = Sanitizer.safeJSONParse<GameSaveData | null>(raw, null);
       if (!data || !data.sim || !data.house) return false;
@@ -454,7 +520,7 @@ export class SaveManager {
       }
 
       // Restore Career
-      if (data.career) {
+      if (data.career && career) {
         career.currentCareerId = data.career.careerId || 'tech_guru';
         career.currentRank = data.career.rank || 1;
       }

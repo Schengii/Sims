@@ -40,7 +40,21 @@ export class Inventory {
     return this.items.find(item => item.id === id);
   }
 
+  public hasItem(name: string): boolean {
+    return this.items.some(item => item.name === name);
+  }
+
+  public removeItemByName(name: string): boolean {
+    const index = this.items.findIndex(item => item.name === name);
+    if (index !== -1) {
+      this.items.splice(index, 1);
+      return true;
+    }
+    return false;
+  }
+
   public clear(): void {
     this.items = [];
   }
 }
+

@@ -26,7 +26,13 @@ export class ToastManager {
     this.container = existing;
   }
 
+  public show(message: string, type: 'info' | 'success' | 'warning' | 'levelUp' | 'error' = 'info'): void {
+    const toastType = type === 'error' ? 'warning' : type;
+    this.showToast('Hinweis', message, '🔔', toastType);
+  }
+
   public showToast(title: string, message: string, icon: string = '🔔', type: 'info' | 'success' | 'warning' | 'levelUp' = 'info'): void {
+
     const toast = document.createElement('div');
     toast.className = `toast-card toast-${type}`;
     toast.innerHTML = `

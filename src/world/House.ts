@@ -168,6 +168,11 @@ export class House {
     return item;
   }
 
+  public addPlacedFurniture(item: PlacedFurniture): void {
+    this.placedFurniture.push(item);
+  }
+
+
   public rotateFurniture(instanceId: string): boolean {
     const item = this.placedFurniture.find(f => f.instanceId === instanceId);
     if (!item) return false;

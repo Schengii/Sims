@@ -20,6 +20,9 @@ export class InputHandler {
   public onKeyboardSpeedToggle?: (speed: number) => void;
   public onKeyboardPauseToggle?: () => void;
   public onEscapePressed?: () => void;
+  public onUndoPressed?: () => void;
+  public onRedoPressed?: () => void;
+  public onHelpPressed?: () => void;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -93,7 +96,24 @@ export class InputHandler {
         return;
       }
 
+      // Undo / Redo
+      if (e.ctrlKey && (e.key === 'z' || e.key === 'Z')) {
+        e.preventDefault();
+        if (this.onUndoPressed) this.onUndoPressed();
+        return;
+      }
+      if (e.ctrlKey && (e.key === 'y' || e.key === 'Y')) {
+        e.preventDefault();
+        if (this.onRedoPressed) this.onRedoPressed();
+        return;
+      }
+
       switch (e.key) {
+        case '?':
+        case 'F1':
+          e.preventDefault();
+          if (this.onHelpPressed) this.onHelpPressed();
+          break;
         case 'ArrowUp':
         case 'w':
         case 'W':
@@ -134,3 +154,4 @@ export class InputHandler {
     });
   }
 }
+

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sims 5 - Das nächste Sim-Erlebnis (Sims 4 & Mobile Hybrid)</title>
     <meta name="description" content="Ein interaktives Sims-Spiel mit Create-A-Sim, 2.5D Isometrischer Engine, Bedürfnis-System, Baumodus, Karriere-Quests & DSGVO-Konformität." />
+    <link rel="manifest" href="/manifest.json" />
+    <meta name="theme-color" content="#06b6d4" />
     
     <!-- CSS Design System & Accessibility Rules -->
     <link rel="stylesheet" href="/src/styles/main.css" />
@@ -17,5 +19,13 @@
       <div id="ui-container"></div>
     </main>
     <script type="module" src="/src/main.ts"></script>
+    <script>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js').catch(() => {});
+        });
+      }
+    </script>
   </body>
 </html>
+

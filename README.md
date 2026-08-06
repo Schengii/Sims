@@ -175,6 +175,19 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 7.0.0 (Genetics, Whims, Recipe Book, Multi-Save & Build Undo Expansion)
+- **[Feature] Genetik & Vererbung (`Genetics.ts`)**: Prozedurales Blending von Hautton, Haarfarbe, Outfit & Vererbung von Charaktermerkmalen für Kinder.
+- **[Feature] Wünsche & Ängste System (`WhimSystem.ts`, `WhimPanel.ts`)**: Dynamisches Wünsche-Panel im HUD mit 3 aktiven Wünschen, Ängsten & Belohnungspunkten (💎).
+- **[Feature] Rezeptbuch & Gourmet-Kochen (`CookingSystem.ts`, `RecipeModal.ts`)**: 8 freischaltbare Gerichte mit Garten-Zutaten-Rabatt (-50%) für Einzel- & Familienmahlzeiten.
+- **[Feature] Öffentliche Ausflugs-Lots (`CommunityLotManager.ts`)**: Fit & Flex Studio, Sunset Lounge & Bar, Plumbob Zentralpark & Willow Creek Bibliothek.
+- **[Feature] Dynamische Nachtlicht-Shaders (`IsometricRenderer.ts`)**: Radiale Lichtquellen bei Nacht für Lampen, TV, Stereoanlagen & Kamine.
+- **[Feature] Requisiten & Hand-Props (`IsometricRenderer.ts`)**: Visuelle Gegenstände in den Händen der Sims bei Interaktionen (☕ Kaffeetasse, 🎨 Pinsel, 📖 Buch, 🍳 Pfanne, 🎸 Gitarre, 🪄 Zauberstab).
+- **[Feature] Prozedurale Ambient Soundscapes (`AmbientAudio.ts`)**: Web Audio API Soundscapes (Vogelgezwitscher, Grillenzirpen, Regengeplätscher & Gewitter).
+- **[Feature] Multi-Save-Slot & JSON Export/Import (`SaveSlotModal.ts`)**: 3 Speicherplätze & Export/Import von Spielständen als `.json`-Datei.
+- **[Feature] Undo / Redo im Baumodus (`BuildHistory.ts`)**: Strg+Z & Strg+Y für rückgängig machen & wiederholen von Bauaktionen.
+- **[Feature] PWA & Offline Support (`manifest.json`, `sw.js`)**: Progressive Web App Konfiguration & Offline-Service-Worker.
+- **[Feature] Barrierefreiheits-Overlay (`HelpModal.ts`)**: WCAG Tastatur-Steuerungsübersicht erreichbar mit `?` oder `F1`.
+
 ### Version 6.0.0 (Weddings, Hobbies, Disasters & Thought FX Expansion)
 - **[Feature] Hochzeit & Verlobung (`WeddingSystem.ts`, `WeddingModal.ts`)**: Antrag machen mit Verlobungsring (💍 § 500), Platzieren des Blumen-Hochzeitsbogens (`wedding_arch`) & unvergessliche Ja-Wort Zeremonie.
 - **[Feature] Hobbys, Handwerken & Freelance-Karrieren (`HobbySystem.ts`, `HobbyModal.ts`)**: Akustik-Gitarre (`guitar_acoustic`), Großmeister Schach-Tisch (`chess_table`), Handwerker-Werkbank (`wood_bench`) & Ausführen von Freelance-Aufträgen.

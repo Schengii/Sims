@@ -76,12 +76,22 @@ import { HobbyModal } from '../ui/HobbyModal';
 import { EventManager } from '../systems/EventSystem';
 import { EventModal } from '../ui/EventModal';
 
+import { WhimManager } from '../systems/WhimSystem';
+import { WhimPanel } from '../ui/WhimPanel';
+import { RecipeModal } from '../ui/RecipeModal';
+import { AmbientAudioEngine } from '../audio/AmbientAudio';
+import { BuildHistoryManager } from '../systems/BuildHistory';
+import { SaveSlotModal } from '../ui/SaveSlotModal';
+import { HelpModal } from '../ui/HelpModal';
+import { GeneticsEngine } from '../entity/Genetics';
+
 export class Game {
   private canvas: HTMLCanvasElement;
   private camera: Camera;
   private renderer: IsometricRenderer;
   private soundManager: SoundManager;
   public radioManager: RadioManager;
+  public ambientAudio: AmbientAudioEngine;
   private inputHandler: InputHandler;
 
   public house: House;
@@ -109,8 +119,11 @@ export class Game {
   public weddingManager: WeddingManager;
   public hobbyManager: HobbyManager;
   public eventManager: EventManager;
+  public whimManager: WhimManager;
+  public buildHistory: BuildHistoryManager;
 
   public hud: HUDManager;
+  public whimPanel: WhimPanel;
   public casModal: CASModal;
   public buildCatalog: BuildBuyCatalog;
   public careerPanel: CareerPanel;
@@ -140,10 +153,14 @@ export class Game {
   public weddingModal: WeddingModal;
   public hobbyModal: HobbyModal;
   public eventModal: EventModal;
+  public recipeModal: RecipeModal;
+  public saveSlotModal: SaveSlotModal;
+  public helpModal: HelpModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
   private isRunning: boolean = false;
+
 
   constructor(canvas: HTMLCanvasElement, uiContainer: HTMLElement) {
     this.canvas = canvas;
@@ -151,6 +168,10 @@ export class Game {
     this.renderer = new IsometricRenderer(canvas);
     this.soundManager = new SoundManager();
     this.radioManager = new RadioManager();
+
+    this.ambientAudio = new AmbientAudioEngine();
+    this.whimManager = new WhimManager();
+    this.buildHistory = new BuildHistoryManager();
 
     this.house = new House();
     this.household = new Household();
@@ -180,6 +201,9 @@ export class Game {
 
     // UI Modules
     this.hud = new HUDManager(uiContainer, this.soundManager);
+    this.toastManager = new ToastManager(uiContainer);
+
+    this.whimPanel = new WhimPanel(uiContainer, this.whimManager, this.sim, this.toastManager);
     this.casModal = new CASModal(uiContainer, this.soundManager);
     this.buildCatalog = new BuildBuyCatalog(uiContainer, this.soundManager);
     this.careerPanel = new CareerPanel(uiContainer, this.soundManager);
@@ -189,7 +213,6 @@ export class Game {
     this.familyTreePanel = new FamilyTreePanel(uiContainer);
     this.partyModal = new PartyModal(uiContainer, this.soundManager);
 
-    this.toastManager = new ToastManager(uiContainer);
     this.furnitureModal = new FurnitureModal(uiContainer, this.soundManager);
     this.inventoryPanel = new InventoryPanel(uiContainer, this.soundManager);
     this.audioSettingsModal = new AudioSettingsModal(uiContainer, this.soundManager, this.radioManager);
@@ -210,7 +233,30 @@ export class Game {
     this.hobbyModal = new HobbyModal(uiContainer, this.soundManager);
     this.eventModal = new EventModal(uiContainer, this.soundManager);
 
+    this.recipeModal = new RecipeModal(uiContainer, this.sim, this.toastManager, this.soundManager, (hungerBoost, mealName) => {
+      this.sim.needs.modify('hunger', hungerBoost);
+      this.toastManager.showToast('🍳 Mahlzeit serviert!', `${mealName} hat den Hunger gestillt.`, '😋', 'success');
+      this.whimManager.checkWhimFulfillment(this.sim, 'cooking');
+    });
+
+    this.saveSlotModal = new SaveSlotModal(uiContainer, this, this.toastManager);
+    this.helpModal = new HelpModal(uiContainer);
+
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
+    this.inputHandler.onUndoPressed = () => {
+      if (this.buildHistory.undo(this.house)) {
+        this.toastManager.showToast('Bau-Rückgängig', '↩️ Bauaktion rückgängig gemacht!', '↩️', 'info');
+      }
+    };
+    this.inputHandler.onRedoPressed = () => {
+      if (this.buildHistory.redo(this.house)) {
+        this.toastManager.showToast('Bau-Wiederholen', '↪️ Bauaktion wiederholt!', '↪️', 'info');
+      }
+    };
+    this.inputHandler.onHelpPressed = () => {
+      this.helpModal.open();
+    };
+
 
     this.initCanvasSize();
     this.setupEventHandlers();
@@ -556,19 +602,36 @@ export class Game {
         this.sim.childrenNames.push(babyName);
         this.sim.partnerName = npc.name;
 
-        // Add child as a new household Sim!
-        const childSim = new Sim({ name: babyName, skinColor: this.sim.customization.skinColor });
+        // Add child as a new household Sim with genetics inheritance!
+        const dna = GeneticsEngine.createOffspringDNA(this.sim.customization, {
+          name: npc.name,
+          gender: 'female',
+          skinColor: npc.skinColor,
+          hairColor: npc.hairColor,
+          outfitColor: npc.outfitColor,
+          trait: 'Genial',
+          aspiration: 'Familie'
+        });
+
+        const childSim = new Sim({
+          name: babyName,
+          skinColor: dna.skinColor,
+          hairColor: dna.hairColor,
+          outfitColor: dna.outfitColor,
+          trait: dna.inheritedTraits[0]
+        });
         childSim.lifeStage = 'baby';
         this.household.addSim(childSim);
 
         this.soundManager.playLevelUp();
-        this.toastManager.showToast('👶 GLÜCKWUNSCH!', `Baby "${babyName}" wurde geboren und dem Haushalt hinzugefügt!`, '🍼', 'levelUp');
+        this.toastManager.showToast('👶 GLÜCKWUNSCH!', `Baby "${babyName}" (mit vererbter Genetik & Merkmal: ${dna.inheritedTraits[0]}) wurde geboren!`, '🍼', 'levelUp');
       }
     };
 
     // Household Sim Switcher Handlers
     this.hud.onSwitchSim = (index) => {
       this.sim = this.household.setActiveSim(index);
+      this.whimPanel.setSim(this.sim);
       this.toastManager.showToast('Sim gewechselt', `Du steuerst jetzt ${this.sim.customization.name}`, '💎', 'info');
     };
 
@@ -603,6 +666,8 @@ export class Game {
     this.hud.onOpenAspirations = () => this.aspirationModal.open(this.sim, this.toastManager);
     this.hud.onOpenWorldMap = () => this.worldMapModal.open(this.worldMap, this, this.toastManager);
     this.hud.onOpenCalendar = () => this.calendarModal.open(this.calendarManager, this, this.toastManager);
+    this.hud.onSaveGame = () => this.saveSlotModal.open();
+
     this.hud.onOpenBills = () => this.billsModal.open(this.billsManager, this.house, this, this.toastManager);
     this.hud.onOpenMagic = () => this.magicModal.open(this.magicManager, this, this.toastManager);
     this.hud.onOpenVehicle = () => this.vehicleModal.open(this.vehicleManager, this, this.toastManager);
@@ -720,12 +785,13 @@ export class Game {
     // 1. Time Update
     const timeResult = this.timeSystem.update(deltaSec);
 
-    // 2. Weather, Garden, Calendar, Bills, Magic, Business Updates
+    // 2. Weather, Garden, Calendar, Bills, Magic, Business & Ambient Audio Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
     this.calendarManager.updateTime(this.timeSystem.day);
     this.billsManager.updateTime(this.timeSystem.day, this.house);
     this.magicManager.updateTime(timeResult.deltaMinutes);
+    this.ambientAudio.updateSoundscape(this.timeSystem.hour, this.weatherSystem.currentWeather as any);
 
     // Simulate business sales tick
     if (Math.random() < 0.005) {
@@ -780,8 +846,9 @@ export class Game {
       this.petManager
     );
 
-    // 9. Update HUD
+    // 9. Update HUD & Whims
     this.hud.update(this.sim, this.timeSystem, this.household, this.petManager);
+    this.whimPanel.update();
 
     requestAnimationFrame(this.loop.bind(this));
   }
