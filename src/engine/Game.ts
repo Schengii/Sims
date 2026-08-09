@@ -90,6 +90,12 @@ import { DeliverySystem } from '../systems/DeliverySystem';
 import { SmartphoneModal } from '../ui/SmartphoneModal';
 import { PetCompetitionModal } from '../ui/PetCompetitionModal';
 import { PublicLotMinigamesModal } from '../ui/PublicLotMinigamesModal';
+import { NeighborhoodProgression } from '../systems/NeighborhoodProgression';
+import { RealEstateManager } from '../systems/RealEstateManager';
+import { RealEstateModal } from '../ui/RealEstateModal';
+import { TraitQuestSystem } from '../systems/TraitQuestSystem';
+import { LifeJournalModal } from '../ui/LifeJournalModal';
+import { EmergencyRescueModal } from '../ui/EmergencyRescueModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -168,6 +174,12 @@ export class Game {
   public smartphoneModal: SmartphoneModal;
   public petCompetitionModal: PetCompetitionModal;
   public publicLotMinigamesModal: PublicLotMinigamesModal;
+  public neighborhoodProgression: NeighborhoodProgression;
+  public realEstateManager: RealEstateManager;
+  public realEstateModal: RealEstateModal;
+  public traitQuestSystem: TraitQuestSystem;
+  public lifeJournalModal: LifeJournalModal;
+  public emergencyRescueModal: EmergencyRescueModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -260,6 +272,12 @@ export class Game {
     this.smartphoneModal = new SmartphoneModal(this.sim, this.deliverySystem, this.toastManager, this.soundManager);
     this.petCompetitionModal = new PetCompetitionModal();
     this.publicLotMinigamesModal = new PublicLotMinigamesModal();
+    this.neighborhoodProgression = new NeighborhoodProgression();
+    this.realEstateManager = new RealEstateManager();
+    this.realEstateModal = new RealEstateModal();
+    this.traitQuestSystem = new TraitQuestSystem();
+    this.lifeJournalModal = new LifeJournalModal();
+    this.emergencyRescueModal = new EmergencyRescueModal();
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -710,6 +728,8 @@ export class Game {
         this.toastManager.showToast('🏆 Pet Show', 'Du benötigst ein Haustier im Haushalt für den Wettbewerb!', '🐕', 'info');
       }
     };
+    this.hud.onOpenRealEstate = () => this.realEstateModal.open(this.realEstateManager, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenJournal = () => this.lifeJournalModal.open(this.sim, this.traitQuestSystem, this.soundManager);
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
@@ -821,6 +841,7 @@ export class Game {
     this.calendarManager.updateTime(this.timeSystem.day);
     this.billsManager.updateTime(this.timeSystem.day, this.house);
     this.magicManager.updateTime(timeResult.deltaMinutes);
+    this.neighborhoodProgression.update(timeResult.deltaMinutes, this.sim, this.toastManager, this.soundManager);
     this.ambientAudio.updateSoundscape(this.timeSystem.hour, this.weatherSystem.currentWeather as any);
 
     // Simulate business sales tick

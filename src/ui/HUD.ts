@@ -55,6 +55,8 @@ export class HUDManager {
   public onOpenCheats?: () => void;
   public onOpenSmartphone?: () => void;
   public onOpenPetShow?: () => void;
+  public onOpenRealEstate?: () => void;
+  public onOpenJournal?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -94,6 +96,8 @@ export class HUDManager {
               § 2,500
             </div>
             <button class="btn-hud" id="btn-open-phone" title="SimPhone (Simstagram & LlamaEats)" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; font-weight: bold;">📱 Handy</button>
+            <button class="btn-hud" id="btn-open-realestate" title="Immobilien-Imperium & Rendite" style="background: rgba(74, 222, 128, 0.2); color: #4ade80; font-weight: bold;">🏢 Immobilien</button>
+            <button class="btn-hud" id="btn-open-journal" title="Lebenschronik & Quests">📖 Chronik</button>
             <button class="btn-hud" id="btn-open-petshow" title="Pet Agility Contest & Training">🏆 Pet Show</button>
             <button class="btn-hud" id="btn-open-map" title="Nachbarschafts-Karte & Ausflüge">🗺️ Karte</button>
             <button class="btn-hud" id="btn-open-asp" title="Bestrebungen & Belohnungs-Shop">🎯 Bestrebungen</button>
@@ -337,6 +341,16 @@ export class HUDManager {
     document.getElementById('btn-open-petshow')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenPetShow) this.onOpenPetShow();
+    });
+
+    document.getElementById('btn-open-realestate')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenRealEstate) this.onOpenRealEstate();
+    });
+
+    document.getElementById('btn-open-journal')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenJournal) this.onOpenJournal();
     });
 
     document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {

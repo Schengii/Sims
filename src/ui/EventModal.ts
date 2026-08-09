@@ -79,10 +79,10 @@ export class EventModal {
 
     document.getElementById('btn-resolve-event')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
-      const res = eventManager.resolveEvent(sim);
-      if (res.success) {
-        ToastManager.showToast('🚨 Notfall Gelöst', res.message, '✅', 'success');
-        this.open(sim, eventManager);
+      this.close();
+      const type = active?.type === 'burglar' ? 'burglar' : 'fire';
+      if ((window as any).game?.emergencyRescueModal) {
+        (window as any).game.emergencyRescueModal.open(type, sim, (window as any).game.toastManager, this.soundManager);
       }
     });
   }
