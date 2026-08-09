@@ -82,6 +82,9 @@ export class WorldMapModal {
             this.soundManager.playLevelUp();
             toastManager?.showToast('🚀 Reise angetreten!', `Angekommen in: ${venue.icon} ${venue.name}`, venue.icon, 'success');
             this.close();
+            if (game.publicLotMinigamesModal) {
+              game.publicLotMinigamesModal.open(venueId, game.sim, toastManager, this.soundManager);
+            }
           }
         }
       });

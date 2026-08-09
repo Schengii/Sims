@@ -53,6 +53,8 @@ export class HUDManager {
   public onAddPet?: () => void;
 
   public onOpenCheats?: () => void;
+  public onOpenSmartphone?: () => void;
+  public onOpenPetShow?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -91,6 +93,8 @@ export class HUDManager {
             <div class="currency-badge" id="hud-simoleons" aria-label="Guthaben in Simoleons">
               § 2,500
             </div>
+            <button class="btn-hud" id="btn-open-phone" title="SimPhone (Simstagram & LlamaEats)" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; font-weight: bold;">📱 Handy</button>
+            <button class="btn-hud" id="btn-open-petshow" title="Pet Agility Contest & Training">🏆 Pet Show</button>
             <button class="btn-hud" id="btn-open-map" title="Nachbarschafts-Karte & Ausflüge">🗺️ Karte</button>
             <button class="btn-hud" id="btn-open-asp" title="Bestrebungen & Belohnungs-Shop">🎯 Bestrebungen</button>
             <button class="btn-hud" id="btn-open-edu" title="Bildung & Universität">🎓 Bildung</button>
@@ -323,6 +327,16 @@ export class HUDManager {
     document.getElementById('btn-open-cheats')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenCheats) this.onOpenCheats();
+    });
+
+    document.getElementById('btn-open-phone')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenSmartphone) this.onOpenSmartphone();
+    });
+
+    document.getElementById('btn-open-petshow')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenPetShow) this.onOpenPetShow();
     });
 
     document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {

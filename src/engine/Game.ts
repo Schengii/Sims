@@ -86,6 +86,10 @@ import { HelpModal } from '../ui/HelpModal';
 import { GeneticsEngine } from '../entity/Genetics';
 import { CheatConsoleModal } from '../ui/CheatConsoleModal';
 import { CareerMiniGameModal } from '../ui/CareerMiniGameModal';
+import { DeliverySystem } from '../systems/DeliverySystem';
+import { SmartphoneModal } from '../ui/SmartphoneModal';
+import { PetCompetitionModal } from '../ui/PetCompetitionModal';
+import { PublicLotMinigamesModal } from '../ui/PublicLotMinigamesModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -160,6 +164,10 @@ export class Game {
   public helpModal: HelpModal;
   public cheatConsole: CheatConsoleModal;
   public careerMiniGameModal: CareerMiniGameModal;
+  public deliverySystem: DeliverySystem;
+  public smartphoneModal: SmartphoneModal;
+  public petCompetitionModal: PetCompetitionModal;
+  public publicLotMinigamesModal: PublicLotMinigamesModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -248,6 +256,10 @@ export class Game {
 
     this.cheatConsole = new CheatConsoleModal(this);
     this.careerMiniGameModal = new CareerMiniGameModal(this);
+    this.deliverySystem = new DeliverySystem();
+    this.smartphoneModal = new SmartphoneModal(this.sim, this.deliverySystem, this.toastManager, this.soundManager);
+    this.petCompetitionModal = new PetCompetitionModal();
+    this.publicLotMinigamesModal = new PublicLotMinigamesModal();
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -689,6 +701,15 @@ export class Game {
     this.hud.onOpenHobby = () => this.hobbyModal.open(this.sim, this.hobbyManager);
     this.hud.onOpenEvent = () => this.eventModal.open(this.sim, this.eventManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
+    this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
+    this.hud.onOpenPetShow = () => {
+      const pet = this.petManager.pets[0];
+      if (pet) {
+        this.petCompetitionModal.open(pet, this.sim, this.toastManager, this.soundManager);
+      } else {
+        this.toastManager.showToast('🏆 Pet Show', 'Du benötigst ein Haustier im Haushalt für den Wettbewerb!', '🐕', 'info');
+      }
+    };
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
@@ -793,9 +814,10 @@ export class Game {
     // 1. Time Update
     const timeResult = this.timeSystem.update(deltaSec);
 
-    // 2. Weather, Garden, Calendar, Bills, Magic, Business & Ambient Audio Updates
+    // 2. Weather, Garden, Calendar, Bills, Magic, Delivery, Business & Ambient Audio Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
+    this.deliverySystem.update(deltaSec, this.sim, this.toastManager, this.soundManager);
     this.calendarManager.updateTime(this.timeSystem.day);
     this.billsManager.updateTime(this.timeSystem.day, this.house);
     this.magicManager.updateTime(timeResult.deltaMinutes);

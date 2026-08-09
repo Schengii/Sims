@@ -58,6 +58,8 @@ export class Pet {
   public animState: 'idle' | 'walking' | 'acting' = 'idle';
   public needs: PetNeeds;
   public activeEmote?: { symbol: string; expiresAt: number };
+  public trickSkillLevel: number = 1;
+  public trickXP: number = 0;
 
   constructor(name: string, species: PetSpecies = 'dog', color?: string) {
     this.id = `pet_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
@@ -65,6 +67,16 @@ export class Pet {
     this.species = species;
     this.color = color || (species === 'dog' ? '#d35400' : '#f39c12');
     this.needs = new PetNeeds();
+  }
+
+  public addTrickXP(amount: number): boolean {
+    this.trickXP += amount;
+    if (this.trickXP >= this.trickSkillLevel * 100 && this.trickSkillLevel < 5) {
+      this.trickXP -= this.trickSkillLevel * 100;
+      this.trickSkillLevel += 1;
+      return true; // Leveled up
+    }
+    return false;
   }
 
   public update(deltaSec: number, deltaMinutes: number): void {
