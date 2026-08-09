@@ -6,8 +6,16 @@
 
 export type WeatherType = 'sunny' | 'rain' | 'snow' | 'thunderstorm';
 
+export interface RainPuddle {
+  id: string;
+  gridX: number;
+  gridY: number;
+  size: number;
+}
+
 export class WeatherSystem {
   public currentWeather: WeatherType = 'sunny';
+  public puddles: RainPuddle[] = [];
   private timerMinutes: number = 0;
   private readonly weatherDurationMinutes: number = 180; // 3 in-game hours per weather cycle
 
@@ -23,8 +31,27 @@ export class WeatherSystem {
     return this.currentWeather;
   }
 
+  public removePuddle(id: string): void {
+    this.puddles = this.puddles.filter(p => p.id !== id);
+  }
+
   public update(deltaMinutes: number): void {
     this.timerMinutes += deltaMinutes;
+
+    // Spawn puddles during rain or thunderstorm
+    if ((this.currentWeather === 'rain' || this.currentWeather === 'thunderstorm') && Math.random() < 0.05 && this.puddles.length < 8) {
+      const rx = Math.floor(Math.random() * 12);
+      const ry = Math.floor(Math.random() * 12);
+      if (!this.puddles.some(p => p.gridX === rx && p.gridY === ry)) {
+        this.puddles.push({
+          id: `puddle_${Date.now()}_${Math.random()}`,
+          gridX: rx,
+          gridY: ry,
+          size: 1 + Math.random() * 0.5
+        });
+      }
+    }
+
     if (this.timerMinutes >= this.weatherDurationMinutes) {
       this.timerMinutes = 0;
       // Randomly change weather

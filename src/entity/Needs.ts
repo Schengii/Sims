@@ -63,6 +63,17 @@ export class Needs {
     return { need: lowestKey, value: lowestVal };
   }
 
+  public fillAll(): void {
+    this.values = {
+      hunger: 100,
+      energy: 100,
+      hygiene: 100,
+      bladder: 100,
+      fun: 100,
+      social: 100
+    };
+  }
+
   public getOverallSatisfaction(): number {
     const sum = Object.values(this.values).reduce((a, b) => a + b, 0);
     return Math.round(sum / 6);

@@ -11,6 +11,7 @@ import type { Point } from '../world/Pathfinding';
 import { Sanitizer } from '../security/Sanitizer';
 import { LifeStage, type LifeStageType } from './LifeStage';
 import { Inventory } from './Inventory';
+import { MoodletManager } from './Moodlets';
 
 export interface SimCustomization {
   name: string;
@@ -44,6 +45,7 @@ export class Sim {
   public needs: Needs;
   public actionQueue: ActionQueue;
   public inventory: Inventory;
+  public moodletManager: MoodletManager;
   public simoleons: number = 2500;
 
   public aspirationPoints: number = 250;
@@ -77,18 +79,21 @@ export class Sim {
     this.needs = new Needs();
     this.actionQueue = new ActionQueue();
     this.inventory = new Inventory();
+    this.moodletManager = new MoodletManager();
     this.renderPos = { x: this.gridPos.x, y: this.gridPos.y };
   }
 
   public getCurrentMood(): MoodInfo {
     const satisfaction = this.needs.getOverallSatisfaction();
     const lowest = this.needs.getLowestNeed();
-    return Moods.getMood(satisfaction, lowest.value, lowest.need);
+    const dominant = this.moodletManager.getDominantEmotion();
+    return Moods.getMood(satisfaction, lowest.value, lowest.need, dominant?.emotion);
   }
 
   public update(deltaSec: number, deltaMinutes: number): void {
-    // 1. Needs decay
+    // 1. Needs & Moodlets decay
     this.needs.update(deltaMinutes);
+    this.moodletManager.update(deltaSec);
 
     // 2. Movement along path
     if (this.currentPath.length > 0) {

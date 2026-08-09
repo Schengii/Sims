@@ -84,6 +84,8 @@ import { BuildHistoryManager } from '../systems/BuildHistory';
 import { SaveSlotModal } from '../ui/SaveSlotModal';
 import { HelpModal } from '../ui/HelpModal';
 import { GeneticsEngine } from '../entity/Genetics';
+import { CheatConsoleModal } from '../ui/CheatConsoleModal';
+import { CareerMiniGameModal } from '../ui/CareerMiniGameModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -156,6 +158,8 @@ export class Game {
   public recipeModal: RecipeModal;
   public saveSlotModal: SaveSlotModal;
   public helpModal: HelpModal;
+  public cheatConsole: CheatConsoleModal;
+  public careerMiniGameModal: CareerMiniGameModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -241,6 +245,9 @@ export class Game {
 
     this.saveSlotModal = new SaveSlotModal(uiContainer, this, this.toastManager);
     this.helpModal = new HelpModal(uiContainer);
+
+    this.cheatConsole = new CheatConsoleModal(this);
+    this.careerMiniGameModal = new CareerMiniGameModal(this);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -681,6 +688,7 @@ export class Game {
     this.hud.onOpenWedding = () => this.weddingModal.open(this.sim, this.weddingManager);
     this.hud.onOpenHobby = () => this.hobbyModal.open(this.sim, this.hobbyManager);
     this.hud.onOpenEvent = () => this.eventModal.open(this.sim, this.eventManager);
+    this.hud.onOpenCheats = () => this.cheatConsole.open();
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
@@ -803,10 +811,21 @@ export class Game {
     }
 
     // 3. Autonomy Update for all Household Sims (active & inactive)
+    let allSleeping = true;
     this.household.sims.forEach(hSim => {
       hSim.update(deltaSec, timeResult.deltaMinutes);
       SimAutonomy.update(hSim, this.house, deltaSec);
+
+      const currentAct = hSim.actionQueue.getCurrentAction();
+      if (!currentAct || (currentAct.id !== 'sleep' && currentAct.id !== 'nap')) {
+        allSleeping = false;
+      }
     });
+
+    // Auto fast-forward if everyone is sleeping
+    if (this.household.sims.length > 0 && allSleeping && this.timeSystem.speedMultiplier !== 3) {
+      this.timeSystem.setSpeed(3);
+    }
 
     // 4. Pet Manager & Autonomy Update
     this.petManager.update(deltaSec, timeResult.deltaMinutes);

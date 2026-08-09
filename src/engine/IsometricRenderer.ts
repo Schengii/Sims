@@ -145,14 +145,29 @@ export class IsometricRenderer {
 
     ctx.restore();
 
-    // 7. Lighting Overlay & Weather Effects
+    // 7. Lighting Overlay, Weather Effects & Sunbeams
     this.renderLightingOverlay(timeOfDay, house.activeFloor);
+    this.renderSunbeams(timeOfDay);
+
     if (weatherSystem) {
       this.renderWeatherParticles(weatherSystem);
     }
 
     // 8. Render Floor Level Badge (Top Left)
     this.renderFloorBadge(house.activeFloor);
+  }
+
+  private renderSunbeams(timeOfDay: number): void {
+    if (timeOfDay < 7 || timeOfDay > 18) return; // Daylight only
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+    const gradient = ctx.createLinearGradient(0, 0, this.canvas.width, this.canvas.height);
+    gradient.addColorStop(0, 'rgba(253, 224, 71, 0.08)');
+    gradient.addColorStop(1, 'rgba(253, 224, 71, 0)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    ctx.restore();
   }
 
   private drawTile(isoX: number, isoY: number, tile: FloorTile): void {

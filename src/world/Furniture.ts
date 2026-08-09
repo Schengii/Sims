@@ -40,6 +40,7 @@ export interface PlacedFurniture {
   gridX: number;
   gridY: number;
   rotation: 0 | 90 | 180 | 270;
+  swatchColor?: string;
 }
 
 export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {

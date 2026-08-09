@@ -17,6 +17,7 @@ export interface FloorTile {
   hasWallNorth?: boolean;
   hasWallWest?: boolean;
   wallColor?: string;
+  wallPattern?: 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile';
   openingNorth?: 'door' | 'window';
   openingWest?: 'door' | 'window';
 }

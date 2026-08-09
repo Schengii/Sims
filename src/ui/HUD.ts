@@ -52,6 +52,8 @@ export class HUDManager {
   public onAddSim?: () => void;
   public onAddPet?: () => void;
 
+  public onOpenCheats?: () => void;
+
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
     this.soundManager = soundManager;
@@ -108,6 +110,7 @@ export class HUDManager {
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
             <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
             <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
+            <button class="btn-hud" id="btn-open-cheats" title="Sims Cheat Konsole (Strg + Umschalt + C)" style="background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">💻 Cheats</button>
             <button class="btn-hud" id="btn-audio-settings" aria-label="Audio Einstellungen">🔊 Audio</button>
             <button class="btn-hud" id="btn-save" aria-label="Spielstand speichern">💾 Speichern</button>
             <button class="btn-hud" id="btn-privacy" aria-label="Datenschutz & DSGVO">🛡️ DSGVO</button>
@@ -129,6 +132,7 @@ export class HUDManager {
               <div class="sim-info">
                 <h3 id="hud-sim-name">Bella Goth</h3>
                 <p id="hud-sim-mood">Stimmung: Glücklich</p>
+                <div id="hud-moodlets-container" style="display: flex; gap: 4px; margin-top: 4px; flex-wrap: wrap;"></div>
               </div>
               <button class="btn-hud" id="btn-open-cas" aria-label="Create-A-Sim Editor öffnen">✏️ Edit</button>
             </div>
@@ -316,6 +320,11 @@ export class HUDManager {
       if (this.onToggleWallMode) this.onToggleWallMode();
     });
 
+    document.getElementById('btn-open-cheats')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenCheats) this.onOpenCheats();
+    });
+
     document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onToggleRadio) this.onToggleRadio();
@@ -399,7 +408,7 @@ export class HUDManager {
       simoleonEl.innerText = `§ ${sim.simoleons.toLocaleString()}`;
     }
 
-    // 2. Sim Profile & Mood
+    // 2. Sim Profile, Mood & Active Moodlets
     const mood = sim.getCurrentMood();
     const stageInfo = LifeStage.getInfo(sim.lifeStage);
     const nameEl = document.getElementById('hud-sim-name');
@@ -412,6 +421,17 @@ export class HUDManager {
     if (plumbobEl) {
       plumbobEl.style.color = mood.plumbobColor;
       plumbobEl.style.background = `${mood.plumbobColor}22`;
+    }
+
+    const moodletsEl = document.getElementById('hud-moodlets-container');
+    if (moodletsEl) {
+      const active = sim.moodletManager.getActiveMoodlets();
+      moodletsEl.innerHTML = active.map(m => `
+        <div title="${m.name}: ${m.description} (${Math.ceil(m.remainingSec)}s)" style="display: flex; align-items: center; gap: 3px; background: rgba(255,255,255,0.15); border-radius: 6px; padding: 2px 6px; font-size: 11px; color: #fff;">
+          <span>${m.icon}</span>
+          <span style="font-weight: 600;">+${m.weight}</span>
+        </div>
+      `).join('');
     }
 
     // 3. Needs Grid
@@ -440,7 +460,7 @@ export class HUDManager {
       `).join('');
     }
 
-    // 4. Action Queue Chips
+    // 4. Action Queue Chips with Cancel support
     const actionQueueEl = document.getElementById('hud-action-queue');
     if (actionQueueEl) {
       const queue = sim.actionQueue.getQueue();
@@ -448,11 +468,23 @@ export class HUDManager {
         actionQueueEl.innerHTML = `<div class="action-item-chip">Bereit</div>`;
       } else {
         actionQueueEl.innerHTML = queue.map(a => `
-          <div class="action-item-chip">
+          <div class="action-item-chip" style="display: flex; align-items: center; gap: 6px;">
             <span>${a.icon}</span>
             <span>${Sanitizer.sanitizeText(a.name, 16)}</span>
+            <button class="btn-cancel-action" data-id="${a.id}" style="background: none; border: none; color: #ff4757; cursor: pointer; padding: 0 2px; font-weight: bold;">✕</button>
           </div>
         `).join('');
+
+        actionQueueEl.querySelectorAll('.btn-cancel-action').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const target = e.currentTarget as HTMLElement;
+            const actionId = target.getAttribute('data-id');
+            if (actionId) {
+              sim.actionQueue.cancelAction(actionId);
+              this.soundManager.playUIClick();
+            }
+          });
+        });
       }
     }
   }
