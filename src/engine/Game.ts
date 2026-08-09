@@ -96,6 +96,14 @@ import { RealEstateModal } from '../ui/RealEstateModal';
 import { TraitQuestSystem } from '../systems/TraitQuestSystem';
 import { LifeJournalModal } from '../ui/LifeJournalModal';
 import { EmergencyRescueModal } from '../ui/EmergencyRescueModal';
+import { FameSystem } from '../systems/FameSystem';
+import { FameModal } from '../ui/FameModal';
+import { OccultSystem } from '../systems/OccultSystem';
+import { OccultModal } from '../ui/OccultModal';
+import { HighSchoolSystem } from '../systems/HighSchoolSystem';
+import { PromModal } from '../ui/PromModal';
+import { RestaurantSystem } from '../systems/RestaurantSystem';
+import { RestaurantModal } from '../ui/RestaurantModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -180,6 +188,14 @@ export class Game {
   public traitQuestSystem: TraitQuestSystem;
   public lifeJournalModal: LifeJournalModal;
   public emergencyRescueModal: EmergencyRescueModal;
+  public fameSystem: FameSystem;
+  public fameModal: FameModal;
+  public occultSystem: OccultSystem;
+  public occultModal: OccultModal;
+  public highSchoolSystem: HighSchoolSystem;
+  public promModal: PromModal;
+  public restaurantSystem: RestaurantSystem;
+  public restaurantModal: RestaurantModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -278,6 +294,14 @@ export class Game {
     this.traitQuestSystem = new TraitQuestSystem();
     this.lifeJournalModal = new LifeJournalModal();
     this.emergencyRescueModal = new EmergencyRescueModal();
+    this.fameSystem = new FameSystem();
+    this.fameModal = new FameModal();
+    this.occultSystem = new OccultSystem();
+    this.occultModal = new OccultModal();
+    this.highSchoolSystem = new HighSchoolSystem();
+    this.promModal = new PromModal();
+    this.restaurantSystem = new RestaurantSystem();
+    this.restaurantModal = new RestaurantModal();
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -730,6 +754,10 @@ export class Game {
     };
     this.hud.onOpenRealEstate = () => this.realEstateModal.open(this.realEstateManager, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenJournal = () => this.lifeJournalModal.open(this.sim, this.traitQuestSystem, this.soundManager);
+    this.hud.onOpenFame = () => this.fameModal.open(this.fameSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenOccult = () => this.occultModal.open(this.occultSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenProm = () => this.promModal.open(this.highSchoolSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenRestaurant = () => this.restaurantModal.open(this.restaurantSystem, this.sim, this.toastManager, this.soundManager);
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);

@@ -175,6 +175,30 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 11.0.0 (Fame, Occult & Restaurant Empire Expansion)
+- **[Feature] Ruhm & Promi-Status (`FameSystem.ts`, `FameModal.ts`)**: Star-Reputation (1-5 Sterne ⭐️), Fame XP, Autogrammstunden für Fans & Paparazzi-Fotoshootings.
+- **[Feature] Okkulte Lebensformen & Zauberkraft (`OccultSystem.ts`, `OccultModal.ts`)**: Verwandlung in Vampir 🦇, Werwolf 🐺 oder Alien 👽 mit Dunkler Form & okkulten Buffs.
+- **[Feature] Highschool & Prom-Event (`HighSchoolSystem.ts`, `PromModal.ts`)**: Abschluss-Prüfungen ablegen, Notendurchschnitt verbessern & Abschlussball-König(in) 👑 werden.
+- **[Feature] Gourmet-Restaurant Management (`RestaurantSystem.ts`, `RestaurantModal.ts`)**: Kauf eigener Restaurants (§ 12.000), Speisekarten-Gestaltung & Kassieren täglicher Restaurant-Gewinne.
+
+### Version 10.0.0 (Living World & Real Estate Empire Expansion)
+- **[Feature] Lebendige Nachbarschaft (`NeighborhoodProgression.ts`)**: Proaktive SMS-Einladungen von Nachbarn (Mortimer Goth, Penny Pizazz) auf dein Smartphone.
+- **[Feature] Immobilien-Imperium (`RealEstateManager.ts`, `RealEstateModal.ts`)**: Erwerb von Rendite-Immobilien, wöchentliche Mieteinnahmen & Immobilien-Stufen-Upgrades.
+- **[Feature] Trait-Quests & Chronik-Tagebuch (`TraitQuestSystem.ts`, `LifeJournalModal.ts`)**: Merkmals-spezifische Quests & illustriertes Lebens-Tagebuch.
+- **[Feature] Notfall-Einsatzkräfte (`EmergencyRescueModal.ts`)**: Interaktive Brand-Bekämpfung & Einbrecher-Stellen für Helden-Medaillen & Simoleon-Boni.
+
+### Version 9.0.0 (Smartphone, Simstagram, Pet Tricks & Public Lots Expansion)
+- **[Feature] Smartphone & LlamaEats (`SmartphoneModal.ts`, `DeliverySystem.ts`)**: SimPhone 15 Pro mit Simstagram (Posten, Follower, Werbeeinnahmen) & LlamaEats Lieferservice (Pizza, Sushi, Burger, Bubble Tea).
+- **[Feature] Pet-Tricks & Agility Shows (`Pet.ts`, `PetCompetitionModal.ts`)**: Kunststücke-Training (Stufe 1-5) & Teilnahme an Agility Shows für Goldpokale & Preisgelder.
+- **[Feature] Public-Lot Activities (`PublicLotMinigamesModal.ts`)**: Laufband-Challenge im Gym, DJ-Beatmixing im VIP Club Velvet & Schnell-Recherche in der Bibliothek.
+
+### Version 8.0.0 (Ultimate Life & Emotions Expansion)
+- **[Feature] Moodlet- & Buff-Engine (`Moodlets.ts`, `Moods.ts`, `HUD.ts`)**: Zeitbasierte emotionale Buffs mit Live-Countdown & HUD-Badge Anzeige.
+- **[Feature] Sims-Cheat-Konsole (`CheatConsoleModal.ts`)**: Retro-Konsole via `Strg + Umschalt + C` oder HUD-Button (`motherlode`, `kaching`, `fillmotive`, `bb.moveobjects`, `fps`, `help`).
+- **[Feature] Shift Mini-Game (`CareerMiniGameModal.ts`)**: Timing-Mini-Spiel zur Beschleunigung von Beförderungen & Simoleon-Prämien.
+- **[Feature] Canvas Shader Upgrades (`IsometricRenderer.ts`, `WeatherSystem.ts`)**: Sonnenstrahlen (God Rays) bei Tageslicht & Regenpfützen.
+- **[Feature] Action Queue QoL & Auto-Zeitraffer (`HUD.ts`, `Game.ts`)**: Einzel-Abbruch per `✕` in der Aktionsschlange & automatischer 3x Zeitraffer bei Schlaf.
+
 ### Version 7.0.0 (Genetics, Whims, Recipe Book, Multi-Save & Build Undo Expansion)
 - **[Feature] Genetik & Vererbung (`Genetics.ts`)**: Prozedurales Blending von Hautton, Haarfarbe, Outfit & Vererbung von Charaktermerkmalen für Kinder.
 - **[Feature] Wünsche & Ängste System (`WhimSystem.ts`, `WhimPanel.ts`)**: Dynamisches Wünsche-Panel im HUD mit 3 aktiven Wünschen, Ängsten & Belohnungspunkten (💎).

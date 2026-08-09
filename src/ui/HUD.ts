@@ -57,6 +57,10 @@ export class HUDManager {
   public onOpenPetShow?: () => void;
   public onOpenRealEstate?: () => void;
   public onOpenJournal?: () => void;
+  public onOpenFame?: () => void;
+  public onOpenOccult?: () => void;
+  public onOpenProm?: () => void;
+  public onOpenRestaurant?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -96,6 +100,10 @@ export class HUDManager {
               § 2,500
             </div>
             <button class="btn-hud" id="btn-open-phone" title="SimPhone (Simstagram & LlamaEats)" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; font-weight: bold;">📱 Handy</button>
+            <button class="btn-hud" id="btn-open-fame" title="Promi-Status & Ruhm" style="background: rgba(250, 204, 21, 0.2); color: #facc15; font-weight: bold;">🌟 Ruhm</button>
+            <button class="btn-hud" id="btn-open-occult" title="Okkulte Verwandlungen">🔮 Okkult</button>
+            <button class="btn-hud" id="btn-open-prom" title="Highschool Abschlussball">👑 Prom</button>
+            <button class="btn-hud" id="btn-open-rest" title="Gourmet-Restaurant Manager">🍽️ Restaurant</button>
             <button class="btn-hud" id="btn-open-realestate" title="Immobilien-Imperium & Rendite" style="background: rgba(74, 222, 128, 0.2); color: #4ade80; font-weight: bold;">🏢 Immobilien</button>
             <button class="btn-hud" id="btn-open-journal" title="Lebenschronik & Quests">📖 Chronik</button>
             <button class="btn-hud" id="btn-open-petshow" title="Pet Agility Contest & Training">🏆 Pet Show</button>
@@ -351,6 +359,26 @@ export class HUDManager {
     document.getElementById('btn-open-journal')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenJournal) this.onOpenJournal();
+    });
+
+    document.getElementById('btn-open-fame')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenFame) this.onOpenFame();
+    });
+
+    document.getElementById('btn-open-occult')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenOccult) this.onOpenOccult();
+    });
+
+    document.getElementById('btn-open-prom')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenProm) this.onOpenProm();
+    });
+
+    document.getElementById('btn-open-rest')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenRestaurant) this.onOpenRestaurant();
     });
 
     document.getElementById('btn-radio-toggle')?.addEventListener('click', () => {
