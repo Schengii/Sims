@@ -122,6 +122,9 @@ export interface GameSaveData {
   inventionData?: any;
   decoratorData?: any;
   petBreedingData?: any;
+  farmData?: any;
+  filmStudioData?: any;
+  yachtData?: any;
   trophiesUnlocked?: string[];
   gardenPlots?: import('../world/GardenSystem').GardenPlot[];
   weather?: import('./WeatherSystem').WeatherType;

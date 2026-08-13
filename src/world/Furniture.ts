@@ -966,5 +966,93 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 35, energy: -5 }
       }
     ]
+  },
+
+  cow_pasture_barn: {
+    id: 'cow_pasture_barn',
+    name: 'Ranch Kuh-Stall',
+    category: 'appliances',
+    price: 2200,
+    width: 2,
+    height: 2,
+    color: '#854d0e',
+    accentColor: '#fef08a',
+    icon: '🐄',
+    description: 'Unterstand für Rinder & Schafe. Melke frische Bio-Milch und schere Wolle.',
+    interactions: [
+      {
+        id: 'milk_cow',
+        label: 'Kuh melken & füttern',
+        icon: '🥛',
+        duration: 6,
+        needEffects: { fun: 30, social: 20 }
+      }
+    ]
+  },
+
+  movie_camera_rig: {
+    id: 'movie_camera_rig',
+    name: 'Hollywood Kamera-Rig',
+    category: 'appliances',
+    price: 3800,
+    width: 2,
+    height: 1,
+    color: '#0f172a',
+    accentColor: '#f59e0b',
+    icon: '🎥',
+    description: 'Profi-Kamera für Hollywood-Blockbuster, Regie-Proben und Starlight-Auditions.',
+    interactions: [
+      {
+        id: 'direct_scene',
+        label: 'Filmszene regieführen',
+        icon: '🎬',
+        duration: 8,
+        needEffects: { fun: 45, energy: -10 }
+      }
+    ]
+  },
+
+  yacht_helm_wheel: {
+    id: 'yacht_helm_wheel',
+    name: 'Mega-Yacht Steuerrad',
+    category: 'entertainment',
+    price: 4500,
+    width: 1,
+    height: 1,
+    color: '#0284c7',
+    accentColor: '#bae6fd',
+    icon: '☸️',
+    description: 'Kapitäns-Steuerrad zur Navigation deiner Mega-Yacht auf hoher See.',
+    interactions: [
+      {
+        id: 'steer_yacht',
+        label: 'Yacht steuern & auslaufen',
+        icon: '⚓',
+        duration: 7,
+        needEffects: { fun: 50, social: 15 }
+      }
+    ]
+  },
+
+  tractor_workbench: {
+    id: 'tractor_workbench',
+    name: 'Traktor-Werkbank',
+    category: 'surfaces',
+    price: 1600,
+    width: 2,
+    height: 1,
+    color: '#15803d',
+    accentColor: '#86efac',
+    icon: '🚜',
+    description: 'Warte Landmaschinen und bereite Erntemaschinen für das Feld vor.',
+    interactions: [
+      {
+        id: 'repair_tractor',
+        label: 'Traktor warten',
+        icon: '🔧',
+        duration: 6,
+        needEffects: { fun: 30, energy: -10 }
+      }
+    ]
   }
 };

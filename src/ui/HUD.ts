@@ -65,6 +65,9 @@ export class HUDManager {
   public onOpenScienceLab?: () => void;
   public onOpenDecorator?: () => void;
   public onOpenPetShelter?: () => void;
+  public onOpenFarm?: () => void;
+  public onOpenDirector?: () => void;
+  public onOpenCruise?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -112,6 +115,9 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-science" title="Sci-Fi Labor & Erfinder-Werkbank" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8; font-weight: bold;">🧪 Sci-Lab</button>
             <button class="btn-hud" id="btn-open-decorator" title="Raumausstatter & Designer Gigs" style="background: rgba(217, 119, 6, 0.2); color: #fef08a; font-weight: bold;">🎨 Designer</button>
             <button class="btn-hud" id="btn-open-petshelter" title="Tierheim & Haustier-Zucht" style="background: rgba(236, 72, 153, 0.2); color: #f472b6; font-weight: bold;">🐾 Tierheim</button>
+            <button class="btn-hud" id="btn-open-farm" title="Bauernhof & Ranch-Imperium" style="background: rgba(133, 77, 14, 0.25); color: #fef08a; font-weight: bold;">🌾 Bauernhof</button>
+            <button class="btn-hud" id="btn-open-director" title="Hollywood Filmstudio & Regie" style="background: rgba(245, 158, 11, 0.25); color: #fbbf24; font-weight: bold;">🎬 Filmstudio</button>
+            <button class="btn-hud" id="btn-open-cruise" title="Mega-Yacht & Insel-Kreuzfahrt Flotte" style="background: rgba(14, 165, 233, 0.25); color: #7dd3fc; font-weight: bold;">⛵ Yachten</button>
             <button class="btn-hud" id="btn-open-realestate" title="Immobilien-Imperium & Rendite" style="background: rgba(74, 222, 128, 0.2); color: #4ade80; font-weight: bold;">🏢 Immobilien</button>
             <button class="btn-hud" id="btn-open-journal" title="Lebenschronik & Quests">📖 Chronik</button>
             <button class="btn-hud" id="btn-open-petshow" title="Pet Agility Contest & Training">🏆 Pet Show</button>
@@ -280,6 +286,21 @@ export class HUDManager {
     document.getElementById('btn-open-petshelter')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenPetShelter) this.onOpenPetShelter();
+    });
+
+    document.getElementById('btn-open-farm')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenFarm) this.onOpenFarm();
+    });
+
+    document.getElementById('btn-open-director')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenDirector) this.onOpenDirector();
+    });
+
+    document.getElementById('btn-open-cruise')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenCruise) this.onOpenCruise();
     });
 
     document.getElementById('btn-open-rent')?.addEventListener('click', () => {

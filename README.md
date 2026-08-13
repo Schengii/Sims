@@ -175,6 +175,12 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 13.0.0 (Farm & Ranch Empire, Hollywood Film Studio, and Mega-Yacht Cruise Expansion)
+- **[Feature] Bauernhof & Ranch-Imperium (`FarmSystem.ts`, `RanchModal.ts`)**: Haltung von Nutztieren (Rinder 🐄 für Milch, Schafe 🐑 für Wolle, Llamas 🦙), Feldbau & Ernte (Riesen-Kürbis 🎃, Wassermelone 🍉, Weizen 🌾) und Verkauf auf dem Erzeugermarkt.
+- **[Feature] Hollywood Filmstudio & Regie (`FilmStudioSystem.ts`, `DirectorModal.ts`)**: Regieführung von Blockbustern in 4 Genres (Action 💥, Sci-Fi 🚀, Rom-Com 💕, Horror 👻), Einspielen hoher Kinokassen-Gewinne (§) & Gewinn von Starlight Oscar Trophäen 🏆.
+- **[Feature] Mega-Yacht & Insel-Kreuzfahrt Flotte (`YachtManager.ts`, `CruiseModal.ts`)**: Kauf luxuriöser Yachten (Sunseeker Express 🚤, Royal Ocean Liner 🛳️, Imperial Sovereign Mega-Yacht ⛵), Ausbau von Helipads, VIP-Casinos & Jacuzzi-Decks sowie Kassieren täglicher Charter-Einnahmen.
+- **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Ranch Kuh-Stall (`cow_pasture_barn`), Hollywood Kamera-Rig (`movie_camera_rig`), Mega-Yacht Steuerrad (`yacht_helm_wheel`) & Traktor-Werkbank (`tractor_workbench`).
+
 ### Version 12.0.0 (Resort Empire, Sci-Fi Inventions, Interior Decorator & Pet Breeding Expansion)
 - **[Feature] Resort-Imperium & Insel-Hotels (`ResortManager.ts`, `ResortModal.ts`)**: Erwerb & Führung luxuriöser Insel-Resorts (Sunbreeze Resort, Coral Reef Hotel, Alpine Spa), Ausbau von Amenities (Pool-Bar, Spa, Feuer-Show), Zimmerpreis-Steuerung & tägliche Gewinnauszahlung (§).
 - **[Feature] Sci-Fi Labor & Erfinder-Werkbank (`InventionSystem.ts`, `ScienceLabModal.ts`)**: Tüfteln an Hightech-Erfindungen (Hoverboard Pro 🛹, Sim-Ray 🔫, Wetter-Manipulator 🌩️, Klon-Kapsel 🧬) & Brauen wirkungsvoller Chemieserume (Instant-Energie, Midas-Gold, Verjüngung).

@@ -112,6 +112,12 @@ import { InteriorDecoratorSystem } from '../systems/InteriorDecoratorSystem';
 import { DecoratorModal } from '../ui/DecoratorModal';
 import { PetBreedingSystem } from '../systems/PetBreedingSystem';
 import { PetShelterModal } from '../ui/PetShelterModal';
+import { FarmSystem } from '../systems/FarmSystem';
+import { RanchModal } from '../ui/RanchModal';
+import { FilmStudioSystem } from '../systems/FilmStudioSystem';
+import { DirectorModal } from '../ui/DirectorModal';
+import { YachtManager } from '../systems/YachtManager';
+import { CruiseModal } from '../ui/CruiseModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -213,6 +219,13 @@ export class Game {
   public decoratorModal: DecoratorModal;
   public petBreedingSystem: PetBreedingSystem;
   public petShelterModal: PetShelterModal;
+
+  public farmSystem: FarmSystem;
+  public ranchModal: RanchModal;
+  public filmStudioSystem: FilmStudioSystem;
+  public directorModal: DirectorModal;
+  public yachtManager: YachtManager;
+  public cruiseModal: CruiseModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -328,6 +341,13 @@ export class Game {
     this.decoratorModal = new DecoratorModal();
     this.petBreedingSystem = new PetBreedingSystem();
     this.petShelterModal = new PetShelterModal();
+
+    this.farmSystem = new FarmSystem();
+    this.ranchModal = new RanchModal();
+    this.filmStudioSystem = new FilmStudioSystem();
+    this.directorModal = new DirectorModal();
+    this.yachtManager = new YachtManager();
+    this.cruiseModal = new CruiseModal();
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -772,6 +792,9 @@ export class Game {
     this.hud.onOpenScienceLab = () => this.scienceLabModal.open(this.inventionSystem, this.sim, this.toastManager, this.soundManager, this.weatherSystem);
     this.hud.onOpenDecorator = () => this.decoratorModal.open(this.decoratorSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenPetShelter = () => this.petShelterModal.open(this.petBreedingSystem, this.petManager, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenFarm = () => this.ranchModal.open(this.farmSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenDirector = () => this.directorModal.open(this.filmStudioSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenCruise = () => this.cruiseModal.open(this.yachtManager, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {
@@ -895,6 +918,7 @@ export class Game {
     // 2. Weather, Garden, Calendar, Bills, Magic, Delivery, Business & Ambient Audio Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
+    this.farmSystem.updateTick();
     this.deliverySystem.update(deltaSec, this.sim, this.toastManager, this.soundManager);
     this.calendarManager.updateTime(this.timeSystem.day);
     this.billsManager.updateTime(this.timeSystem.day, this.house);
