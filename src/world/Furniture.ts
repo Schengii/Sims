@@ -877,5 +877,94 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { social: 20, fun: -10 }
       }
     ]
+  },
+
+  invention_workbench: {
+    id: 'invention_workbench',
+    name: 'Sci-Fi Erfinder-Werkbank',
+    category: 'appliances',
+    price: 1800,
+    width: 2,
+    height: 1,
+    color: '#0284c7',
+    accentColor: '#38bdf8',
+    icon: '🔬',
+    description: 'Station zur Erfindung von Sci-Fi-Gadgets und Brauen chemischer Serumpotionen.',
+    interactions: [
+      {
+        id: 'use_invention_bench',
+        label: 'Tüfteln & Erfinden',
+        icon: '⚙️',
+        duration: 6,
+        needEffects: { fun: 45, energy: -10 },
+        skillGain: { skill: 'programming', amount: 15 }
+      }
+    ]
+  },
+
+  pet_nursery_bed: {
+    id: 'pet_nursery_bed',
+    name: 'Welpen & Kätzchen Nest',
+    category: 'comfort',
+    price: 450,
+    width: 1,
+    height: 1,
+    color: '#f472b6',
+    accentColor: '#fbcfe8',
+    icon: '🐾',
+    description: 'Ein kuscheliges Körbchen für neugeborene Tierbabys und Zuchtnachwuchs.',
+    interactions: [
+      {
+        id: 'cuddle_nursery_pet',
+        label: 'Tierbaby knuddeln',
+        icon: '💖',
+        duration: 4,
+        needEffects: { fun: 50, social: 30 }
+      }
+    ]
+  },
+
+  resort_reception: {
+    id: 'resort_reception',
+    name: 'Resort Empfangs-Tresen',
+    category: 'surfaces',
+    price: 2400,
+    width: 2,
+    height: 1,
+    color: '#0d9488',
+    accentColor: '#2dd4bf',
+    icon: '🏨',
+    description: 'Eleganter Rezeptionstresen zur Verwaltung deines Insel-Hotels und Gäste-Checkins.',
+    interactions: [
+      {
+        id: 'checkin_resort_guests',
+        label: 'Gäste einchecken',
+        icon: '📋',
+        duration: 5,
+        needEffects: { social: 25, fun: 20 }
+      }
+    ]
+  },
+
+  decorator_drafting_table: {
+    id: 'decorator_drafting_table',
+    name: 'Architekten Zeichentisch',
+    category: 'surfaces',
+    price: 1100,
+    width: 2,
+    height: 1,
+    color: '#d97706',
+    accentColor: '#fef08a',
+    icon: '📐',
+    description: 'Entwirf Grundrisse und erstelle Kunden-Präsentationen für deinen Raumausstatter-Auftrag.',
+    interactions: [
+      {
+        id: 'draft_blueprint',
+        label: 'Entwurf zeichnen',
+        icon: '✏️',
+        duration: 7,
+        needEffects: { fun: 35, energy: -5 }
+      }
+    ]
   }
 };

@@ -118,6 +118,10 @@ export interface GameSaveData {
   rentersData?: {
     tenants: import('./RentersSystem').Tenant[];
   };
+  resortData?: any;
+  inventionData?: any;
+  decoratorData?: any;
+  petBreedingData?: any;
   trophiesUnlocked?: string[];
   gardenPlots?: import('../world/GardenSystem').GardenPlot[];
   weather?: import('./WeatherSystem').WeatherType;

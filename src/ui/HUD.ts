@@ -61,6 +61,10 @@ export class HUDManager {
   public onOpenOccult?: () => void;
   public onOpenProm?: () => void;
   public onOpenRestaurant?: () => void;
+  public onOpenResort?: () => void;
+  public onOpenScienceLab?: () => void;
+  public onOpenDecorator?: () => void;
+  public onOpenPetShelter?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -104,6 +108,10 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-occult" title="Okkulte Verwandlungen">🔮 Okkult</button>
             <button class="btn-hud" id="btn-open-prom" title="Highschool Abschlussball">👑 Prom</button>
             <button class="btn-hud" id="btn-open-rest" title="Gourmet-Restaurant Manager">🍽️ Restaurant</button>
+            <button class="btn-hud" id="btn-open-resort" title="Resort-Imperium & Insel-Hotels" style="background: rgba(16, 185, 129, 0.2); color: #34d399; font-weight: bold;">🏝️ Resort</button>
+            <button class="btn-hud" id="btn-open-science" title="Sci-Fi Labor & Erfinder-Werkbank" style="background: rgba(2, 132, 199, 0.2); color: #38bdf8; font-weight: bold;">🧪 Sci-Lab</button>
+            <button class="btn-hud" id="btn-open-decorator" title="Raumausstatter & Designer Gigs" style="background: rgba(217, 119, 6, 0.2); color: #fef08a; font-weight: bold;">🎨 Designer</button>
+            <button class="btn-hud" id="btn-open-petshelter" title="Tierheim & Haustier-Zucht" style="background: rgba(236, 72, 153, 0.2); color: #f472b6; font-weight: bold;">🐾 Tierheim</button>
             <button class="btn-hud" id="btn-open-realestate" title="Immobilien-Imperium & Rendite" style="background: rgba(74, 222, 128, 0.2); color: #4ade80; font-weight: bold;">🏢 Immobilien</button>
             <button class="btn-hud" id="btn-open-journal" title="Lebenschronik & Quests">📖 Chronik</button>
             <button class="btn-hud" id="btn-open-petshow" title="Pet Agility Contest & Training">🏆 Pet Show</button>
@@ -252,6 +260,26 @@ export class HUDManager {
     document.getElementById('btn-open-edu')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenEducation) this.onOpenEducation();
+    });
+
+    document.getElementById('btn-open-resort')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenResort) this.onOpenResort();
+    });
+
+    document.getElementById('btn-open-science')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenScienceLab) this.onOpenScienceLab();
+    });
+
+    document.getElementById('btn-open-decorator')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenDecorator) this.onOpenDecorator();
+    });
+
+    document.getElementById('btn-open-petshelter')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenPetShelter) this.onOpenPetShelter();
     });
 
     document.getElementById('btn-open-rent')?.addEventListener('click', () => {

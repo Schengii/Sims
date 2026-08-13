@@ -104,6 +104,14 @@ import { HighSchoolSystem } from '../systems/HighSchoolSystem';
 import { PromModal } from '../ui/PromModal';
 import { RestaurantSystem } from '../systems/RestaurantSystem';
 import { RestaurantModal } from '../ui/RestaurantModal';
+import { ResortManager } from '../systems/ResortManager';
+import { ResortModal } from '../ui/ResortModal';
+import { InventionSystem } from '../systems/InventionSystem';
+import { ScienceLabModal } from '../ui/ScienceLabModal';
+import { InteriorDecoratorSystem } from '../systems/InteriorDecoratorSystem';
+import { DecoratorModal } from '../ui/DecoratorModal';
+import { PetBreedingSystem } from '../systems/PetBreedingSystem';
+import { PetShelterModal } from '../ui/PetShelterModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -196,6 +204,15 @@ export class Game {
   public promModal: PromModal;
   public restaurantSystem: RestaurantSystem;
   public restaurantModal: RestaurantModal;
+
+  public resortManager: ResortManager;
+  public resortModal: ResortModal;
+  public inventionSystem: InventionSystem;
+  public scienceLabModal: ScienceLabModal;
+  public decoratorSystem: InteriorDecoratorSystem;
+  public decoratorModal: DecoratorModal;
+  public petBreedingSystem: PetBreedingSystem;
+  public petShelterModal: PetShelterModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private lastTime: number = 0;
@@ -302,6 +319,15 @@ export class Game {
     this.promModal = new PromModal();
     this.restaurantSystem = new RestaurantSystem();
     this.restaurantModal = new RestaurantModal();
+
+    this.resortManager = new ResortManager();
+    this.resortModal = new ResortModal();
+    this.inventionSystem = new InventionSystem();
+    this.scienceLabModal = new ScienceLabModal();
+    this.decoratorSystem = new InteriorDecoratorSystem();
+    this.decoratorModal = new DecoratorModal();
+    this.petBreedingSystem = new PetBreedingSystem();
+    this.petShelterModal = new PetShelterModal();
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -742,6 +768,10 @@ export class Game {
     this.hud.onOpenWedding = () => this.weddingModal.open(this.sim, this.weddingManager);
     this.hud.onOpenHobby = () => this.hobbyModal.open(this.sim, this.hobbyManager);
     this.hud.onOpenEvent = () => this.eventModal.open(this.sim, this.eventManager);
+    this.hud.onOpenResort = () => this.resortModal.open(this.resortManager, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenScienceLab = () => this.scienceLabModal.open(this.inventionSystem, this.sim, this.toastManager, this.soundManager, this.weatherSystem);
+    this.hud.onOpenDecorator = () => this.decoratorModal.open(this.decoratorSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenPetShelter = () => this.petShelterModal.open(this.petBreedingSystem, this.petManager, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {
@@ -903,6 +933,15 @@ export class Game {
     this.petManager.pets.forEach(pet => {
       PetAutonomy.update(pet, this.house, deltaSec);
     });
+
+    if (Math.random() < 0.001) {
+      const birthRes = this.petBreedingSystem.updateGestationTick();
+      if (birthRes.birthed && birthRes.puppyName) {
+        this.soundManager.playLevelUp();
+        this.petManager.addPet(birthRes.puppyName, birthRes.species?.includes('Hund') ? 'dog' : 'cat', '#f472b6');
+        this.toastManager.showToast('🐾 GEBURT IM HAUS!', `Ein neues Tierbaby (${birthRes.puppyName} - ${birthRes.species}) wurde geboren!`, '🍼', 'levelUp');
+      }
+    }
 
     // 5. Party & NPC Updates
     const partyResult = this.partyManager.update(timeResult.deltaMinutes);

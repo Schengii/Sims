@@ -175,6 +175,13 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 12.0.0 (Resort Empire, Sci-Fi Inventions, Interior Decorator & Pet Breeding Expansion)
+- **[Feature] Resort-Imperium & Insel-Hotels (`ResortManager.ts`, `ResortModal.ts`)**: Erwerb & Führung luxuriöser Insel-Resorts (Sunbreeze Resort, Coral Reef Hotel, Alpine Spa), Ausbau von Amenities (Pool-Bar, Spa, Feuer-Show), Zimmerpreis-Steuerung & tägliche Gewinnauszahlung (§).
+- **[Feature] Sci-Fi Labor & Erfinder-Werkbank (`InventionSystem.ts`, `ScienceLabModal.ts`)**: Tüfteln an Hightech-Erfindungen (Hoverboard Pro 🛹, Sim-Ray 🔫, Wetter-Manipulator 🌩️, Klon-Kapsel 🧬) & Brauen wirkungsvoller Chemieserume (Instant-Energie, Midas-Gold, Verjüngung).
+- **[Feature] Raumausstatter & Designer-Karriere (`InteriorDecoratorSystem.ts`, `DecoratorModal.ts`)**: Raumausstatter-Aufträge für NPC-Nachbarn annehmen, Kundenwünsche (Stil, Farbe, Budget) berücksichtigen, Umgestaltungen präsentieren & Star-Bewertungen erhalten.
+- **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
+- **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
+
 ### Version 11.0.0 (Fame, Occult & Restaurant Empire Expansion)
 - **[Feature] Ruhm & Promi-Status (`FameSystem.ts`, `FameModal.ts`)**: Star-Reputation (1-5 Sterne ⭐️), Fame XP, Autogrammstunden für Fans & Paparazzi-Fotoshootings.
 - **[Feature] Okkulte Lebensformen & Zauberkraft (`OccultSystem.ts`, `OccultModal.ts`)**: Verwandlung in Vampir 🦇, Werwolf 🐺 oder Alien 👽 mit Dunkler Form & okkulten Buffs.
