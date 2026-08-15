@@ -78,6 +78,8 @@ export class HUDManager {
   public onOpenSpace?: () => void;
   public onOpenBand?: () => void;
   public onOpenInheritance?: () => void;
+  public onOpenTravel?: () => void;
+  public onOpenDetective?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -146,7 +148,8 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-magic" title="Zauberbuch & Alchemie">🪄 Magie</button>
             <button class="btn-hud" id="btn-open-veh" title="Garage & Fuhrpark">🚗 Garage</button>
             <button class="btn-hud" id="btn-open-biz" title="Eigenes Gewerbe & Laden">🏪 Gewerbe</button>
-            <button class="btn-hud" id="btn-open-cam" title="Kamera & Fotoalbum">📸 Kamera</button>
+            <button class="btn-hud" id="btn-open-travel" title="Flughafen & Traumurlaube" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; font-weight: bold;">✈️ Urlaub</button>
+            <button class="btn-hud" id="btn-open-detective" title="Polizeirevier & Detektiv-Fälle" style="background: rgba(52, 73, 94, 0.35); color: #93c5fd; font-weight: bold;">🕵️ Detektiv</button>
             <button class="btn-hud" id="btn-open-park" title="Sim-Wunderland Freizeitpark" style="background: rgba(243, 156, 18, 0.25); color: #f1c40f; font-weight: bold;">🎡 Freizeitpark</button>
             <button class="btn-hud" id="btn-open-space" title="Weltraum-Labor & Raketenstartrampe" style="background: rgba(142, 68, 173, 0.25); color: #9b59b6; font-weight: bold;">🚀 Weltraum</button>
             <button class="btn-hud" id="btn-open-band" title="Rockband & Live-Konzerte" style="background: rgba(231, 76, 60, 0.25); color: #e74c3c; font-weight: bold;">🎸 Band</button>
@@ -363,6 +366,16 @@ export class HUDManager {
     document.getElementById('btn-open-inher')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenInheritance) this.onOpenInheritance();
+    });
+
+    document.getElementById('btn-open-travel')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenTravel) this.onOpenTravel();
+    });
+
+    document.getElementById('btn-open-detective')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenDetective) this.onOpenDetective();
     });
 
     document.getElementById('btn-open-cruise')?.addEventListener('click', () => {

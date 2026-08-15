@@ -41,6 +41,7 @@ export class BuildBuyCatalog {
             <button class="btn-hud tool-mode-btn" id="btn-tool-move" style="font-size: 0.85rem;">🚚 Möbel verschieben</button>
             <button class="btn-hud tool-mode-btn" id="btn-tool-sell" style="font-size: 0.85rem;">💰 Möbel verkaufen</button>
             <button class="btn-hud tool-mode-btn" id="btn-tool-garden" style="font-size: 0.85rem;">🌱 Gartenbeet (§ 100)</button>
+            <button class="btn-hud tool-mode-btn" id="btn-tool-sprinkler" style="font-size: 0.85rem; background: #3498db; color: #fff;">💧 Rasensprenger (§ 450)</button>
           </div>
 
           <!-- Tab Navigation Bar -->
@@ -113,6 +114,17 @@ export class BuildBuyCatalog {
       this.activeToolMode = 'garden';
       this.soundManager.playUIClick();
       alert('🌱 Gartenbeet-Werkzeug aktiviert! Klicke auf ein Rasen-Feld draußen, um ein Pflanzbeet (§ 100) anzulegen.');
+      this.close();
+    });
+
+    document.getElementById('btn-tool-sprinkler')?.addEventListener('click', () => {
+      if (sim.simoleons >= 450) {
+        sim.simoleons -= 450;
+        this.soundManager.playBuySound();
+        alert('💧 Smarte Bewässerung aktiviert! Automatische Rasensprenger wurden im gesamten Garten installiert.');
+      } else {
+        alert('Nicht genügend Simoleons (§ 450 benötigt)!');
+      }
       this.close();
     });
 

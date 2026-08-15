@@ -188,6 +188,12 @@ Sims/
 - **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
 - **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
 
+### Version 16.0.0 (World Vacations, Magic Familiars, Detective Career & Smart Garden Expansion)
+- **[Feature] Weltreisen, Flughafen & Traumurlaube (`TravelManager.ts`, `TravelModal.ts`)**: Flugbuchungen zu weltberühmten Ferienzielen (Sulani Tropeninsel 🏝️, Mt. Komorebi Ski & Onsen 🏔️, Oasis Springs 🏜️), 100% Bedürfnis-Revitalisierung, Souvenirs & Tiefenentspannungs-Moodlet.
+- **[Feature] Magische Zauber-Vertraute (`FamiliarManager.ts`, `MagicModal.ts`)**: Beschwörung magischer Schutzgeister & Begleiter (Schnee-Eule 🦉, Glühender Phönix 🐦‍🔥, Sternen-Katze 🐱, Mini-Glutdrache 🐉) für permanente passive Mana-Regeneration.
+- **[Feature] Detektiv-Karriere & Kriminalfälle (`DetectiveManager.ts`, `DetectiveModal.ts`)**: Tatorte untersuchen 🔍, Fingerabdrücke sichern, Beweise sammeln, Verdächtige verhaften & Fangprämien (§ 1.200+) kassieren.
+- **[Feature] Smarte Rasensprenger & Garten-Automatisierung (`SmartGardenSystem.ts`, `BuildBuyCatalog.ts`)**: Automatische Bewässerungsanlage für den Garten (§ 450), die vertrocknete Beete automatisch auf 100% Feuchtigkeit hält.
+
 ### Version 15.0.0 (Theme Park, Space Exploration, Rockstar Band & Inheritance Expansion)
 - **[Feature] Freizeitpark & Jahrmarkt (`ThemeParkManager.ts`, `ThemeParkModal.ts`)**: Besuch spektakulärer Fahrgeschäfte (Riesenrad 🎡, Looping-Achterbahn 🎢, Autoscooter 🏎️, Geisterbahn 👻, Zuckerwatte-Stand 🍭) mit Adrenalin-Moodlets & Spaß-Boosts.
 - **[Feature] Weltraum-Erkundung & Raketenbau (`SpaceManager.ts`, `SpaceModal.ts`)**: Raketenstufen schrittweise montieren (0-100%), Weltraummissionen starten (Erd-Orbit 🛰️, Mond-Landung 🌕, Alien-Tiefenraum 👽) & kosmische Artefakte sammeln.

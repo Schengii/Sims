@@ -5,6 +5,7 @@
 
 import { SoundManager } from '../audio/SoundManager';
 import { SPELLS_CATALOG, POTIONS_CATALOG, type MagicManager } from '../systems/MagicSystem';
+import { FAMILIARS_CATALOG } from '../systems/FamiliarManager';
 import type { ToastManager } from './ToastManager';
 
 export class MagicModal {
@@ -69,7 +70,7 @@ export class MagicModal {
         </div>
 
         <h4 style="margin: 0 0 8px 0; color: #e84393;">⚗️ Alchemie-Kessel: Zaubertränke brauen</h4>
-        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 150px; overflow-y: auto;">
+        <div style="display: flex; flex-direction: column; gap: 8px; max-height: 120px; overflow-y: auto; margin-bottom: 14px;">
           ${Object.values(POTIONS_CATALOG).map(pot => {
             const canBrew = magicManager.manaPoints >= pot.manaCost;
             return `
@@ -84,6 +85,22 @@ export class MagicModal {
 
                 <button class="hud-btn btn-brew-potion" data-id="${pot.id}" ${canBrew ? '' : 'disabled'} style="padding: 4px 10px; font-size: 11px; background: ${canBrew ? '#e84393' : '#7f8c8d'}; font-weight: bold;">
                   ⚗️ Brauen (${pot.manaCost} Mana)
+                </button>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <h4 style="margin: 0 0 8px 0; color: #2ecc71;">🦉 Magische Haustiere & Zauber-Vertraute:</h4>
+        <div style="display: flex; gap: 8px; overflow-x: auto; padding-bottom: 4px;">
+          ${FAMILIARS_CATALOG.map(fam => {
+            const isCurrent = game.familiarManager?.activeFamiliar?.id === fam.id;
+            return `
+              <div class="glass-panel" style="padding: 8px 12px; min-width: 140px; text-align: center; border-color: ${isCurrent ? '#2ecc71' : 'rgba(255,255,255,0.1)'};">
+                <div style="font-size: 24px;">${fam.icon}</div>
+                <div style="font-size: 11px; font-weight: bold; color: #ffffff; margin-top: 2px;">${fam.name}</div>
+                <button class="hud-btn btn-summon-familiar" data-id="${fam.id}" style="margin-top: 6px; width: 100%; font-size: 10px; justify-content: center; background: ${isCurrent ? '#27ae60' : '#34495e'};">
+                  ${isCurrent ? '✅ Aktiv' : 'Beschwören'}
                 </button>
               </div>
             `;
@@ -114,6 +131,18 @@ export class MagicModal {
           } else {
             toastManager?.showToast('Kessel-Magie fehlgeschlagen', res.message, '⚠️', 'warning');
           }
+        }
+      });
+    });
+
+    modal.querySelectorAll('.btn-summon-familiar').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const famId = (e.currentTarget as HTMLElement).getAttribute('data-id');
+        if (famId && game.familiarManager) {
+          const res = game.familiarManager.summonFamiliar(famId, game.sim);
+          this.soundManager.playLevelUp();
+          toastManager?.showToast('🔮 Zauber-Vertrauter', res.message, '✨', 'levelUp');
+          this.open(magicManager, game, toastManager);
         }
       });
     });

@@ -138,6 +138,12 @@ import { BandManager } from '../systems/BandManager';
 import { BandModal } from '../ui/BandModal';
 import { InheritanceManager } from '../systems/InheritanceManager';
 import { InheritanceModal } from '../ui/InheritanceModal';
+import { TravelManager } from '../systems/TravelManager';
+import { TravelModal } from '../ui/TravelModal';
+import { FamiliarManager } from '../systems/FamiliarManager';
+import { DetectiveManager } from '../systems/DetectiveManager';
+import { DetectiveModal } from '../ui/DetectiveModal';
+import { SmartGardenSystem } from '../systems/SmartGardenSystem';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -265,6 +271,12 @@ export class Game {
   public bandModal: BandModal;
   public inheritanceManager: InheritanceManager;
   public inheritanceModal: InheritanceModal;
+  public travelManager: TravelManager;
+  public travelModal: TravelModal;
+  public familiarManager: FamiliarManager;
+  public detectiveManager: DetectiveManager;
+  public detectiveModal: DetectiveModal;
+  public smartGarden: SmartGardenSystem;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -407,6 +419,12 @@ export class Game {
     this.bandModal = new BandModal(uiContainer, this.soundManager);
     this.inheritanceManager = new InheritanceManager();
     this.inheritanceModal = new InheritanceModal(uiContainer, this.soundManager);
+    this.travelManager = new TravelManager();
+    this.travelModal = new TravelModal(uiContainer, this.soundManager);
+    this.familiarManager = new FamiliarManager();
+    this.detectiveManager = new DetectiveManager();
+    this.detectiveModal = new DetectiveModal(uiContainer, this.soundManager);
+    this.smartGarden = new SmartGardenSystem();
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -912,6 +930,8 @@ export class Game {
     this.hud.onOpenSpace = () => this.spaceModal.open(this.spaceManager, this.sim, this.toastManager);
     this.hud.onOpenBand = () => this.bandModal.open(this.bandManager, this.sim, this.toastManager);
     this.hud.onOpenInheritance = () => this.inheritanceModal.open(this.inheritanceManager, this.sim, this.toastManager);
+    this.hud.onOpenTravel = () => this.travelModal.open(this.travelManager, this.sim, this.toastManager);
+    this.hud.onOpenDetective = () => this.detectiveModal.open(this.detectiveManager, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {
@@ -1035,6 +1055,7 @@ export class Game {
     // 2. Weather, Garden, Calendar, Bills, Magic, Delivery, Business & Ambient Audio Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
+    this.smartGarden.updateSprinklers(this.gardenSystem);
     this.healthSystem.update(timeResult.deltaMinutes, this.sim, this.weatherSystem.currentWeather);
     this.farmSystem.updateTick();
     this.deliverySystem.update(deltaSec, this.sim, this.toastManager, this.soundManager);
