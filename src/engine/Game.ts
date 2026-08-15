@@ -130,6 +130,14 @@ import { ArchaeologySystem } from '../systems/ArchaeologySystem';
 import { ArchaeologyModal } from '../ui/ArchaeologyModal';
 import { SchoolSystem } from '../systems/SchoolSystem';
 import { SchoolModal } from '../ui/SchoolModal';
+import { ThemeParkManager } from '../systems/ThemeParkManager';
+import { ThemeParkModal } from '../ui/ThemeParkModal';
+import { SpaceManager } from '../systems/SpaceManager';
+import { SpaceModal } from '../ui/SpaceModal';
+import { BandManager } from '../systems/BandManager';
+import { BandModal } from '../ui/BandModal';
+import { InheritanceManager } from '../systems/InheritanceManager';
+import { InheritanceModal } from '../ui/InheritanceModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -249,6 +257,14 @@ export class Game {
   public archaeologyModal: ArchaeologyModal;
   public schoolSystem: SchoolSystem;
   public schoolModal: SchoolModal;
+  public themeParkManager: ThemeParkManager;
+  public themeParkModal: ThemeParkModal;
+  public spaceManager: SpaceManager;
+  public spaceModal: SpaceModal;
+  public bandManager: BandManager;
+  public bandModal: BandModal;
+  public inheritanceManager: InheritanceManager;
+  public inheritanceModal: InheritanceModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -383,6 +399,14 @@ export class Game {
     this.archaeologyModal = new ArchaeologyModal(uiContainer, this.soundManager);
     this.schoolSystem = new SchoolSystem();
     this.schoolModal = new SchoolModal(uiContainer, this.soundManager);
+    this.themeParkManager = new ThemeParkManager();
+    this.themeParkModal = new ThemeParkModal(uiContainer, this.soundManager);
+    this.spaceManager = new SpaceManager();
+    this.spaceModal = new SpaceModal(uiContainer, this.soundManager);
+    this.bandManager = new BandManager();
+    this.bandModal = new BandModal(uiContainer, this.soundManager);
+    this.inheritanceManager = new InheritanceManager();
+    this.inheritanceModal = new InheritanceModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -884,6 +908,10 @@ export class Game {
     this.hud.onOpenPolitics = () => this.politicsModal.open(this.politicsManager, this.sim, this.toastManager);
     this.hud.onOpenArch = () => this.archaeologyModal.open(this.archaeologySystem, this.sim, this.toastManager);
     this.hud.onOpenSchool = () => this.schoolModal.open(this.schoolSystem, this.sim, this.toastManager);
+    this.hud.onOpenThemePark = () => this.themeParkModal.open(this.themeParkManager, this.sim, this.toastManager);
+    this.hud.onOpenSpace = () => this.spaceModal.open(this.spaceManager, this.sim, this.toastManager);
+    this.hud.onOpenBand = () => this.bandModal.open(this.bandManager, this.sim, this.toastManager);
+    this.hud.onOpenInheritance = () => this.inheritanceModal.open(this.inheritanceManager, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {

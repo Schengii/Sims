@@ -1,0 +1,98 @@
+/**
+ * Theme Park UI Modal
+ * Displays list of funfair attractions, ticket purchases, and fun boosts.
+ */
+
+import { ThemeParkManager, ATTRACTIONS_CATALOG } from '../systems/ThemeParkManager';
+import type { Sim } from '../entity/Sim';
+import { SoundManager } from '../audio/SoundManager';
+import type { ToastManager } from './ToastManager';
+
+export class ThemeParkModal {
+  private container: HTMLElement;
+  private modalElement: HTMLElement | null = null;
+  private soundManager: SoundManager;
+
+  constructor(container: HTMLElement, soundManager: SoundManager) {
+    this.container = container;
+    this.soundManager = soundManager;
+  }
+
+  public open(parkManager: ThemeParkManager, sim: Sim, toastManager?: ToastManager): void {
+    this.close();
+
+    const modal = document.createElement('div');
+    modal.className = 'modal-backdrop';
+    modal.id = 'theme-park-modal';
+
+    modal.innerHTML = `
+      <div class="modal-card glassmorphism-card" style="max-width: 640px; width: 90%;">
+        <div class="modal-header">
+          <h2>🎡 Sim-Wunderland Freizeitpark</h2>
+          <button class="close-btn" id="close-park-modal">&times;</button>
+        </div>
+
+        <p style="color: #bdc3c7; font-size: 13px; margin-top: -6px;">
+          Besuche atemberaubende Fahrgeschäfte, rasante Achterbahnen und nasche süße Zuckerwatte!
+        </p>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; max-height: 350px; overflow-y: auto;">
+          ${ATTRACTIONS_CATALOG.map(ride => {
+            const canAfford = sim.simoleons >= ride.ticketPrice;
+            return `
+              <div style="display: flex; align-items: center; justify-content: space-between; background: rgba(255,255,255,0.06); padding: 12px; border-radius: 10px; border-left: 4px solid #f1c40f;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                  <span style="font-size: 30px;">${ride.icon}</span>
+                  <div>
+                    <h4 style="margin: 0; color: #ffffff;">${ride.name}</h4>
+                    <div style="font-size: 11px; color: #bdc3c7; margin-top: 2px;">${ride.description}</div>
+                  </div>
+                </div>
+
+                <div style="display: flex; align-items: center; gap: 10px;">
+                  <span style="color: #2ecc71; font-weight: bold; font-size: 13px;">§ ${ride.ticketPrice}</span>
+                  <button class="hud-btn btn-ride-attraction" data-id="${ride.id}" ${canAfford ? '' : 'disabled'} style="padding: 6px 12px; font-size: 11px; background: ${canAfford ? '#f39c12' : '#7f8c8d'}; color: #000; font-weight: bold;">
+                    🎟️ Fahren (+${ride.funGain} Spaß)
+                  </button>
+                </div>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <div style="margin-top: 18px; text-align: right;">
+          <button class="hud-btn" id="close-park-bottom">Schließen</button>
+        </div>
+      </div>
+    `;
+
+    this.container.appendChild(modal);
+    this.modalElement = modal;
+
+    modal.querySelector('#close-park-modal')?.addEventListener('click', () => this.close());
+    modal.querySelector('#close-park-bottom')?.addEventListener('click', () => this.close());
+
+    modal.querySelectorAll('.btn-ride-attraction').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const id = (e.currentTarget as HTMLElement).getAttribute('data-id');
+        if (id) {
+          const res = parkManager.rideAttraction(id, sim);
+          if (res.success) {
+            this.soundManager.playLevelUp();
+            toastManager?.showToast('🎡 Freizeitpark', res.message, '🎉', 'levelUp');
+            this.open(parkManager, sim, toastManager);
+          } else {
+            toastManager?.showToast('Freizeitpark', res.message, '⚠️', 'warning');
+          }
+        }
+      });
+    });
+  }
+
+  public close(): void {
+    if (this.modalElement) {
+      this.modalElement.remove();
+      this.modalElement = null;
+    }
+  }
+}

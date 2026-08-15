@@ -188,6 +188,12 @@ Sims/
 - **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
 - **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
 
+### Version 15.0.0 (Theme Park, Space Exploration, Rockstar Band & Inheritance Expansion)
+- **[Feature] Freizeitpark & Jahrmarkt (`ThemeParkManager.ts`, `ThemeParkModal.ts`)**: Besuch spektakulärer Fahrgeschäfte (Riesenrad 🎡, Looping-Achterbahn 🎢, Autoscooter 🏎️, Geisterbahn 👻, Zuckerwatte-Stand 🍭) mit Adrenalin-Moodlets & Spaß-Boosts.
+- **[Feature] Weltraum-Erkundung & Raketenbau (`SpaceManager.ts`, `SpaceModal.ts`)**: Raketenstufen schrittweise montieren (0-100%), Weltraummissionen starten (Erd-Orbit 🛰️, Mond-Landung 🌕, Alien-Tiefenraum 👽) & kosmische Artefakte sammeln.
+- **[Feature] Band-Gründung & Live-Konzerte (`BandManager.ts`, `BandModal.ts`)**: Bandmitglieder verwalten (Gitarre, Drums, Bass, Gesang), Proben abhalten, Fanbase aufbauen, ausverkaufte Gigs spielen & Chart-Alben veröffentlichen (💿).
+- **[Feature] Generationen-Erbe & Testament (`InheritanceManager.ts`, `InheritanceModal.ts`)**: Notariell beglaubigtes Testament für Haupterben aufsetzen, Familienmotto festlegen, Prestige steigern & Generationen-Auszahlungen (§ 5.000+) erhalten.
+
 ### Version 14.0.0 (City Politics, Archaeology, Potion Cauldron & School Expansion)
 - **[Feature] Bürgermeister-Wahl & Rathaus-Verordnungen (`PoliticsManager.ts`, `PoliticsModal.ts`)**: Kandidatur für das Bürgermeisteramt (5 politische Ränge), Halten mitreißender Wahlkampfreden (📢), Steigerung der Wählerzustimmung & Erlass von Stadtverordnungen (Öko-Förderung 🌱, Nachtruhe 🌙, Kunst-Förderung 🎨, Steuersenkung 🪙).
 - **[Feature] Archäologie & Relikte-Ausgrabung (`ArchaeologySystem.ts`, `ArchaeologyModal.ts`)**: Graben im Erdreich nach antiken Fossilien, Tonamphoren, Kristallschädeln und der legendären Goldenen Lama-Statue (🦙, § 1.800).

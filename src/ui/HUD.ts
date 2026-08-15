@@ -74,6 +74,10 @@ export class HUDManager {
   public onOpenPolitics?: () => void;
   public onOpenArch?: () => void;
   public onOpenSchool?: () => void;
+  public onOpenThemePark?: () => void;
+  public onOpenSpace?: () => void;
+  public onOpenBand?: () => void;
+  public onOpenInheritance?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -143,7 +147,10 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-veh" title="Garage & Fuhrpark">🚗 Garage</button>
             <button class="btn-hud" id="btn-open-biz" title="Eigenes Gewerbe & Laden">🏪 Gewerbe</button>
             <button class="btn-hud" id="btn-open-cam" title="Kamera & Fotoalbum">📸 Kamera</button>
-            <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
+            <button class="btn-hud" id="btn-open-park" title="Sim-Wunderland Freizeitpark" style="background: rgba(243, 156, 18, 0.25); color: #f1c40f; font-weight: bold;">🎡 Freizeitpark</button>
+            <button class="btn-hud" id="btn-open-space" title="Weltraum-Labor & Raketenstartrampe" style="background: rgba(142, 68, 173, 0.25); color: #9b59b6; font-weight: bold;">🚀 Weltraum</button>
+            <button class="btn-hud" id="btn-open-band" title="Rockband & Live-Konzerte" style="background: rgba(231, 76, 60, 0.25); color: #e74c3c; font-weight: bold;">🎸 Band</button>
+            <button class="btn-hud" id="btn-open-inher" title="Generationen-Erbe & Testament" style="background: rgba(241, 196, 15, 0.25); color: #f39c12; font-weight: bold;">📜 Erbschaft</button>
             <button class="btn-hud" id="btn-open-politics" title="Rathaus & Bürgermeister-Wahl" style="background: rgba(41, 128, 185, 0.25); color: #3498db; font-weight: bold;">🏛️ Rathaus</button>
             <button class="btn-hud" id="btn-open-arch" title="Archäologie & Antike Relikte" style="background: rgba(211, 84, 0, 0.25); color: #e67e22; font-weight: bold;">🏺 Archäologie</button>
             <button class="btn-hud" id="btn-open-school" title="Schule & Hausaufgaben" style="background: rgba(52, 152, 219, 0.25); color: #74b9ff; font-weight: bold;">🏫 Schule</button>
@@ -336,6 +343,26 @@ export class HUDManager {
     document.getElementById('btn-open-school')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenSchool) this.onOpenSchool();
+    });
+
+    document.getElementById('btn-open-park')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenThemePark) this.onOpenThemePark();
+    });
+
+    document.getElementById('btn-open-space')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenSpace) this.onOpenSpace();
+    });
+
+    document.getElementById('btn-open-band')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenBand) this.onOpenBand();
+    });
+
+    document.getElementById('btn-open-inher')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenInheritance) this.onOpenInheritance();
     });
 
     document.getElementById('btn-open-cruise')?.addEventListener('click', () => {
