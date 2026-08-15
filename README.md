@@ -188,6 +188,11 @@ Sims/
 - **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
 - **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
 
+### Version 13.0.0 (Seasons Festivals, Veterinary Clinic, Roof Architecture & Disco Lighting Expansion)
+- **[Feature] Saisonale Feste & Marktstände (`FestivalManager.ts`, `FestivalModal.ts`)**: 4 saisonale Feste (🌸 Frühlingsblüten-Fest mit Ostereiersuche, ☀️ Sommer-Beachparty mit Wasserballon-Schlachten, 🎃 Herbst-Kürbisfest mit Kürbisschnitzen, ❄️ Winter-Wunderland mit Schneemannbauen & Eislaufen) samt exklusiven Belohnungen & Moodlets.
+- **[Feature] Tierklinik & Haustier-Gesundheit (`VetClinicManager.ts`, `VetClinicModal.ts`)**: Diagnose & Heilung von Haustier-Leiden (Flöhe 🪲, Schnupfennase 🤧, Haarballen 🐱, Pfotenverletzung 🐾), Durchführung von Anti-Floh-Spezialbädern & Tierarzt-Behandlungen.
+- **[Feature] Dächer, Fassaden-Design & Party-Disco-Shader (`House.ts`, `BuildBuyCatalog.ts`, `IsometricRenderer.ts`)**: Konfigurierbare Dach-Formen (Giebeldach, Walmdach, Flachdach) mit 3D-Dachfirst-Rendering, Außenfassaden-Muster (§ 300) und dynamische RGB-Discolicht-Shader bei eingeschalteter HiFi-Anlage.
+
 ### Version 12.0.0 (Live Community Lots, Health & Wellness, Emergency Responders & Medical System)
 - **[Feature] Aktive Gemeinschaftsgrundstücke (`WorldMap.ts`, `WorldMapModal.ts`)**: Nahtloses Reisen auf voll bespielbare Live-Venues (Fit & Flex Gym 🏋️, La Bella Sim Restaurant 🍽️, Club Velvet Lounge 🍸, Plumbob Park 🌳, Café Simlish ☕) mit spawnden Nachbarn & spezifischen Interaktions-Objekten.
 - **[Feature] Gesundheit, Krankheiten & Wellness (`HealthSystem.ts`, `HealthModal.ts`)**: 4 Krankheiten (Erkältung 🤧, Grippe 🤒, Stress-Burnout 🤯, Pollen-Allergie 🌸) mit Symptomen, Bio-Kräutertee brauen 🍵 und Arzt-Hausbesuchen 🚑.

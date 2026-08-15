@@ -59,7 +59,8 @@ export class IsometricRenderer {
     gardenSystem?: GardenSystem,
     householdSims?: Sim[],
     petManager?: PetManager,
-    eventManager?: EventManager
+    eventManager?: EventManager,
+    radioManager?: any
   ): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -152,12 +153,21 @@ export class IsometricRenderer {
 
     ctx.restore();
 
-    // 7. Lighting Overlay, Weather Effects & Sunbeams
+    // 7. Lighting Overlay, Weather Effects, Disco Lights & Sunbeams
     this.renderLightingOverlay(timeOfDay, house.activeFloor);
     this.renderSunbeams(timeOfDay);
 
+    if (radioManager && radioManager.getIsPlaying()) {
+      this.renderDiscoLights();
+    }
+
     if (weatherSystem) {
       this.renderWeatherParticles(weatherSystem);
+    }
+
+    // 7b. Render Roof Structure if on highest floor with full walls
+    if (house.activeFloor >= 1 && house.wallDisplayMode === 'full' && house.roofStyle !== 'none') {
+      this.renderRoofStructure(house);
     }
 
     // 8. Render Floor Level Badge (Top Left)
@@ -803,6 +813,67 @@ export class IsometricRenderer {
       ctx.textAlign = 'center';
       ctx.fillText('👻', ghostIso.x, gy);
     }
+
+    ctx.restore();
+  }
+
+  private renderDiscoLights(): void {
+    const ctx = this.ctx;
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    const time = Date.now() / 300;
+    const colors = ['rgba(236, 72, 153, 0.15)', 'rgba(56, 189, 248, 0.15)', 'rgba(168, 85, 247, 0.15)', 'rgba(234, 179, 8, 0.15)'];
+
+    for (let i = 0; i < 4; i++) {
+      const angle = time + (i * Math.PI / 2);
+      const cx = this.canvas.width / 2 + Math.cos(angle) * (this.canvas.width / 3);
+      const cy = this.canvas.height / 2 + Math.sin(angle) * (this.canvas.height / 3);
+
+      const radGrad = ctx.createRadialGradient(cx, cy, 10, cx, cy, 220);
+      radGrad.addColorStop(0, colors[i % colors.length]);
+      radGrad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+      ctx.fillStyle = radGrad;
+      ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+
+    ctx.restore();
+  }
+
+  private renderRoofStructure(house: House): void {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Render roof triangle peak above indoor perimeter (3 to 12)
+    const isoNorth = this.gridToIso(3, 3);
+    const isoEast = this.gridToIso(12, 3);
+    const isoSouth = this.gridToIso(12, 12);
+    const isoWest = this.gridToIso(3, 12);
+
+    const roofPeakHeight = 60;
+
+    // Roof Left Slope
+    ctx.fillStyle = house.roofColor;
+    ctx.beginPath();
+    ctx.moveTo(isoNorth.x, isoNorth.y - 45);
+    ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
+    ctx.lineTo(isoWest.x, isoWest.y - 45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+    ctx.stroke();
+
+    // Roof Right Slope
+    ctx.fillStyle = this.adjustColorBrightness(house.roofColor, -25);
+    ctx.beginPath();
+    ctx.moveTo(isoEast.x, isoEast.y - 45);
+    ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
+    ctx.lineTo(isoSouth.x, isoSouth.y - 45);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+    ctx.stroke();
 
     ctx.restore();
   }

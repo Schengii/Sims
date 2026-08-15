@@ -50,6 +50,7 @@ export class BuildBuyCatalog {
             <button class="btn-hud build-tab-btn" data-tab="walls">🧱 Wände</button>
             <button class="btn-hud build-tab-btn" data-tab="openings">🚪 Türen & Fenster</button>
             <button class="btn-hud build-tab-btn" data-tab="floors">🎨 Bodenbeläge</button>
+            <button class="btn-hud build-tab-btn" data-tab="roofs">🏠 Dächer & Fassaden</button>
             <button class="btn-hud build-tab-btn" data-tab="pools">🏊 Outdoor & Pool</button>
           </div>
 
@@ -121,7 +122,7 @@ export class BuildBuyCatalog {
     document.getElementById('build-btn-close')?.addEventListener('click', () => this.close());
   }
 
-  private renderTabContent(sim: Sim, house: House, tab: 'furniture' | 'blueprints' | 'walls' | 'openings' | 'floors' | 'pools'): void {
+  private renderTabContent(sim: Sim, house: House, tab: 'furniture' | 'blueprints' | 'walls' | 'openings' | 'floors' | 'roofs' | 'pools'): void {
     const content = document.getElementById('build-tab-content');
     if (!content) return;
 
@@ -319,6 +320,64 @@ export class BuildBuyCatalog {
           this.soundManager.playUIClick();
           alert(`🎨 Boden-Werkzeug (${type.toUpperCase()}) aktiviert! Klicke auf Felder im Haus.`);
           this.close();
+        });
+      });
+    } else if (tab === 'roofs') {
+      content.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 16px;">
+          <div>
+            <h4 style="margin: 0 0 6px 0; color: #ffffff;">🏠 Dach-Stil wählen</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 10px 0;">Wähle die Dachform deines Hauses für die oberste Etage.</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+              <button class="btn-hud set-roof-btn" data-roof="gabled" data-color="#c0392b">📐 Giebeldach (Klassisch)</button>
+              <button class="btn-hud set-roof-btn" data-roof="hipped" data-color="#2c3e50">🏰 Walmdach (Schiefer)</button>
+              <button class="btn-hud set-roof-btn" data-roof="flat" data-color="#7f8c8d">🏢 Flachdach (Modern)</button>
+              <button class="btn-hud set-roof-btn" data-roof="none" data-color="#000000">🚫 Kein Dach</button>
+            </div>
+          </div>
+
+          <div>
+            <h4 style="margin: 0 0 6px 0; color: #ffffff;">🧱 Außenfassaden-Design</h4>
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin: 0 0 10px 0;">Passe den Anstrich aller Außenwände deines Grundstücks an (§ 300).</p>
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+              <button class="btn-hud set-facade-btn" data-color="#2c3e50">🏛️ Dunkelblau Modern</button>
+              <button class="btn-hud set-facade-btn" data-color="#e67e22">🧱 Ziegel-Terracotta</button>
+              <button class="btn-hud set-facade-btn" data-color="#ecf0f1">🏛️ Weißer Marmorputz</button>
+              <button class="btn-hud set-facade-btn" data-color="#27ae60">🌲 Waldhaus-Grün</button>
+            </div>
+          </div>
+        </div>
+      `;
+
+      content.querySelectorAll('.set-roof-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const roof = (e.currentTarget as HTMLElement).getAttribute('data-roof') as any;
+          const color = (e.currentTarget as HTMLElement).getAttribute('data-color') || '#c0392b';
+          house.roofStyle = roof;
+          house.roofColor = color;
+          this.soundManager.playBuySound();
+          alert(`🏠 Dach-Stil "${roof.toUpperCase()}" erfolgreich eingerichtet!`);
+          this.close();
+        });
+      });
+
+      content.querySelectorAll('.set-facade-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const color = (e.currentTarget as HTMLElement).getAttribute('data-color') || '#2c3e50';
+          if (sim.simoleons >= 300) {
+            sim.simoleons -= 300;
+            for (let x = 0; x < house.width; x++) {
+              for (let y = 0; y < house.height; y++) {
+                if (house.tiles[x][y].hasWallNorth) house.tiles[x][y].wallColor = color;
+                if (house.tiles[x][y].hasWallWest) house.tiles[x][y].wallColor = color;
+              }
+            }
+            this.soundManager.playBuySound();
+            alert('🧱 Außenfassade erfolgreich neu gestrichen! (-§ 300)');
+            this.close();
+          } else {
+            alert('Nicht genügend Simoleons vorhanden!');
+          }
         });
       });
     } else if (tab === 'pools') {

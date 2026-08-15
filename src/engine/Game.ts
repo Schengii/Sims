@@ -121,6 +121,9 @@ import { YachtManager } from '../systems/YachtManager';
 import { CruiseModal } from '../ui/CruiseModal';
 import { HealthSystem } from '../systems/HealthSystem';
 import { HealthModal } from '../ui/HealthModal';
+import { FestivalModal } from '../ui/FestivalModal';
+import { VetClinicManager } from '../systems/VetClinicManager';
+import { VetClinicModal } from '../ui/VetClinicModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -231,6 +234,9 @@ export class Game {
   public cruiseModal: CruiseModal;
   public healthSystem: HealthSystem;
   public healthModal: HealthModal;
+  public festivalModal: FestivalModal;
+  public vetClinicManager: VetClinicManager;
+  public vetClinicModal: VetClinicModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -356,6 +362,9 @@ export class Game {
     this.cruiseModal = new CruiseModal();
     this.healthSystem = new HealthSystem();
     this.healthModal = new HealthModal(uiContainer, this.soundManager);
+    this.festivalModal = new FestivalModal(uiContainer, this.soundManager);
+    this.vetClinicManager = new VetClinicManager();
+    this.vetClinicModal = new VetClinicModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -852,6 +861,8 @@ export class Game {
     this.hud.onOpenDirector = () => this.directorModal.open(this.filmStudioSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenCruise = () => this.cruiseModal.open(this.yachtManager, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenHealth = () => this.healthModal.open(this.healthSystem, this.sim, this.toastManager);
+    this.hud.onOpenFestival = () => this.festivalModal.open(this.sim, this.timeSystem.day, this.toastManager);
+    this.hud.onOpenVet = () => this.vetClinicModal.open(this.vetClinicManager, this.petManager.pets, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {
@@ -1010,8 +1021,9 @@ export class Game {
       this.timeSystem.setSpeed(3);
     }
 
-    // 4. Pet Manager & Autonomy Update
+    // 4. Pet Manager, Autonomy & Health Checkup
     this.petManager.update(deltaSec, timeResult.deltaMinutes);
+    this.vetClinicManager.update(this.petManager.pets);
     this.petManager.pets.forEach(pet => {
       PetAutonomy.update(pet, this.house, deltaSec);
     });
@@ -1055,7 +1067,8 @@ export class Game {
       this.gardenSystem,
       this.household.sims,
       this.petManager,
-      this.eventManager
+      this.eventManager,
+      this.radioManager
     );
 
     // 9. Update HUD & Whims

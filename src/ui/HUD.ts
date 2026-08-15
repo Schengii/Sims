@@ -69,6 +69,8 @@ export class HUDManager {
   public onOpenDirector?: () => void;
   public onOpenCruise?: () => void;
   public onOpenHealth?: () => void;
+  public onOpenFestival?: () => void;
+  public onOpenVet?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -140,7 +142,8 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-cam" title="Kamera & Fotoalbum">📸 Kamera</button>
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
             <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
-            <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
+            <button class="btn-hud" id="btn-open-fest" title="Saisonale Feste & Marktstände" style="background: rgba(232, 67, 147, 0.25); color: #fd79a8; font-weight: bold;">🎡 Festival</button>
+            <button class="btn-hud" id="btn-open-vet" title="Tierklinik & Haustier-Arzt" style="background: rgba(20, 184, 166, 0.25); color: #2dd4bf; font-weight: bold;">🐾 Tierklinik</button>
             <button class="btn-hud" id="btn-open-health" title="Gesundheit & Medizin-Zentrum" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-weight: bold;">🩺 Gesundheit</button>
             <button class="btn-hud" id="btn-open-cheats" title="Sims Cheat Konsole (Strg + Umschalt + C)" style="background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">💻 Cheats</button>
             <button class="btn-hud" id="btn-audio-settings" aria-label="Audio Einstellungen">🔊 Audio</button>
@@ -303,6 +306,16 @@ export class HUDManager {
     document.getElementById('btn-open-health')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenHealth) this.onOpenHealth();
+    });
+
+    document.getElementById('btn-open-fest')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenFestival) this.onOpenFestival();
+    });
+
+    document.getElementById('btn-open-vet')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenVet) this.onOpenVet();
     });
 
     document.getElementById('btn-open-cruise')?.addEventListener('click', () => {

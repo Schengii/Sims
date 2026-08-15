@@ -8,6 +8,8 @@
 import { FURNITURE_CATALOG, type PlacedFurniture } from './Furniture';
 
 export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool';
+export type RoofStyle = 'gabled' | 'flat' | 'hipped' | 'none';
+export type WallPattern = 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile';
 
 export interface FloorTile {
   x: number;
@@ -17,7 +19,7 @@ export interface FloorTile {
   hasWallNorth?: boolean;
   hasWallWest?: boolean;
   wallColor?: string;
-  wallPattern?: 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile';
+  wallPattern?: WallPattern;
   openingNorth?: 'door' | 'window';
   openingWest?: 'door' | 'window';
 }
@@ -27,6 +29,8 @@ export class House {
   public readonly height: number = 16;
 
   public activeFloor: number = 0; // -1: Keller, 0: EG, 1: 1. OG, 2: 2. OG
+  public roofStyle: RoofStyle = 'gabled';
+  public roofColor: string = '#c0392b';
   public floorTilesMap: Record<number, FloorTile[][]> = {};
   public floorFurnitureMap: Record<number, PlacedFurniture[]> = {};
   public wallDisplayMode: 'full' | 'cutaway' | 'hidden' = 'cutaway';
