@@ -188,6 +188,12 @@ Sims/
 - **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
 - **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
 
+### Version 14.0.0 (City Politics, Archaeology, Potion Cauldron & School Expansion)
+- **[Feature] Bürgermeister-Wahl & Rathaus-Verordnungen (`PoliticsManager.ts`, `PoliticsModal.ts`)**: Kandidatur für das Bürgermeisteramt (5 politische Ränge), Halten mitreißender Wahlkampfreden (📢), Steigerung der Wählerzustimmung & Erlass von Stadtverordnungen (Öko-Förderung 🌱, Nachtruhe 🌙, Kunst-Förderung 🎨, Steuersenkung 🪙).
+- **[Feature] Archäologie & Relikte-Ausgrabung (`ArchaeologySystem.ts`, `ArchaeologyModal.ts`)**: Graben im Erdreich nach antiken Fossilien, Tonamphoren, Kristallschädeln und der legendären Goldenen Lama-Statue (🦙, § 1.800).
+- **[Feature] Zaubertrank-Kessel & Alchemie (`MagicSystem.ts`, `MagicModal.ts`)**: Kessel-Brausystem für Zaubertränke wie das *Elixier der ewigen Jugend* (🧪, 100% Bedürfnis-Refill) und *Amors Liebeszauber-Trank* (💖, kokettes Moodlet).
+- **[Feature] Schule, Hausaufgaben & Noten-Zeugnisse (`SchoolSystem.ts`, `SchoolModal.ts`)**: Hausaufgabenheft am Schreibtisch lösen, Notendurchschnitt verbessern (1.0 bis 5.0), Schultag absolvieren & Ehren-Stipendien (§ 250) erhalten.
+
 ### Version 13.0.0 (Seasons Festivals, Veterinary Clinic, Roof Architecture & Disco Lighting Expansion)
 - **[Feature] Saisonale Feste & Marktstände (`FestivalManager.ts`, `FestivalModal.ts`)**: 4 saisonale Feste (🌸 Frühlingsblüten-Fest mit Ostereiersuche, ☀️ Sommer-Beachparty mit Wasserballon-Schlachten, 🎃 Herbst-Kürbisfest mit Kürbisschnitzen, ❄️ Winter-Wunderland mit Schneemannbauen & Eislaufen) samt exklusiven Belohnungen & Moodlets.
 - **[Feature] Tierklinik & Haustier-Gesundheit (`VetClinicManager.ts`, `VetClinicModal.ts`)**: Diagnose & Heilung von Haustier-Leiden (Flöhe 🪲, Schnupfennase 🤧, Haarballen 🐱, Pfotenverletzung 🐾), Durchführung von Anti-Floh-Spezialbädern & Tierarzt-Behandlungen.

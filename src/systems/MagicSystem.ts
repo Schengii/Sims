@@ -47,12 +47,79 @@ export const SPELLS_CATALOG: Record<string, SpellDef> = {
   }
 };
 
+export interface PotionRecipe {
+  id: string;
+  name: string;
+  icon: string;
+  description: string;
+  manaCost: number;
+  effect: (sim: any) => string;
+}
+
+export const POTIONS_CATALOG: Record<string, PotionRecipe> = {
+  youth_potion: {
+    id: 'youth_potion',
+    name: 'Elixier der ewigen Jugend',
+    icon: '🧪',
+    description: 'Setzt alle Bedürfnisse auf 100% und verleiht ein intensives Energie-Moodlet.',
+    manaCost: 40,
+    effect: (sim) => {
+      sim.needs.fillAll();
+      sim.moodletManager.addMoodlet({
+        id: 'potion_youth',
+        name: 'Jugendlicher Elan',
+        emotion: 'energized',
+        weight: 3,
+        durationSec: 240,
+        icon: '🧪',
+        description: 'Vollkommene Frische durch das Elixier der Jugend!'
+      });
+      return '🧪 Jugend-Elixier getrunken! Alle Bedürfnisse sind bei 100%!';
+    }
+  },
+  love_potion: {
+    id: 'love_potion',
+    name: 'Amors Liebeszauber-Trank',
+    icon: '💖',
+    description: 'Verleiht sofort das kokette Stimmungs-Moodlet und steigert Charisma.',
+    manaCost: 35,
+    effect: (sim) => {
+      sim.moodletManager.addMoodlet({
+        id: 'potion_love',
+        name: 'Amors Zauber',
+        emotion: 'flirty',
+        weight: 3,
+        durationSec: 240,
+        icon: '💖',
+        description: 'Unwiderstehliche Anziehungskraft durch Liebestrank!'
+      });
+      return '💖 Liebestrank gebraut! Dein Sim wirkt auf alle unwiderstehlich!';
+    }
+  }
+};
+
 export class MagicManager {
   public magicLevel: number = 1;
   public magicXP: number = 0;
   public manaPoints: number = 100;
   public maxMana: number = 100;
   public unlockedSpells: string[] = ['clean_spell', 'food_spell'];
+
+  public brewPotion(potionId: string, sim: any): { success: boolean; message: string } {
+    const potion = POTIONS_CATALOG[potionId];
+    if (!potion) return { success: false, message: 'Unbekannter Zaubertrank!' };
+
+    if (this.manaPoints < potion.manaCost) {
+      return { success: false, message: `Nicht genügend Mana (${Math.round(this.manaPoints)} / ${potion.manaCost} benötigt)!` };
+    }
+
+    this.manaPoints -= potion.manaCost;
+    this.addMagicXP(35);
+    const msg = potion.effect(sim);
+    sim.triggerEmote(potion.icon, 4000);
+
+    return { success: true, message: msg };
+  }
 
   public updateTime(deltaMinutes: number): void {
     // Regenerate Mana over time

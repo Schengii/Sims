@@ -124,6 +124,12 @@ import { HealthModal } from '../ui/HealthModal';
 import { FestivalModal } from '../ui/FestivalModal';
 import { VetClinicManager } from '../systems/VetClinicManager';
 import { VetClinicModal } from '../ui/VetClinicModal';
+import { PoliticsManager } from '../systems/PoliticsManager';
+import { PoliticsModal } from '../ui/PoliticsModal';
+import { ArchaeologySystem } from '../systems/ArchaeologySystem';
+import { ArchaeologyModal } from '../ui/ArchaeologyModal';
+import { SchoolSystem } from '../systems/SchoolSystem';
+import { SchoolModal } from '../ui/SchoolModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -237,6 +243,12 @@ export class Game {
   public festivalModal: FestivalModal;
   public vetClinicManager: VetClinicManager;
   public vetClinicModal: VetClinicModal;
+  public politicsManager: PoliticsManager;
+  public politicsModal: PoliticsModal;
+  public archaeologySystem: ArchaeologySystem;
+  public archaeologyModal: ArchaeologyModal;
+  public schoolSystem: SchoolSystem;
+  public schoolModal: SchoolModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -365,6 +377,12 @@ export class Game {
     this.festivalModal = new FestivalModal(uiContainer, this.soundManager);
     this.vetClinicManager = new VetClinicManager();
     this.vetClinicModal = new VetClinicModal(uiContainer, this.soundManager);
+    this.politicsManager = new PoliticsManager();
+    this.politicsModal = new PoliticsModal(uiContainer, this.soundManager);
+    this.archaeologySystem = new ArchaeologySystem();
+    this.archaeologyModal = new ArchaeologyModal(uiContainer, this.soundManager);
+    this.schoolSystem = new SchoolSystem();
+    this.schoolModal = new SchoolModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -863,6 +881,9 @@ export class Game {
     this.hud.onOpenHealth = () => this.healthModal.open(this.healthSystem, this.sim, this.toastManager);
     this.hud.onOpenFestival = () => this.festivalModal.open(this.sim, this.timeSystem.day, this.toastManager);
     this.hud.onOpenVet = () => this.vetClinicModal.open(this.vetClinicManager, this.petManager.pets, this.sim, this.toastManager);
+    this.hud.onOpenPolitics = () => this.politicsModal.open(this.politicsManager, this.sim, this.toastManager);
+    this.hud.onOpenArch = () => this.archaeologyModal.open(this.archaeologySystem, this.sim, this.toastManager);
+    this.hud.onOpenSchool = () => this.schoolModal.open(this.schoolSystem, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {

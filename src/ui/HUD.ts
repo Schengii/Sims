@@ -71,6 +71,9 @@ export class HUDManager {
   public onOpenHealth?: () => void;
   public onOpenFestival?: () => void;
   public onOpenVet?: () => void;
+  public onOpenPolitics?: () => void;
+  public onOpenArch?: () => void;
+  public onOpenSchool?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -141,7 +144,9 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-biz" title="Eigenes Gewerbe & Laden">🏪 Gewerbe</button>
             <button class="btn-hud" id="btn-open-cam" title="Kamera & Fotoalbum">📸 Kamera</button>
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
-            <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
+            <button class="btn-hud" id="btn-open-politics" title="Rathaus & Bürgermeister-Wahl" style="background: rgba(41, 128, 185, 0.25); color: #3498db; font-weight: bold;">🏛️ Rathaus</button>
+            <button class="btn-hud" id="btn-open-arch" title="Archäologie & Antike Relikte" style="background: rgba(211, 84, 0, 0.25); color: #e67e22; font-weight: bold;">🏺 Archäologie</button>
+            <button class="btn-hud" id="btn-open-school" title="Schule & Hausaufgaben" style="background: rgba(52, 152, 219, 0.25); color: #74b9ff; font-weight: bold;">🏫 Schule</button>
             <button class="btn-hud" id="btn-open-fest" title="Saisonale Feste & Marktstände" style="background: rgba(232, 67, 147, 0.25); color: #fd79a8; font-weight: bold;">🎡 Festival</button>
             <button class="btn-hud" id="btn-open-vet" title="Tierklinik & Haustier-Arzt" style="background: rgba(20, 184, 166, 0.25); color: #2dd4bf; font-weight: bold;">🐾 Tierklinik</button>
             <button class="btn-hud" id="btn-open-health" title="Gesundheit & Medizin-Zentrum" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-weight: bold;">🩺 Gesundheit</button>
@@ -316,6 +321,21 @@ export class HUDManager {
     document.getElementById('btn-open-vet')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenVet) this.onOpenVet();
+    });
+
+    document.getElementById('btn-open-politics')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenPolitics) this.onOpenPolitics();
+    });
+
+    document.getElementById('btn-open-arch')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenArch) this.onOpenArch();
+    });
+
+    document.getElementById('btn-open-school')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenSchool) this.onOpenSchool();
     });
 
     document.getElementById('btn-open-cruise')?.addEventListener('click', () => {
