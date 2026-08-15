@@ -194,9 +194,13 @@ Sims/
 - **[Feature] Highschool & Prom-Event (`HighSchoolSystem.ts`, `PromModal.ts`)**: Abschluss-Prüfungen ablegen, Notendurchschnitt verbessern & Abschlussball-König(in) 👑 werden.
 - **[Feature] Gourmet-Restaurant Management (`RestaurantSystem.ts`, `RestaurantModal.ts`)**: Kauf eigener Restaurants (§ 12.000), Speisekarten-Gestaltung & Kassieren täglicher Restaurant-Gewinne.
 
-### Version 10.0.0 (Living World & Real Estate Empire Expansion)
-- **[Feature] Lebendige Nachbarschaft (`NeighborhoodProgression.ts`)**: Proaktive SMS-Einladungen von Nachbarn (Mortimer Goth, Penny Pizazz) auf dein Smartphone.
-- **[Feature] Immobilien-Imperium (`RealEstateManager.ts`, `RealEstateModal.ts`)**: Erwerb von Rendite-Immobilien, wöchentliche Mieteinnahmen & Immobilien-Stufen-Upgrades.
+### Version 10.0.0 (Event-Bus Architecture, Dynamic Conversations, Room-Building & Testing Suite)
+- **[Feature] Visual Conversation Bubbles & Couple Interactions (`IsometricRenderer.ts`, `SocialWheel.ts`, `Sim.ts`)**: Dynamische Sprechblasen mit Piktogrammen über den Köpfen sprechender Sims, neue Sozialaktionen (Paartanz 💃, Schultermassage 💆, Geschenke überreichen 🎁, tiefgründige Gespräche 💭).
+- **[Feature] Quick Room-Draw Tool & 3D Staircase Step-Rendering (`House.ts`, `BuildBuyCatalog.ts`, `IsometricRenderer.ts`)**: 2-Klick-Raumerstellung (Wände + Böden per Mausklick über 2 Diagonalpunkte) & verfeinertes 3D-Stufenrendering für Treppen auf 4 Etagen samt Möbelrotation (0°/90°/180°/270°).
+- **[Architektur] Global Event-Bus & Message Broker (`EventBus.ts`)**: Vollständig typisiertes Publish-Subscribe-System zur Entkopplung von Gameplay-Systemen und Entitäten.
+- **[Testing] Automated Vitest Suite (`npm test`, `*.test.ts`)**: Automatisierte Unit- und Integrationstests für Hausbau, Möbelrotation, Sim-Lebenszyklus, Emotes und EventBus.
+
+### Version 9.5.0 (Resort, Farm & Science Lab Expansion)
 - **[Feature] Trait-Quests & Chronik-Tagebuch (`TraitQuestSystem.ts`, `LifeJournalModal.ts`)**: Merkmals-spezifische Quests & illustriertes Lebens-Tagebuch.
 - **[Feature] Notfall-Einsatzkräfte (`EmergencyRescueModal.ts`)**: Interaktive Brand-Bekämpfung & Einbrecher-Stellen für Helden-Medaillen & Simoleon-Boni.
 

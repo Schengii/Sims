@@ -102,22 +102,28 @@ export class SocialWheel {
       { id: 'smalltalk', label: 'Smalltalk halten', category: 'friendly', icon: '💬', friendshipDelta: 8, romanceDelta: 0, emoteSymbol: '💬' },
       { id: 'compliment', label: 'Outfit loben', category: 'friendly', icon: '✨', friendshipDelta: 12, romanceDelta: 2, emoteSymbol: '😀' },
       { id: 'hobbies', label: 'Über Hobbys sprechen', category: 'friendly', icon: '🎨', friendshipDelta: 15, romanceDelta: 0, emoteSymbol: '🎨' },
+      { id: 'deep_talk', label: 'Tiefgründiges Gespräch führen', category: 'friendly', icon: '🌟', friendshipDelta: 20, romanceDelta: 5, emoteSymbol: '💭', minFriendshipRequired: 35 },
+      { id: 'give_gift', label: 'Geschenk überreichen', category: 'friendly', icon: '🎁', friendshipDelta: 25, romanceDelta: 10, emoteSymbol: '🎁', minFriendshipRequired: 20 },
       { id: 'party_toast', label: 'Party-Toast anstoßen (🥂)', category: 'friendly', icon: '🥂', friendshipDelta: 18, romanceDelta: 5, emoteSymbol: '🥂' },
       
       // Funny
       { id: 'tell_joke', label: 'Witz erzählen', category: 'funny', icon: '😂', friendshipDelta: 14, romanceDelta: 0, emoteSymbol: '😂' },
       { id: 'crazy_story', label: 'Verrückte Story erzählen', category: 'funny', icon: '🤪', friendshipDelta: 16, romanceDelta: 0, emoteSymbol: '🤪' },
+      { id: 'impersonate', label: 'Berühmten Sim nachahmen', category: 'funny', icon: '🎭', friendshipDelta: 18, romanceDelta: 4, emoteSymbol: '🕺' },
 
       // Romantic
       { id: 'flirt', label: 'Anflirten', category: 'romantic', icon: '😉', friendshipDelta: 5, romanceDelta: 18, emoteSymbol: '💕' },
       { id: 'hold_hands', label: 'Hände halten', category: 'romantic', icon: '🤝', friendshipDelta: 8, romanceDelta: 25, emoteSymbol: '💖', minFriendshipRequired: 40 },
       { id: 'hug', label: 'Herzlich umarmen', category: 'romantic', icon: '🤗', friendshipDelta: 10, romanceDelta: 15, emoteSymbol: '🤗', minFriendshipRequired: 30 },
+      { id: 'massage', label: 'Romantische Schultermassage', category: 'romantic', icon: '💆', friendshipDelta: 12, romanceDelta: 30, emoteSymbol: '💆‍♀️', minFriendshipRequired: 50 },
+      { id: 'couple_dance', label: 'Romantischer Paartanz', category: 'romantic', icon: '💃', friendshipDelta: 15, romanceDelta: 35, emoteSymbol: '💃', minFriendshipRequired: 55 },
       { id: 'first_kiss', label: 'Erster Kuss', category: 'romantic', icon: '💋', friendshipDelta: 15, romanceDelta: 40, emoteSymbol: '💋', minFriendshipRequired: 60 },
       { id: 'make_baby', label: 'Baby planen (Whahoo)', category: 'romantic', icon: '👶', friendshipDelta: 20, romanceDelta: 45, emoteSymbol: '👶', minFriendshipRequired: 75 },
 
       // Mean
       { id: 'insult', label: 'Beleidigen', category: 'mean', icon: '😡', friendshipDelta: -25, romanceDelta: -20, emoteSymbol: '😡' },
-      { id: 'argue', label: 'Streiten', category: 'mean', icon: '🤬', friendshipDelta: -30, romanceDelta: -25, emoteSymbol: '💔' }
+      { id: 'argue', label: 'Streiten', category: 'mean', icon: '🤬', friendshipDelta: -30, romanceDelta: -25, emoteSymbol: '💔' },
+      { id: 'mock', label: 'Auslachen & Verspotten', category: 'mean', icon: '🤡', friendshipDelta: -20, romanceDelta: -15, emoteSymbol: '🤡' }
     ];
 
     const filtered = allOptions.filter(o => o.category === category);

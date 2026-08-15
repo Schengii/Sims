@@ -149,6 +149,66 @@ export class House {
     }
   }
 
+  public setOpeningWest(x: number, y: number, type: 'door' | 'window' | undefined): void {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      this.tiles[x][y].hasWallWest = true;
+      this.tiles[x][y].openingWest = type;
+    }
+  }
+
+  /**
+   * Builds an entire enclosed room rectangle with floors and enclosing boundary walls
+   */
+  public buildRoom(
+    startX: number,
+    startY: number,
+    endX: number,
+    endY: number,
+    floorType: FloorType = 'wood',
+    floorColor: string = '#8d5524',
+    wallColor: string = '#2c3e50'
+  ): void {
+    const minX = Math.max(0, Math.min(startX, endX));
+    const maxX = Math.min(this.width - 1, Math.max(startX, endX));
+    const minY = Math.max(0, Math.min(startY, endY));
+    const maxY = Math.min(this.height - 1, Math.max(startY, endY));
+
+    // 1. Fill Floor tiles
+    for (let x = minX; x <= maxX; x++) {
+      for (let y = minY; y <= maxY; y++) {
+        this.setFloorStyle(x, y, floorType, floorColor);
+      }
+    }
+
+    // 2. Build North & South walls
+    for (let x = minX; x <= maxX; x++) {
+      this.tiles[x][minY].hasWallNorth = true;
+      this.tiles[x][minY].wallColor = wallColor;
+
+      if (maxY + 1 < this.height) {
+        this.tiles[x][maxY + 1].hasWallNorth = true;
+        this.tiles[x][maxY + 1].wallColor = wallColor;
+      } else {
+        this.tiles[x][maxY].hasWallNorth = true;
+        this.tiles[x][maxY].wallColor = wallColor;
+      }
+    }
+
+    // 3. Build West & East walls
+    for (let y = minY; y <= maxY; y++) {
+      this.tiles[minX][y].hasWallWest = true;
+      this.tiles[minX][y].wallColor = wallColor;
+
+      if (maxX + 1 < this.width) {
+        this.tiles[maxX + 1][y].hasWallWest = true;
+        this.tiles[maxX + 1][y].wallColor = wallColor;
+      } else {
+        this.tiles[maxX][y].hasWallWest = true;
+        this.tiles[maxX][y].wallColor = wallColor;
+      }
+    }
+  }
+
   public addFurniture(furnitureId: string, gridX: number, gridY: number): PlacedFurniture | null {
     const def = FURNITURE_CATALOG[furnitureId];
     if (!def) return null;

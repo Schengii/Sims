@@ -23,6 +23,7 @@ import { QuestManager } from '../systems/QuestSystem';
 import { SaveManager } from '../systems/SaveManager';
 import { Pathfinding } from '../world/Pathfinding';
 import { FURNITURE_CATALOG } from '../world/Furniture';
+import { EventBus } from '../systems/EventBus';
 
 import { NPCManager } from '../entity/NPCManager';
 import { HUDManager } from '../ui/HUD';
@@ -228,6 +229,7 @@ export class Game {
   public cruiseModal: CruiseModal;
 
   private movingFurnitureInstanceId: string | null = null;
+  private roomStartGrid: { x: number; y: number } | null = null;
   private lastTime: number = 0;
   private isRunning: boolean = false;
 
@@ -432,6 +434,28 @@ export class Game {
             this.sim.simoleons -= 300;
             this.house.setFloorStyle(gridX, gridY, 'pool', '#00e5ff');
             this.soundManager.playBuySound();
+          }
+        } else if (toolMode === 'room') {
+          if (!this.roomStartGrid) {
+            this.roomStartGrid = { x: gridX, y: gridY };
+            this.toastManager.showToast('Raum-Ecke 1 gewählt', `Ecke 1 bei (${gridX}, ${gridY}) fixiert. Klicke jetzt die gegenüberliegende Ecke!`, '📦', 'info');
+            return; // Don't reset toolMode yet, wait for second corner click
+          } else {
+            const start = this.roomStartGrid;
+            const end = { x: gridX, y: gridY };
+            const width = Math.abs(end.x - start.x) + 1;
+            const height = Math.abs(end.y - start.y) + 1;
+            const cost = width * height * 40 + (width + height) * 2 * 50;
+
+            if (this.sim.simoleons >= cost) {
+              this.sim.simoleons -= cost;
+              this.house.buildRoom(start.x, start.y, end.x, end.y, this.buildCatalog.activeFloorType, this.buildCatalog.activeFloorColor);
+              this.soundManager.playBuySound();
+              this.toastManager.showToast('📦 Raum fertiggestellt', `${width}x${height} Raum für § ${cost} errichtet!`, '🏠', 'success');
+            } else {
+              alert(`Nicht genügend Simoleons (§ ${cost} benötigt)!`);
+            }
+            this.roomStartGrid = null;
           }
         } else if (toolMode === 'garden') {
           if (this.sim.simoleons >= 100) {
@@ -697,11 +721,37 @@ export class Game {
 
     // Social Wheel Callback
     this.socialWheel.onInteractionExecuted = (npc, option) => {
-      this.npcManager.triggerEmote(npc.id, option.emoteSymbol, 3000);
+      // Trigger visual conversation speech bubbles on both Sims
+      this.npcManager.triggerEmote(npc.id, option.emoteSymbol, 3500);
+      this.sim.triggerEmote(option.emoteSymbol, 3500);
+
+      // EventBus emission for decoupled listeners
+      EventBus.getInstance().emit('SIM_SOCIAL_INTERACTION', {
+        simId: this.sim.id,
+        targetNpcId: npc.id,
+        interactionId: option.id,
+        emote: option.emoteSymbol
+      });
+
       this.partyManager.triggerGoal('p_talk');
 
       if (option.id === 'party_toast') {
         this.partyManager.triggerGoal('p_toast');
+      }
+
+      if (option.id === 'couple_dance') {
+        this.sim.addSkillXP('fitness', 15);
+        this.sim.addSkillXP('charisma', 20);
+        this.soundManager.playSimlish(1.2, 'flirty');
+        this.toastManager.showToast('💃 Paartanz', `Mit ${npc.name} über die Tanzfläche geschwebt!`, '💖', 'success');
+      } else if (option.id === 'massage') {
+        this.sim.needs.modify('fun', 30);
+        this.soundManager.playSimlish(1.0, 'flirty');
+        this.toastManager.showToast('💆 Schultermassage', `Romantische Massage mit ${npc.name} genossen!`, '✨', 'success');
+      } else if (option.id === 'give_gift') {
+        this.sim.simoleons = Math.max(0, this.sim.simoleons - 50);
+        this.soundManager.playBuySound();
+        this.toastManager.showToast('🎁 Geschenk überreicht', `${npc.name} hat sich riesig über das Präsent gefreut! (-§ 50)`, '🎀', 'success');
       }
 
       if (option.id === 'make_baby') {

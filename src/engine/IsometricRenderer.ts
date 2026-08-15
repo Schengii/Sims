@@ -317,8 +317,42 @@ export class IsometricRenderer {
     ctx.save();
     ctx.translate(isoX, isoY);
 
-    if (rotation === 90 || rotation === 270) {
+    if (rotation === 90) {
       ctx.scale(-1, 1);
+    } else if (rotation === 180) {
+      ctx.scale(1, -1);
+      ctx.translate(0, -h);
+    } else if (rotation === 270) {
+      ctx.scale(-1, -1);
+      ctx.translate(0, -h);
+    }
+
+    // Special 3D Staircase Step Rendering
+    if (def.id.includes('stairs')) {
+      const steps = 4;
+      for (let s = 0; s < steps; s++) {
+        const stepH = (h / steps) * (s + 1);
+        const stepW = (w / steps) * (steps - s);
+        const stepY = -stepH;
+
+        ctx.fillStyle = s % 2 === 0 ? def.color : this.adjustColorBrightness(def.color, 15);
+        ctx.beginPath();
+        ctx.moveTo(0, stepY);
+        ctx.lineTo(stepW, (stepW / 2) + stepY);
+        ctx.lineTo(0, stepW + stepY);
+        ctx.lineTo(-stepW, (stepW / 2) + stepY);
+        ctx.closePath();
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(0,0,0,0.3)';
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#ffffff';
+      ctx.font = '16px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(def.icon, 0, -h - 6);
+      ctx.restore();
+      return;
     }
 
     ctx.fillStyle = def.color;
@@ -470,8 +504,12 @@ export class IsometricRenderer {
 
       ctx.fillStyle = '#2ecc71';
       ctx.fillRect(bx, by, barW * progress, barH);
-    } else {
+    }
 
+    // Active Emote / Conversation speech bubble vs. Needs/Thought bubble
+    if (sim.activeEmote) {
+      this.drawSpeechBubble(0, -92 + yOffset, sim.activeEmote.symbol);
+    } else if (!currentAction) {
       const lowest = sim.needs.getLowestNeed();
       if (lowest.value < 40) {
         let alertIcon = '🍕';
@@ -520,8 +558,56 @@ export class IsometricRenderer {
     ctx.fillText(npc.name, isoX, isoY - 46);
 
     if (npc.activeEmote) {
-      this.drawEmoteBubble(isoX, isoY - 60, npc.activeEmote.symbol);
+      this.drawSpeechBubble(isoX, isoY - 62, npc.activeEmote.symbol);
     }
+  }
+
+  private drawSpeechBubble(x: number, y: number, symbol: string): void {
+    const ctx = this.ctx;
+    ctx.save();
+
+    // Bubble pop animation offset
+    const bounce = Math.sin(Date.now() / 120) * 1.5;
+    const by = y + bounce;
+
+    // Shadow
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+    ctx.beginPath();
+    ctx.roundRect(x - 17, by - 13, 34, 26, [8]);
+    ctx.fill();
+
+    // Main speech bubble body
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.roundRect(x - 18, by - 14, 36, 26, [8]);
+    ctx.fill();
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Speech bubble tail pointing down
+    ctx.fillStyle = '#ffffff';
+    ctx.beginPath();
+    ctx.moveTo(x - 4, by + 12);
+    ctx.lineTo(x, by + 18);
+    ctx.lineTo(x + 4, by + 12);
+    ctx.closePath();
+    ctx.fill();
+    ctx.strokeStyle = '#2c3e50';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    // Clean inner tail seam
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(x - 3, by + 10, 6, 3);
+
+    // Emoji icon / symbol
+    ctx.font = '15px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(symbol, x, by - 1);
+
+    ctx.restore();
   }
 
   private drawEmoteBubble(x: number, y: number, symbol: string): void {

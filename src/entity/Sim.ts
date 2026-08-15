@@ -90,7 +90,21 @@ export class Sim {
     return Moods.getMood(satisfaction, lowest.value, lowest.need, dominant?.emotion);
   }
 
+  public activeEmote: { symbol: string; expiresAt: number } | null = null;
+
+  public triggerEmote(symbol: string, durationMs: number = 3500): void {
+    this.activeEmote = {
+      symbol,
+      expiresAt: Date.now() + durationMs
+    };
+  }
+
   public update(deltaSec: number, deltaMinutes: number): void {
+    // 0. Check active emote expiry
+    if (this.activeEmote && Date.now() > this.activeEmote.expiresAt) {
+      this.activeEmote = null;
+    }
+
     // 1. Needs & Moodlets decay
     this.needs.update(deltaMinutes);
     this.moodletManager.update(deltaSec);

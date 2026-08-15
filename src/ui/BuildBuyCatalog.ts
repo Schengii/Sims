@@ -8,7 +8,7 @@ import { House, type FloorType } from '../world/House';
 import { FURNITURE_CATALOG } from '../world/Furniture';
 import { SoundManager } from '../audio/SoundManager';
 
-export type BuildToolMode = 'select' | 'wall' | 'door' | 'window' | 'floor' | 'pool' | 'rotate' | 'move' | 'sell' | 'garden';
+export type BuildToolMode = 'select' | 'wall' | 'room' | 'door' | 'window' | 'floor' | 'pool' | 'rotate' | 'move' | 'sell' | 'garden';
 
 export class BuildBuyCatalog {
   private container: HTMLElement;
@@ -35,7 +35,8 @@ export class BuildBuyCatalog {
           </div>
 
           <!-- Quick Action Toolbar -->
-          <div style="display: flex; gap: 8px; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px;">
+          <div style="display: flex; gap: 8px; margin-bottom: 12px; background: rgba(0,0,0,0.2); padding: 8px; border-radius: 8px; flex-wrap: wrap;">
+            <button class="btn-hud tool-mode-btn" id="btn-tool-room" style="font-size: 0.85rem; background: var(--primary-accent); color: #000; font-weight: bold;">📦 Raum erstellen</button>
             <button class="btn-hud tool-mode-btn" id="btn-tool-rotate" style="font-size: 0.85rem;">🔄 Möbel drehen</button>
             <button class="btn-hud tool-mode-btn" id="btn-tool-move" style="font-size: 0.85rem;">🚚 Möbel verschieben</button>
             <button class="btn-hud tool-mode-btn" id="btn-tool-sell" style="font-size: 0.85rem;">💰 Möbel verkaufen</button>
@@ -79,6 +80,13 @@ export class BuildBuyCatalog {
     });
 
     // Quick Toolbar listeners
+    document.getElementById('btn-tool-room')?.addEventListener('click', () => {
+      this.activeToolMode = 'room';
+      this.soundManager.playUIClick();
+      alert('📦 Raum-Werkzeug aktiviert!\nKlicke zuerst auf die linke obere Ecke und danach auf die rechte untere Ecke im Haus.');
+      this.close();
+    });
+
     document.getElementById('btn-tool-rotate')?.addEventListener('click', () => {
       this.activeToolMode = 'rotate';
       this.soundManager.playUIClick();
@@ -113,7 +121,7 @@ export class BuildBuyCatalog {
     document.getElementById('build-btn-close')?.addEventListener('click', () => this.close());
   }
 
-  private renderTabContent(sim: Sim, house: House, tab: 'furniture' | 'walls' | 'openings' | 'floors' | 'pools'): void {
+  private renderTabContent(sim: Sim, house: House, tab: 'furniture' | 'blueprints' | 'walls' | 'openings' | 'floors' | 'pools'): void {
     const content = document.getElementById('build-tab-content');
     if (!content) return;
 
@@ -157,13 +165,91 @@ export class BuildBuyCatalog {
           }
         });
       });
+    } else if (tab === 'blueprints') {
+      content.innerHTML = `
+        <div style="display: flex; flex-direction: column; gap: 14px;">
+          <p style="font-size: 0.9rem; color: var(--text-muted);">Wähle einen fertigen Designer-Raum und platziere ihn mit einem Klick auf deinem Grundstück.</p>
+          <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;">
+            <div class="glass-panel" style="padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 2rem; text-align: center; margin-bottom: 8px;">🛏️</div>
+                <h4 style="font-family: var(--font-heading);">Starter-Schlafzimmer</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 8px 0;">3x3 Raum inkl. Bett, Staffelei und Parkettboden.</p>
+              </div>
+              <div>
+                <div style="font-weight: bold; color: var(--simoleon-green); margin-bottom: 8px;">§ 850</div>
+                <button class="btn-hud blueprint-btn" data-type="bedroom" style="width: 100%; justify-content: center;">📐 Raum Errichten</button>
+              </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 2rem; text-align: center; margin-bottom: 8px;">🛁</div>
+                <h4 style="font-family: var(--font-heading);">Wellness-Badezimmer</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 8px 0;">3x3 Raum inkl. Dusche, Toilette und Fliesenboden.</p>
+              </div>
+              <div>
+                <div style="font-weight: bold; color: var(--simoleon-green); margin-bottom: 8px;">§ 1.200</div>
+                <button class="btn-hud blueprint-btn" data-type="bathroom" style="width: 100%; justify-content: center;">📐 Raum Errichten</button>
+              </div>
+            </div>
+
+            <div class="glass-panel" style="padding: 14px; display: flex; flex-direction: column; justify-content: space-between;">
+              <div>
+                <div style="font-size: 2rem; text-align: center; margin-bottom: 8px;">💻</div>
+                <h4 style="font-family: var(--font-heading);">High-Tech Arbeitszimmer</h4>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin: 4px 0 8px 0;">3x3 Raum inkl. PC-Station, Marmorboden & Fenster.</p>
+              </div>
+              <div>
+                <div style="font-weight: bold; color: var(--simoleon-green); margin-bottom: 8px;">§ 1.600</div>
+                <button class="btn-hud blueprint-btn" data-type="office" style="width: 100%; justify-content: center;">📐 Raum Errichten</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      content.querySelectorAll('.blueprint-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const type = (e.currentTarget as HTMLElement).getAttribute('data-type');
+          if (type === 'bedroom' && sim.simoleons >= 850) {
+            sim.simoleons -= 850;
+            house.buildRoom(4, 4, 7, 7, 'wood', '#8d5524');
+            house.addFurniture('bed_basic', 5, 5);
+            house.addFurniture('easel_artist', 7, 5);
+            this.soundManager.playBuySound();
+            alert('🎉 Starter-Schlafzimmer erfolgreich errichtet!');
+            this.close();
+          } else if (type === 'bathroom' && sim.simoleons >= 1200) {
+            sim.simoleons -= 1200;
+            house.buildRoom(8, 4, 11, 7, 'tile', '#95a5a6');
+            house.addFurniture('shower_glass', 9, 5);
+            house.addFurniture('toilet_deluxe', 10, 5);
+            this.soundManager.playBuySound();
+            alert('🎉 Wellness-Badezimmer erfolgreich errichtet!');
+            this.close();
+          } else if (type === 'office' && sim.simoleons >= 1600) {
+            sim.simoleons -= 1600;
+            house.buildRoom(4, 8, 7, 11, 'marble', '#ecf0f1');
+            house.addFurniture('pc_station', 5, 9);
+            this.soundManager.playBuySound();
+            alert('🎉 High-Tech Büro erfolgreich errichtet!');
+            this.close();
+          } else {
+            alert('Nicht genügend Simoleons vorhanden!');
+          }
+        });
+      });
     } else if (tab === 'walls') {
       content.innerHTML = `
         <div style="display: flex; flex-direction: column; gap: 14px;">
-          <p style="font-size: 0.9rem; color: var(--text-muted);">Aktiviere das Wand-Werkzeug und klicke auf Kacheln auf dem Spielfeld, um Wände zu bauen oder abzureißen (§ 100 pro Wand segment).</p>
+          <p style="font-size: 0.9rem; color: var(--text-muted);">Aktiviere das Wand-Werkzeug und klicke auf Kacheln auf dem Spielfeld, um Wände zu bauen oder abzureißen (§ 100 pro Wandsegment).</p>
           <div style="display: flex; gap: 12px;">
             <button class="btn-hud ${this.activeToolMode === 'wall' ? 'active' : ''}" id="btn-tool-wall" style="flex: 1; justify-content: center;">
-              🧱 Wand-Werkzeug Aktivieren (§ 100)
+              🧱 Einzelne Wand Aktivieren (§ 100)
+            </button>
+            <button class="btn-hud ${this.activeToolMode === 'room' ? 'active' : ''}" id="btn-tool-room-tab" style="flex: 1; justify-content: center; background: var(--primary-accent); color: #000; font-weight: bold;">
+              📦 Ganzen Raum ziehen
             </button>
           </div>
         </div>
@@ -173,6 +259,13 @@ export class BuildBuyCatalog {
         this.activeToolMode = 'wall';
         this.soundManager.playUIClick();
         alert('🧱 Wand-Werkzeug aktiviert! Klicke auf ein Rasterfeld im Spiel, um Wände zu setzen.');
+        this.close();
+      });
+
+      document.getElementById('btn-tool-room-tab')?.addEventListener('click', () => {
+        this.activeToolMode = 'room';
+        this.soundManager.playUIClick();
+        alert('📦 Raum-Werkzeug aktiviert! Klicke zwei Ecken auf dem Spielfeld an, um einen Raum zu erstellen.');
         this.close();
       });
     } else if (tab === 'openings') {
