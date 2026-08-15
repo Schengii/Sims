@@ -80,6 +80,10 @@ export class HUDManager {
   public onOpenInheritance?: () => void;
   public onOpenTravel?: () => void;
   public onOpenDetective?: () => void;
+  public onOpenEquestrian?: () => void;
+  public onOpenScuba?: () => void;
+  public onOpenPenthouse?: () => void;
+  public onOpenPrivateChef?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -147,7 +151,10 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-bills" title="Rechnungen & Stromkonto">📮 Rechnungen</button>
             <button class="btn-hud" id="btn-open-magic" title="Zauberbuch & Alchemie">🪄 Magie</button>
             <button class="btn-hud" id="btn-open-veh" title="Garage & Fuhrpark">🚗 Garage</button>
-            <button class="btn-hud" id="btn-open-biz" title="Eigenes Gewerbe & Laden">🏪 Gewerbe</button>
+            <button class="btn-hud" id="btn-open-equestrian" title="Reitsportzentrum & Turniere" style="background: rgba(139, 69, 19, 0.25); color: #f39c12; font-weight: bold;">🐎 Reiten</button>
+            <button class="btn-hud" id="btn-open-scuba" title="Tiefsee-Tauchen & Schätze" style="background: rgba(41, 128, 185, 0.25); color: #38bdf8; font-weight: bold;">🤿 Tauchen</button>
+            <button class="btn-hud" id="btn-open-penthouse" title="Luxus-Penthouses & High-Rise Living" style="background: rgba(241, 196, 15, 0.25); color: #f1c40f; font-weight: bold;">🏙️ Penthouse</button>
+            <button class="btn-hud" id="btn-open-chef" title="Privatkoch & VIP-Catering" style="background: rgba(230, 126, 34, 0.25); color: #f39c12; font-weight: bold;">👨‍🍳 Privatkoch</button>
             <button class="btn-hud" id="btn-open-travel" title="Flughafen & Traumurlaube" style="background: rgba(56, 189, 248, 0.25); color: #38bdf8; font-weight: bold;">✈️ Urlaub</button>
             <button class="btn-hud" id="btn-open-detective" title="Polizeirevier & Detektiv-Fälle" style="background: rgba(52, 73, 94, 0.35); color: #93c5fd; font-weight: bold;">🕵️ Detektiv</button>
             <button class="btn-hud" id="btn-open-park" title="Sim-Wunderland Freizeitpark" style="background: rgba(243, 156, 18, 0.25); color: #f1c40f; font-weight: bold;">🎡 Freizeitpark</button>
@@ -376,6 +383,26 @@ export class HUDManager {
     document.getElementById('btn-open-detective')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenDetective) this.onOpenDetective();
+    });
+
+    document.getElementById('btn-open-equestrian')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenEquestrian) this.onOpenEquestrian();
+    });
+
+    document.getElementById('btn-open-scuba')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenScuba) this.onOpenScuba();
+    });
+
+    document.getElementById('btn-open-penthouse')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenPenthouse) this.onOpenPenthouse();
+    });
+
+    document.getElementById('btn-open-chef')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenPrivateChef) this.onOpenPrivateChef();
     });
 
     document.getElementById('btn-open-cruise')?.addEventListener('click', () => {

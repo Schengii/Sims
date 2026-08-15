@@ -188,6 +188,12 @@ Sims/
 - **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
 - **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
 
+### Version 17.0.0 (Equestrian Center, Scuba Diving, Penthouse Living & Private Chef Expansion)
+- **[Feature] Reitsportzentrum & Pferdeturniere (`EquestrianManager.ts`, `EquestrianModal.ts`)**: Eigene edle Pferde pflegen, Tempo- & Sprungtraining absolvieren und an Meisterschafts-Turnieren um Goldmedaillen & Preisgelder (§ 2.500+) teilnehmen.
+- **[Feature] Tiefsee-Tauchen & Meeres-Schätze (`ScubaDivingSystem.ts`, `ScubaModal.ts`)**: Tauchgänge auf den Meeresgrund wagen, schillernde Riesenperlen, Tiefseekorallen und versunkene Piraten-Goldtruhen bergen.
+- **[Feature] Luxus-Penthouses & High-Rise Living (`PenthouseManager.ts`, `PenthouseModal.ts`)**: Wolkenkratzer-Penthouses ersteigern (Skyline Tower, Starlight Crown Suite) und wöchentliche Luxus-Mietdividenden (§ 2.200 - § 3.800) kassieren.
+- **[Feature] Privatkoch & VIP-Catering Business (`PrivateChefManager.ts`, `PrivateChefModal.ts`)**: Exklusive Gourmet-Aufträge für Schloss-Hochzeiten und VIP-Filmgala-Buffets annehmen, 5-Sterne-Menüs zaubern & Starkoch-Honorare kassieren.
+
 ### Version 16.0.0 (World Vacations, Magic Familiars, Detective Career & Smart Garden Expansion)
 - **[Feature] Weltreisen, Flughafen & Traumurlaube (`TravelManager.ts`, `TravelModal.ts`)**: Flugbuchungen zu weltberühmten Ferienzielen (Sulani Tropeninsel 🏝️, Mt. Komorebi Ski & Onsen 🏔️, Oasis Springs 🏜️), 100% Bedürfnis-Revitalisierung, Souvenirs & Tiefenentspannungs-Moodlet.
 - **[Feature] Magische Zauber-Vertraute (`FamiliarManager.ts`, `MagicModal.ts`)**: Beschwörung magischer Schutzgeister & Begleiter (Schnee-Eule 🦉, Glühender Phönix 🐦‍🔥, Sternen-Katze 🐱, Mini-Glutdrache 🐉) für permanente passive Mana-Regeneration.

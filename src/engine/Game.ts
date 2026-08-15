@@ -144,6 +144,14 @@ import { FamiliarManager } from '../systems/FamiliarManager';
 import { DetectiveManager } from '../systems/DetectiveManager';
 import { DetectiveModal } from '../ui/DetectiveModal';
 import { SmartGardenSystem } from '../systems/SmartGardenSystem';
+import { EquestrianManager } from '../systems/EquestrianManager';
+import { EquestrianModal } from '../ui/EquestrianModal';
+import { ScubaDivingSystem } from '../systems/ScubaDivingSystem';
+import { ScubaModal } from '../ui/ScubaModal';
+import { PenthouseManager } from '../systems/PenthouseManager';
+import { PenthouseModal } from '../ui/PenthouseModal';
+import { PrivateChefManager } from '../systems/PrivateChefManager';
+import { PrivateChefModal } from '../ui/PrivateChefModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -277,6 +285,14 @@ export class Game {
   public detectiveManager: DetectiveManager;
   public detectiveModal: DetectiveModal;
   public smartGarden: SmartGardenSystem;
+  public equestrianManager: EquestrianManager;
+  public equestrianModal: EquestrianModal;
+  public scubaSystem: ScubaDivingSystem;
+  public scubaModal: ScubaModal;
+  public penthouseManager: PenthouseManager;
+  public penthouseModal: PenthouseModal;
+  public privateChefManager: PrivateChefManager;
+  public privateChefModal: PrivateChefModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -425,6 +441,14 @@ export class Game {
     this.detectiveManager = new DetectiveManager();
     this.detectiveModal = new DetectiveModal(uiContainer, this.soundManager);
     this.smartGarden = new SmartGardenSystem();
+    this.equestrianManager = new EquestrianManager();
+    this.equestrianModal = new EquestrianModal(uiContainer, this.soundManager);
+    this.scubaSystem = new ScubaDivingSystem();
+    this.scubaModal = new ScubaModal(uiContainer, this.soundManager);
+    this.penthouseManager = new PenthouseManager();
+    this.penthouseModal = new PenthouseModal(uiContainer, this.soundManager);
+    this.privateChefManager = new PrivateChefManager();
+    this.privateChefModal = new PrivateChefModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -932,6 +956,10 @@ export class Game {
     this.hud.onOpenInheritance = () => this.inheritanceModal.open(this.inheritanceManager, this.sim, this.toastManager);
     this.hud.onOpenTravel = () => this.travelModal.open(this.travelManager, this.sim, this.toastManager);
     this.hud.onOpenDetective = () => this.detectiveModal.open(this.detectiveManager, this.sim, this.toastManager);
+    this.hud.onOpenEquestrian = () => this.equestrianModal.open(this.equestrianManager, this.sim, this.toastManager);
+    this.hud.onOpenScuba = () => this.scubaModal.open(this.scubaSystem, this.sim, this.toastManager);
+    this.hud.onOpenPenthouse = () => this.penthouseModal.open(this.penthouseManager, this.sim, this.toastManager);
+    this.hud.onOpenPrivateChef = () => this.privateChefModal.open(this.privateChefManager, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {
