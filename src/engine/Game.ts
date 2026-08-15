@@ -119,6 +119,8 @@ import { FilmStudioSystem } from '../systems/FilmStudioSystem';
 import { DirectorModal } from '../ui/DirectorModal';
 import { YachtManager } from '../systems/YachtManager';
 import { CruiseModal } from '../ui/CruiseModal';
+import { HealthSystem } from '../systems/HealthSystem';
+import { HealthModal } from '../ui/HealthModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -227,6 +229,8 @@ export class Game {
   public directorModal: DirectorModal;
   public yachtManager: YachtManager;
   public cruiseModal: CruiseModal;
+  public healthSystem: HealthSystem;
+  public healthModal: HealthModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -350,6 +354,8 @@ export class Game {
     this.directorModal = new DirectorModal();
     this.yachtManager = new YachtManager();
     this.cruiseModal = new CruiseModal();
+    this.healthSystem = new HealthSystem();
+    this.healthModal = new HealthModal(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -845,6 +851,7 @@ export class Game {
     this.hud.onOpenFarm = () => this.ranchModal.open(this.farmSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenDirector = () => this.directorModal.open(this.filmStudioSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenCruise = () => this.cruiseModal.open(this.yachtManager, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenHealth = () => this.healthModal.open(this.healthSystem, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
     this.hud.onOpenPetShow = () => {
@@ -968,6 +975,7 @@ export class Game {
     // 2. Weather, Garden, Calendar, Bills, Magic, Delivery, Business & Ambient Audio Updates
     this.weatherSystem.update(timeResult.deltaMinutes);
     this.gardenSystem.update(timeResult.deltaMinutes);
+    this.healthSystem.update(timeResult.deltaMinutes, this.sim, this.weatherSystem.currentWeather);
     this.farmSystem.updateTick();
     this.deliverySystem.update(deltaSec, this.sim, this.toastManager, this.soundManager);
     this.calendarManager.updateTime(this.timeSystem.day);
@@ -1046,7 +1054,8 @@ export class Game {
       this.weatherSystem,
       this.gardenSystem,
       this.household.sims,
-      this.petManager
+      this.petManager,
+      this.eventManager
     );
 
     // 9. Update HUD & Whims

@@ -68,6 +68,7 @@ export class HUDManager {
   public onOpenFarm?: () => void;
   public onOpenDirector?: () => void;
   public onOpenCruise?: () => void;
+  public onOpenHealth?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -140,6 +141,7 @@ export class HUDManager {
             <button class="btn-hud" id="btn-weather-toggle" title="Wetter umstellen">☀️ Sonnig</button>
             <button class="btn-hud" id="btn-wall-toggle" title="Wandansicht wechseln">🧱 Wände: Cutaway</button>
             <button class="btn-hud" id="btn-radio-toggle" aria-label="Radio Sender umschalten">📻 Radio: Aus</button>
+            <button class="btn-hud" id="btn-open-health" title="Gesundheit & Medizin-Zentrum" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-weight: bold;">🩺 Gesundheit</button>
             <button class="btn-hud" id="btn-open-cheats" title="Sims Cheat Konsole (Strg + Umschalt + C)" style="background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">💻 Cheats</button>
             <button class="btn-hud" id="btn-audio-settings" aria-label="Audio Einstellungen">🔊 Audio</button>
             <button class="btn-hud" id="btn-save" aria-label="Spielstand speichern">💾 Speichern</button>
@@ -296,6 +298,11 @@ export class HUDManager {
     document.getElementById('btn-open-director')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenDirector) this.onOpenDirector();
+    });
+
+    document.getElementById('btn-open-health')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenHealth) this.onOpenHealth();
     });
 
     document.getElementById('btn-open-cruise')?.addEventListener('click', () => {

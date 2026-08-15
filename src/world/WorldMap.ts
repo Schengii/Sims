@@ -25,6 +25,14 @@ export const VENUES_CATALOG: Record<string, VenueLocation> = {
     description: 'Dein eigenes gebautes Zuhause mit Garten, Möbeln und Haustieren.',
     bgColor: '#27ae60'
   },
+  gym: {
+    id: 'gym',
+    name: '🏋️ Fit & Flex Studio',
+    category: 'Sport & Fitness',
+    icon: '🏋️',
+    description: 'Modernes Fitnessstudio mit Laufbändern, Hantelbänken & Wellness-Duschen.',
+    bgColor: '#d35400'
+  },
   lounge: {
     id: 'lounge',
     name: 'Club Velvet (Lounge & Nightclub)',
@@ -35,11 +43,19 @@ export const VENUES_CATALOG: Record<string, VenueLocation> = {
   },
   park: {
     id: 'park',
-    name: 'Plumbob Park & Fitness',
-    category: 'Erholung & Sport',
-    icon: '🏋️',
-    description: 'Öffentlicher Stadtpark mit Angelteich, Laufbändern, Schach-Tischen und Natur.',
-    bgColor: '#d35400'
+    name: 'Plumbob Zentralpark & Teich',
+    category: 'Erholung & Natur',
+    icon: '🌳',
+    description: 'Öffentlicher Stadtpark mit Angelteich, Picknick-Wiese, Staffeleien und Schachtisch.',
+    bgColor: '#27ae60'
+  },
+  restaurant: {
+    id: 'restaurant',
+    name: 'La Bella Sim (Gourmet-Restaurant)',
+    category: 'Gastronomie & Genuss',
+    icon: '🍽️',
+    description: 'Edles 5-Sterne-Restaurant mit Gourmet-Buffet, Kellnern und gemütlicher Dinner-Lounge.',
+    bgColor: '#e74c3c'
   },
   cafe: {
     id: 'cafe',
@@ -58,7 +74,7 @@ export class WorldMap {
   public travelToVenue(venueId: string, game: any): boolean {
     if (!VENUES_CATALOG[venueId]) return false;
 
-    // 1. Save home layout if leaving home for the first time
+    // 1. Save home layout if leaving home
     if (this.currentVenueId === 'home' && venueId !== 'home') {
       this.homeBackupHouseData = JSON.parse(JSON.stringify({
         placedFurniture: game.house.placedFurniture,
@@ -68,16 +84,20 @@ export class WorldMap {
 
     this.currentVenueId = venueId;
 
-    // 2. Clear current lot furniture and setup venue-specific layout
+    // 2. Setup venue-specific active layout
     if (venueId === 'home') {
       if (this.homeBackupHouseData) {
         game.house.placedFurniture = this.homeBackupHouseData.placedFurniture;
         game.house.tiles = this.homeBackupHouseData.tiles;
       }
+    } else if (venueId === 'gym') {
+      this.setupGymVenue(game.house, game.npcManager);
     } else if (venueId === 'lounge') {
       this.setupLoungeVenue(game.house, game.npcManager);
     } else if (venueId === 'park') {
       this.setupParkVenue(game.house, game.npcManager);
+    } else if (venueId === 'restaurant') {
+      this.setupRestaurantVenue(game.house, game.npcManager);
     } else if (venueId === 'cafe') {
       this.setupCafeVenue(game.house, game.npcManager);
     }
@@ -90,14 +110,37 @@ export class WorldMap {
     return true;
   }
 
-  private setupLoungeVenue(house: House, npcManager: NPCManager): void {
-    for (let x = 0; x < house.width; x++) {
-      for (let y = 0; y < house.height; y++) {
-        house.tiles[x][y].type = (x >= 2 && x <= 13 && y >= 2 && y <= 13) ? 'marble' : 'tile';
-        house.tiles[x][y].color = (x >= 2 && x <= 13 && y >= 2 && y <= 13) ? '#111827' : '#374151';
-      }
-    }
+  private setupGymVenue(house: House, npcManager: NPCManager): void {
+    house.buildRoom(2, 2, 13, 12, 'tile', '#7f8c8d', '#2c3e50');
+    house.placedFurniture = [];
+    house.addFurniture('treadmill', 4, 4);
+    house.addFurniture('treadmill', 6, 4);
+    house.addFurniture('shower_glass', 10, 4);
+    house.addFurniture('shower_glass', 12, 4);
+    house.addFurniture('sofa_luxury', 8, 9);
+    house.addFurniture('stereo_hifi', 4, 9);
 
+    npcManager.spawnTownie();
+    npcManager.spawnTownie();
+    npcManager.spawnTownie();
+  }
+
+  private setupRestaurantVenue(house: House, npcManager: NPCManager): void {
+    house.buildRoom(2, 2, 13, 12, 'marble', '#f5f6fa', '#c0392b');
+    house.placedFurniture = [];
+    house.addFurniture('party_buffet', 4, 4);
+    house.addFurniture('bar_counter', 9, 4);
+    house.addFurniture('sofa_luxury', 4, 8);
+    house.addFurniture('sofa_luxury', 9, 8);
+    house.addFurniture('coffee_bar', 12, 4);
+
+    npcManager.spawnTownie();
+    npcManager.spawnTownie();
+    npcManager.spawnTownie();
+  }
+
+  private setupLoungeVenue(house: House, npcManager: NPCManager): void {
+    house.buildRoom(2, 2, 13, 12, 'marble', '#111827', '#8e44ad');
     house.placedFurniture = [];
     house.addFurniture('dj_booth', 7, 3);
     house.addFurniture('bar_counter', 4, 8);
@@ -121,8 +164,7 @@ export class WorldMap {
     }
 
     house.placedFurniture = [];
-    house.addFurniture('treadmill', 3, 4);
-    house.addFurniture('treadmill', 5, 4);
+    house.addFurniture('chess_table', 4, 4);
     house.addFurniture('easel_artist', 3, 9);
     house.addFurniture('sofa_luxury', 7, 7);
 
@@ -131,14 +173,7 @@ export class WorldMap {
   }
 
   private setupCafeVenue(house: House, npcManager: NPCManager): void {
-    for (let x = 0; x < house.width; x++) {
-      for (let y = 0; y < house.height; y++) {
-        const isIndoor = x >= 3 && x <= 12 && y >= 3 && y <= 11;
-        house.tiles[x][y].type = isIndoor ? 'tile' : 'grass';
-        house.tiles[x][y].color = isIndoor ? '#d35400' : '#27ae60';
-      }
-    }
-
+    house.buildRoom(3, 3, 12, 11, 'tile', '#d35400', '#795548');
     house.placedFurniture = [];
     house.addFurniture('coffee_bar', 7, 4);
     house.addFurniture('sofa_luxury', 4, 7);

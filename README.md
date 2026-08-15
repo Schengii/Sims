@@ -188,6 +188,11 @@ Sims/
 - **[Feature] Tierheim & Haustier-Zucht (`PetBreedingSystem.ts`, `PetShelterModal.ts`)**: Veranlassen von Haustier-Zucht im Haushalt, Vererbung genetischer Fellmerkmale & Rassen, Pflege von Tierbabys im Welpen- & Kätzchen-Nest sowie Tierheim-Adoptionen.
 - **[Feature] Neue Interaktive Möbel (`Furniture.ts`)**: Sci-Fi Erfinder-Werkbank (`invention_workbench`), Welpen- & Kätzchen-Nest (`pet_nursery_bed`), Resort Empfangs-Tresen (`resort_reception`) & Architekten Zeichentisch (`decorator_drafting_table`).
 
+### Version 12.0.0 (Live Community Lots, Health & Wellness, Emergency Responders & Medical System)
+- **[Feature] Aktive Gemeinschaftsgrundstücke (`WorldMap.ts`, `WorldMapModal.ts`)**: Nahtloses Reisen auf voll bespielbare Live-Venues (Fit & Flex Gym 🏋️, La Bella Sim Restaurant 🍽️, Club Velvet Lounge 🍸, Plumbob Park 🌳, Café Simlish ☕) mit spawnden Nachbarn & spezifischen Interaktions-Objekten.
+- **[Feature] Gesundheit, Krankheiten & Wellness (`HealthSystem.ts`, `HealthModal.ts`)**: 4 Krankheiten (Erkältung 🤧, Grippe 🤒, Stress-Burnout 🤯, Pollen-Allergie 🌸) mit Symptomen, Bio-Kräutertee brauen 🍵 und Arzt-Hausbesuchen 🚑.
+- **[Feature] Live-Einsatzkräfte & Notfall-Visualisierung (`IsometricRenderer.ts`, `EventSystem.ts`)**: Animierte Flammen-Partikel bei Bränden sowie sichtbare Einsatzkräfte (Feuerwehr 🚒 & Polizei 🚓) auf dem Grundstück.
+
 ### Version 11.0.0 (Fame, Occult & Restaurant Empire Expansion)
 - **[Feature] Ruhm & Promi-Status (`FameSystem.ts`, `FameModal.ts`)**: Star-Reputation (1-5 Sterne ⭐️), Fame XP, Autogrammstunden für Fans & Paparazzi-Fotoshootings.
 - **[Feature] Okkulte Lebensformen & Zauberkraft (`OccultSystem.ts`, `OccultModal.ts`)**: Verwandlung in Vampir 🦇, Werwolf 🐺 oder Alien 👽 mit Dunkler Form & okkulten Buffs.

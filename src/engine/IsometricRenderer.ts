@@ -7,6 +7,7 @@ import { LifeStage } from '../entity/LifeStage';
 import type { WeatherSystem } from '../systems/WeatherSystem';
 import type { GardenSystem } from '../world/GardenSystem';
 import type { PetManager } from '../entity/PetManager';
+import type { EventManager } from '../systems/EventSystem';
 
 export class IsometricRenderer {
   private canvas: HTMLCanvasElement;
@@ -57,7 +58,8 @@ export class IsometricRenderer {
     weatherSystem?: WeatherSystem,
     gardenSystem?: GardenSystem,
     householdSims?: Sim[],
-    petManager?: PetManager
+    petManager?: PetManager,
+    eventManager?: EventManager
   ): void {
     const ctx = this.ctx;
     ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
@@ -142,6 +144,11 @@ export class IsometricRenderer {
       const isActive = hSim.id === sim.id;
       this.drawSim(simIso.x, simIso.y, hSim, isOnPool, isActive);
     });
+
+    // 6b. Render Emergency Responders & Disasters (Fire, Burglars, Firefighter 🚒, Police 🚓)
+    if (eventManager && eventManager.activeEvent && !eventManager.activeEvent.resolved) {
+      this.renderEmergencyDisaster(eventManager.activeEvent);
+    }
 
     ctx.restore();
 
@@ -741,6 +748,62 @@ export class IsometricRenderer {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(text, 110, 34);
+    ctx.restore();
+  }
+
+  private renderEmergencyDisaster(event: any): void {
+    const ctx = this.ctx;
+    ctx.save();
+
+    const time = Date.now() / 200;
+
+    if (event.type === 'fire') {
+      // Render animated flame particles at kitchen stove area (around grid 10, 4)
+      const fireIso = this.gridToIso(10, 4);
+      for (let i = 0; i < 5; i++) {
+        const fx = fireIso.x + Math.sin(time + i) * 12;
+        const fy = fireIso.y - 15 - (i * 8) - Math.abs(Math.cos(time * 2 + i) * 10);
+        const radius = 6 + Math.sin(time + i) * 3;
+
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(239, 68, 68, 0.85)' : 'rgba(245, 158, 11, 0.9)';
+        ctx.beginPath();
+        ctx.arc(fx, fy, Math.max(2, radius), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Firefighter Responders at entrance
+      const responderIso = this.gridToIso(7, 12);
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🚒', responderIso.x - 24, responderIso.y);
+      ctx.fillText('🧯', responderIso.x + 8, responderIso.y - 10);
+      ctx.font = 'bold 10px sans-serif';
+      ctx.fillStyle = '#ef4444';
+      ctx.fillText('FEUERWEHR', responderIso.x - 8, responderIso.y - 28);
+    } else if (event.type === 'burglar') {
+      // Burglar with bag
+      const thiefIso = this.gridToIso(6, 6);
+      ctx.font = '22px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('🥷', thiefIso.x, thiefIso.y - 12);
+      ctx.fillText('💰', thiefIso.x + 12, thiefIso.y - 12);
+
+      // Police Responders at entrance
+      const copIso = this.gridToIso(7, 12);
+      ctx.font = '22px sans-serif';
+      ctx.fillText('🚓', copIso.x - 20, copIso.y);
+      ctx.fillText('👮', copIso.x + 10, copIso.y - 10);
+      ctx.font = 'bold 10px sans-serif';
+      ctx.fillStyle = '#38bdf8';
+      ctx.fillText('POLIZEI', copIso.x - 5, copIso.y - 28);
+    } else if (event.type === 'ghost') {
+      const ghostIso = this.gridToIso(8, 8);
+      const gy = ghostIso.y - 20 + Math.sin(time) * 8;
+      ctx.font = '24px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('👻', ghostIso.x, gy);
+    }
+
     ctx.restore();
   }
 
