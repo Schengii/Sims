@@ -152,6 +152,7 @@ import { PenthouseManager } from '../systems/PenthouseManager';
 import { PenthouseModal } from '../ui/PenthouseModal';
 import { PrivateChefManager } from '../systems/PrivateChefManager';
 import { PrivateChefModal } from '../ui/PrivateChefModal';
+import { Minimap } from '../ui/Minimap';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -298,6 +299,8 @@ export class Game {
   private roomStartGrid: { x: number; y: number } | null = null;
   private lastTime: number = 0;
   private isRunning: boolean = false;
+  private minimap!: Minimap;
+  private faintWarningCooldown: number = 0;
 
 
   constructor(canvas: HTMLCanvasElement, uiContainer: HTMLElement) {
@@ -470,7 +473,13 @@ export class Game {
     this.setupEventHandlers();
     this.attemptLoadSave();
 
-    this.toastManager.showToast('Willkommen bei Sims 5 (v5.0)', 'Universität, Vermietung, Merkmale, Outfits & Galerie sind aktiv!', '💎', 'info');
+    // Wire NPC player reference for social AI (Verbesserung #7)
+    this.npcManager.setPlayerReference(this.sim);
+
+    // Initialize minimap (Verbesserung #16)
+    this.minimap = new Minimap(uiContainer);
+
+    this.toastManager.showToast('Willkommen bei Sims 5 (v18.0)', 'Bugfixes, Traits wirken jetzt, Quest-Rotation, Neue Skills & mehr!', '💎', 'info');
   }
 
   private initCanvasSize(): void {
@@ -1015,19 +1024,13 @@ export class Game {
     };
 
     this.hud.onSaveGame = () => {
-      SaveManager.saveGame(
-        this.sim,
-        this.house,
-        this.careerManager,
-        this.npcManager,
-        this.partyManager,
-        this.gardenSystem,
-        this.weatherSystem,
-        this.household,
-        this.petManager
-      );
-      this.soundManager.playLevelUp();
-      this.toastManager.showToast('Speicherstand gesichert', 'Spielstand inklusive Haushalt, Pets, Inventar & Garten gespeichert!', '💾', 'success');
+      const saved = SaveManager.saveFullGame(this);
+      if (saved) {
+        this.soundManager.playLevelUp();
+        this.toastManager.showToast('Spielstand gespeichert', 'Alle Systeme (Farm, Karriere, Quests, Gesundheit, etc.) vollständig gespeichert!', '💾', 'success');
+      } else {
+        this.toastManager.showToast('⚠️ Speicherfehler', 'Spielstand konnte nicht gespeichert werden!', '⚠️', 'warning');
+      }
     };
 
     this.hud.onSpeedChange = (speed) => this.timeSystem.setSpeed(speed);
@@ -1047,20 +1050,10 @@ export class Game {
   }
 
   private attemptLoadSave(): void {
-    const loaded = SaveManager.loadGame(
-      this.sim,
-      this.house,
-      this.careerManager,
-      this.npcManager,
-      this.partyManager,
-      this.gardenSystem,
-      this.weatherSystem,
-      this.household,
-      this.petManager
-    );
+    const loaded = SaveManager.loadFullGame(this);
     if (loaded) {
       this.sim = this.household.getActiveSim();
-      console.log('[Game Engine] Save file, household sims & pets loaded successfully.');
+      console.log('[Game Engine] Full game state loaded successfully (v18 SaveManager).');
     }
   }
 
@@ -1093,6 +1086,12 @@ export class Game {
     this.neighborhoodProgression.update(timeResult.deltaMinutes, this.sim, this.toastManager, this.soundManager);
     this.ambientAudio.updateSoundscape(this.timeSystem.hour, this.weatherSystem.currentWeather as any);
 
+    // Bug #3 fix: Daily quest reset check
+    const questReset = this.questManager.checkDailyReset(this.timeSystem.day, this.sim.getActiveTraitIds()[0]);
+    if (questReset) {
+      this.toastManager.showToast('📋 Neue Tagesquests!', '5 frische Aufgaben warten auf dich. Viel Erfolg!', '📋', 'info');
+    }
+
     // Simulate business sales tick
     if (Math.random() < 0.005) {
       this.businessManager.simulateCustomerTick();
@@ -1107,6 +1106,23 @@ export class Game {
     this.household.sims.forEach(hSim => {
       hSim.update(deltaSec, timeResult.deltaMinutes);
       SimAutonomy.update(hSim, this.house, deltaSec);
+
+      // Bug #9 fix: Faint warning when critically low needs
+      if (hSim.isFainting) {
+        this.sim.moodletManager.addMoodlet({
+          id: 'fainting_critical',
+          name: 'Kurz vor der Ohnmacht',
+          emotion: 'exhausted',
+          weight: 3,
+          durationSec: 30,
+          icon: '😵',
+          description: 'Hunger & Energie auf kritischem Niveau!'
+        });
+        if (hSim === this.sim && this.faintWarningCooldown <= 0) {
+          this.toastManager.showToast('⚠️ Notfall!', `${hSim.customization.name} droht ohnmächtig zu werden! Sofort essen und schlafen!`, '😵', 'warning');
+          this.faintWarningCooldown = 15; // Only warn every 15 seconds
+        }
+      }
 
       const currentAct = hSim.actionQueue.getCurrentAction();
       if (!currentAct || (currentAct.id !== 'sleep' && currentAct.id !== 'nap')) {
@@ -1173,6 +1189,15 @@ export class Game {
     this.hud.update(this.sim, this.timeSystem, this.household, this.petManager);
     this.whimPanel.update();
 
+    // 10. Minimap render (Verbesserung #16)
+    if (this.minimap) {
+      this.minimap.render(this.house, this.sim, this.npcManager, this.petManager);
+    }
+
+    // Update faint warning cooldown
+    if (this.faintWarningCooldown > 0) this.faintWarningCooldown -= deltaSec;
+
     requestAnimationFrame(this.loop.bind(this));
   }
 }
+

@@ -187,4 +187,20 @@ export class HealthSystem {
     }
     return { success: true, message: 'Frischer Kräutertee hat deinen Sim aufgewärmt (+Wohlbefinden).' };
   }
+
+  public exportData(): any {
+    return {
+      currentIllness: this.currentIllness,
+      remainingMinutes: this.remainingMinutes,
+      immunityLevel: this.immunityLevel
+    };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (data.currentIllness) this.currentIllness = data.currentIllness;
+    if (typeof data.remainingMinutes === 'number') this.remainingMinutes = data.remainingMinutes;
+    if (typeof data.immunityLevel === 'number') this.immunityLevel = data.immunityLevel;
+  }
 }
+

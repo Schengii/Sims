@@ -1,12 +1,22 @@
 /**
  * Create-A-Sim (CAS) Modal UI Editor
  * Provides customization for Sim name, gender, skin color, hair color, outfit style,
- * personality traits, and aspiration. Fully WCAG accessible.
+ * personality traits (up to 3), and aspiration. Fully WCAG accessible.
+ * v18: Now supports 3 trait slots like Sims 4. Traits are linked to TRAIT_CATALOG IDs.
  */
 
 import { Sim } from '../entity/Sim';
 import { Sanitizer } from '../security/Sanitizer';
 import { SoundManager } from '../audio/SoundManager';
+import { TRAIT_CATALOG } from '../systems/TraitSystem';
+
+/** Build the trait <option> list from TRAIT_CATALOG */
+function buildTraitOptions(selectedId?: string): string {
+  const entries = Object.values(TRAIT_CATALOG);
+  return entries.map(t => `
+    <option value="${t.id}" ${t.id === selectedId ? 'selected' : ''}>${t.icon} ${t.name}</option>
+  `).join('');
+}
 
 export class CASModal {
   private container: HTMLElement;
@@ -21,6 +31,7 @@ export class CASModal {
   }
 
   private renderBaseHTML(): void {
+    const traitOpts = buildTraitOptions();
     this.container.innerHTML = `
       <div class="modal-backdrop" id="modal-cas-backdrop" role="dialog" aria-modal="true" aria-labelledby="cas-title">
         <div class="modal-dialog glass-panel">
@@ -46,20 +57,47 @@ export class CASModal {
               </div>
 
               <div>
-                <label for="cas-trait" style="display: block; margin-bottom: 6px; font-weight: 600;">Hauptmerkmal</label>
-                <select id="cas-trait" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white;">
-                  <option value="Genial">🧠 Genial (Skill-Lernbonus)</option>
-                  <option value="Romantisch">💖 Romantisch (Doppelter Romantik-Zuwachs)</option>
-                  <option value="Aktiv">🏃 Aktiv & Sportlich (Verlangsamter Energieabbau)</option>
-                  <option value="Partylöwe">🥳 Partylöwe (Doppelte Party-Punkte)</option>
-                  <option value="Kreativ">🎨 Kreativ (+50% Gemälde-Wert)</option>
-                  <option value="Perfektionist">⭐ Perfektionist (Beförderungs-Bonus)</option>
-                  <option value="Chaotisch">🍕 Chaotisch (Halber Hygieneabbau)</option>
-                  <option value="Einsamer Wolf">🐺 Einsamer Wolf (Minimales Sozialbedürfnis)</option>
-                  <option value="Tech-Geek">💻 Tech-Geek (Doppelter Spaß am PC)</option>
-                  <option value="Tierliebhaber">🐾 Tierliebhaber (Maximale Pet-Bindung)</option>
+                <label style="display: block; margin-bottom: 6px; font-weight: 600;">🧬 Aspiration</label>
+                <select id="cas-aspiration" style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white;">
+                  <option value="Meisterköchin">🍽️ Meisterköchin</option>
+                  <option value="Weltberühmter Maler">🎨 Weltberühmter Maler</option>
+                  <option value="Fitness-Guru">🏃 Fitness-Guru</option>
+                  <option value="Technik-Genie">💻 Technik-Genie</option>
+                  <option value="Soziale Ikone">🌟 Soziale Ikone</option>
+                  <option value="Romantischer Weltenbummler">💕 Romantischer Weltenbummler</option>
+                  <option value="Familie">👨‍👩‍👧 Familie</option>
+                  <option value="Erfolgreicher Unternehmer">💼 Erfolgreicher Unternehmer</option>
                 </select>
               </div>
+            </div>
+
+            <!-- 3 Trait Slots (v18) -->
+            <div>
+              <label style="display: block; margin-bottom: 8px; font-weight: 600;">🧠 Merkmale (bis zu 3 aktiv, wie in Sims 4)</label>
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                <div>
+                  <label for="cas-trait-1" style="font-size: 0.8rem; display: block; margin-bottom: 4px; color: var(--plumbob-green);">Merkmal 1</label>
+                  <select id="cas-trait-1" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white; font-size: 0.85rem;">
+                    <option value="">– Kein Merkmal –</option>
+                    ${traitOpts}
+                  </select>
+                </div>
+                <div>
+                  <label for="cas-trait-2" style="font-size: 0.8rem; display: block; margin-bottom: 4px; color: var(--plumbob-green);">Merkmal 2</label>
+                  <select id="cas-trait-2" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white; font-size: 0.85rem;">
+                    <option value="">– Kein Merkmal –</option>
+                    ${traitOpts}
+                  </select>
+                </div>
+                <div>
+                  <label for="cas-trait-3" style="font-size: 0.8rem; display: block; margin-bottom: 4px; color: var(--plumbob-green);">Merkmal 3</label>
+                  <select id="cas-trait-3" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white; font-size: 0.85rem;">
+                    <option value="">– Kein Merkmal –</option>
+                    ${traitOpts}
+                  </select>
+                </div>
+              </div>
+              <p style="margin-top: 6px; font-size: 0.78rem; color: #aaa;">Jedes Merkmal beeinflusst Bedürfnis-Abbau, Launen und Whims deines Sims!</p>
             </div>
 
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;">
@@ -88,30 +126,60 @@ export class CASModal {
 
   public open(sim: Sim): void {
     const backdrop = document.getElementById('modal-cas-backdrop');
-    if (!backdrop) return;
+    if (!backdrop) {
+      this.renderBaseHTML();
+    }
+    const bd = document.getElementById('modal-cas-backdrop');
+    if (!bd) return;
 
     // Populate current values
     (document.getElementById('cas-name') as HTMLInputElement).value = sim.customization.name;
     (document.getElementById('cas-gender') as HTMLSelectElement).value = sim.customization.gender;
-    (document.getElementById('cas-trait') as HTMLSelectElement).value = sim.customization.trait;
     (document.getElementById('cas-skin') as HTMLInputElement).value = sim.customization.skinColor;
     (document.getElementById('cas-hair') as HTMLInputElement).value = sim.customization.hairColor;
     (document.getElementById('cas-outfit') as HTMLInputElement).value = sim.customization.outfitColor;
 
-    backdrop.classList.add('active');
+    if (sim.customization.aspiration) {
+      const asp = document.getElementById('cas-aspiration') as HTMLSelectElement;
+      if (asp) asp.value = sim.customization.aspiration;
+    }
 
-    // Attach form submit listener
+    // Populate trait slots
+    const activeTraits = sim.customization.traits && sim.customization.traits.length > 0
+      ? sim.customization.traits
+      : [sim.getActiveTraitIds()[0] ?? '', '', ''];
+    for (let i = 0; i < 3; i++) {
+      const sel = document.getElementById(`cas-trait-${i + 1}`) as HTMLSelectElement;
+      if (sel) sel.value = activeTraits[i] ?? '';
+    }
+
+    bd.classList.add('active');
+
+    // Attach form submit listener (replace to avoid duplicates)
     const form = document.getElementById('cas-form') as HTMLFormElement;
-    form.onsubmit = (e) => {
+    const newForm = form.cloneNode(true) as HTMLFormElement;
+    form.parentNode!.replaceChild(newForm, form);
+
+    newForm.onsubmit = (e) => {
       e.preventDefault();
       this.soundManager.playLevelUp();
 
       sim.customization.name = Sanitizer.sanitizeText((document.getElementById('cas-name') as HTMLInputElement).value, 24);
       sim.customization.gender = (document.getElementById('cas-gender') as HTMLSelectElement).value as any;
-      sim.customization.trait = Sanitizer.sanitizeText((document.getElementById('cas-trait') as HTMLSelectElement).value, 30);
       sim.customization.skinColor = (document.getElementById('cas-skin') as HTMLInputElement).value;
       sim.customization.hairColor = (document.getElementById('cas-hair') as HTMLInputElement).value;
       sim.customization.outfitColor = (document.getElementById('cas-outfit') as HTMLInputElement).value;
+      sim.customization.aspiration = (document.getElementById('cas-aspiration') as HTMLSelectElement)?.value ?? sim.customization.aspiration;
+
+      // Collect up to 3 traits
+      const traits: string[] = [];
+      for (let i = 1; i <= 3; i++) {
+        const val = (document.getElementById(`cas-trait-${i}`) as HTMLSelectElement)?.value;
+        if (val) traits.push(val);
+      }
+      sim.customization.traits = traits;
+      // Update legacy single trait for backward compat
+      sim.customization.trait = traits[0] ? (TRAIT_CATALOG[traits[0]]?.name ?? traits[0]) : sim.customization.trait;
 
       // Play Simlish chatter greeting
       this.soundManager.playSimlish(1.2, 'happy');

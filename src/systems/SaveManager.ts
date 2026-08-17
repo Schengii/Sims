@@ -1,6 +1,7 @@
 /**
  * Safe Persistence & LocalStorage Save Manager
  * Handles game state serialization, safe deserialization, and save file import/export.
+ * v18: Extended to persist ALL game systems added in versions 10–17.
  */
 
 import { Sim } from '../entity/Sim';
@@ -118,6 +119,7 @@ export interface GameSaveData {
   rentersData?: {
     tenants: import('./RentersSystem').Tenant[];
   };
+  // System data (all exported via exportData() pattern)
   resortData?: any;
   inventionData?: any;
   decoratorData?: any;
@@ -125,6 +127,32 @@ export interface GameSaveData {
   farmData?: any;
   filmStudioData?: any;
   yachtData?: any;
+  // v18: newly persisted systems
+  questData?: any;
+  healthData?: any;
+  fameData?: any;
+  politicsData?: any;
+  archaeologyData?: any;
+  schoolData?: any;
+  themeParkData?: any;
+  spaceData?: any;
+  bandData?: any;
+  inheritanceData?: any;
+  travelData?: any;
+  familiarData?: any;
+  detectiveData?: any;
+  equestrianData?: any;
+  scubaData?: any;
+  penthouseData?: any;
+  privateChefData?: any;
+  restaurantData?: any;
+  realEstateData?: any;
+  vetClinicData?: any;
+  aspirationData?: any;
+  weddingData?: any;
+  hobbyData?: any;
+  occultData?: any;
+  festivalData?: any;
   trophiesUnlocked?: string[];
   gardenPlots?: import('../world/GardenSystem').GardenPlot[];
   weather?: import('./WeatherSystem').WeatherType;
@@ -292,6 +320,152 @@ export class SaveManager {
       return false;
     }
   }
+
+  /**
+   * Save the full game instance (all systems) to a slot key.
+   * Uses exportData() pattern for all subsystems added in v10-v17.
+   * This is the recommended save method when called from the game loop.
+   */
+  public static saveFullGame(gameInstance: any, slotKey?: string): boolean {
+    try {
+      const key = slotKey || this.SAVE_KEY;
+      const g = gameInstance;
+
+      // Build base save with existing saveGame logic
+      const base = this.saveGame(
+        g.sim, g.house, g.careerManager, g.npcManager, g.partyManager,
+        g.gardenSystem, g.weatherSystem, g.household, g.petManager,
+        g.calendarManager, g.billsManager, g.magicManager, g.vehicleManager,
+        g.businessManager, g.photoManager, g.educationManager, g.rentersManager
+      );
+      if (!base) return false;
+
+      // Load the just-saved data and extend with all new system data
+      const raw = localStorage.getItem(key) || localStorage.getItem(this.SAVE_KEY);
+      if (!raw) return false;
+
+      const saveData: any = JSON.parse(raw);
+
+      // v18 extended system saves using exportData() pattern
+      const systemExports: Record<string, any> = {
+        questData:       g.questManager?.exportData?.(),
+        healthData:      g.healthSystem?.exportData?.(),
+        fameData:        g.fameSystem?.exportData?.(),
+        politicsData:    g.politicsManager?.exportData?.(),
+        archaeologyData: g.archaeologySystem?.exportData?.(),
+        schoolData:      g.schoolSystem?.exportData?.(),
+        themeParkData:   g.themeParkManager?.exportData?.(),
+        spaceData:       g.spaceManager?.exportData?.(),
+        bandData:        g.bandManager?.exportData?.(),
+        inheritanceData: g.inheritanceManager?.exportData?.(),
+        travelData:      g.travelManager?.exportData?.(),
+        familiarData:    g.familiarManager?.exportData?.(),
+        detectiveData:   g.detectiveManager?.exportData?.(),
+        equestrianData:  g.equestrianManager?.exportData?.(),
+        scubaData:       g.scubaSystem?.exportData?.(),
+        penthouseData:   g.penthouseManager?.exportData?.(),
+        privateChefData: g.privateChefManager?.exportData?.(),
+        restaurantData:  g.restaurantSystem?.exportData?.(),
+        realEstateData:  g.realEstateManager?.exportData?.(),
+        vetClinicData:   g.vetClinicManager?.exportData?.(),
+        resortData:      g.resortManager?.exportData?.(),
+        inventionData:   g.inventionSystem?.exportData?.(),
+        decoratorData:   g.decoratorSystem?.exportData?.(),
+        petBreedingData: g.petBreedingSystem?.exportData?.(),
+        farmData:        g.farmSystem?.exportData?.(),
+        filmStudioData:  g.filmStudioSystem?.exportData?.(),
+        yachtData:       g.yachtManager?.exportData?.(),
+        festivalData:    g.calendarManager?.exportFestivalData?.(),
+        occultData:      g.occultSystem?.exportData?.(),
+        weddingData:     g.weddingManager?.exportData?.(),
+        hobbyData:       g.hobbyManager?.exportData?.(),
+      };
+
+      // Merge into save object (skip undefined exports)
+      Object.entries(systemExports).forEach(([k, v]) => {
+        if (v !== undefined) saveData[k] = v;
+      });
+
+      localStorage.setItem(key, JSON.stringify(saveData));
+      return true;
+    } catch (e) {
+      console.error('[SaveManager] Error in saveFullGame:', e);
+      return false;
+    }
+  }
+
+  /**
+   * Load the full game instance (all systems) from a slot key.
+   * Calls importData() on all subsystems that have it.
+   */
+  public static loadFullGame(gameInstance: any, slotKey?: string): boolean {
+    try {
+      const key = slotKey || this.SAVE_KEY;
+      const raw = localStorage.getItem(key);
+      if (!raw) return false;
+
+      const data: any = Sanitizer.safeJSONParse(raw, null);
+      if (!data) return false;
+
+      // Load base systems
+      const base = this.loadGame(
+        gameInstance.sim, gameInstance.house, gameInstance.careerManager,
+        gameInstance.npcManager, gameInstance.partyManager, gameInstance.gardenSystem,
+        gameInstance.weatherSystem, gameInstance.household, gameInstance.petManager,
+        gameInstance.calendarManager, gameInstance.billsManager, gameInstance.magicManager,
+        gameInstance.vehicleManager, gameInstance.businessManager, gameInstance.photoManager,
+        gameInstance.educationManager, gameInstance.rentersManager
+      );
+      if (!base) return false;
+
+      // v18 extended system loads
+      const g = gameInstance;
+      const systemImports: [any, string][] = [
+        [g.questManager,       'questData'],
+        [g.healthSystem,       'healthData'],
+        [g.fameSystem,         'fameData'],
+        [g.politicsManager,    'politicsData'],
+        [g.archaeologySystem,  'archaeologyData'],
+        [g.schoolSystem,       'schoolData'],
+        [g.themeParkManager,   'themeParkData'],
+        [g.spaceManager,       'spaceData'],
+        [g.bandManager,        'bandData'],
+        [g.inheritanceManager, 'inheritanceData'],
+        [g.travelManager,      'travelData'],
+        [g.familiarManager,    'familiarData'],
+        [g.detectiveManager,   'detectiveData'],
+        [g.equestrianManager,  'equestrianData'],
+        [g.scubaSystem,        'scubaData'],
+        [g.penthouseManager,   'penthouseData'],
+        [g.privateChefManager, 'privateChefData'],
+        [g.restaurantSystem,   'restaurantData'],
+        [g.realEstateManager,  'realEstateData'],
+        [g.vetClinicManager,   'vetClinicData'],
+        [g.resortManager,      'resortData'],
+        [g.inventionSystem,    'inventionData'],
+        [g.decoratorSystem,    'decoratorData'],
+        [g.petBreedingSystem,  'petBreedingData'],
+        [g.farmSystem,         'farmData'],
+        [g.filmStudioSystem,   'filmStudioData'],
+        [g.yachtManager,       'yachtData'],
+        [g.occultSystem,       'occultData'],
+        [g.weddingManager,     'weddingData'],
+        [g.hobbyManager,       'hobbyData'],
+      ];
+
+      systemImports.forEach(([system, key]) => {
+        if (system && typeof system.importData === 'function' && data[key] !== undefined) {
+          system.importData(data[key]);
+        }
+      });
+
+      return true;
+    } catch (e) {
+      console.error('[SaveManager] Error in loadFullGame:', e);
+      return false;
+    }
+  }
+
 
   public static serializeGame(gameInstance: any): GameSaveData {
     return {

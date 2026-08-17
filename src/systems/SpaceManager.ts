@@ -121,4 +121,20 @@ export class SpaceManager {
 
     return { success: true, message: `Mission erfolgreich! +§ ${mission.rewardSimoleons} verdient!` };
   }
+
+  public exportData(): any {
+    return {
+      rocketBuildProgress: (this as any).rocketBuildProgress ?? 0,
+      completedMissions: (this as any).completedMissions ?? [],
+      collectedArtifacts: (this as any).collectedArtifacts ?? []
+    };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (typeof data.rocketBuildProgress === 'number') (this as any).rocketBuildProgress = data.rocketBuildProgress;
+    if (Array.isArray(data.completedMissions)) (this as any).completedMissions = data.completedMissions;
+    if (Array.isArray(data.collectedArtifacts)) (this as any).collectedArtifacts = data.collectedArtifacts;
+  }
 }
+

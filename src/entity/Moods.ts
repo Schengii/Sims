@@ -2,9 +2,10 @@
  * Sims Emotion & Mood Engine
  * Determines current Sim mood based on satisfaction, active traits, and recent actions.
  * Updates the iconic Plumbob color!
+ * v18: Added 'angry' and 'bored' mood types.
  */
 
-export type MoodType = 'happy' | 'energized' | 'inspired' | 'focused' | 'flirty' | 'tense' | 'sad' | 'exhausted';
+export type MoodType = 'happy' | 'energized' | 'inspired' | 'focused' | 'flirty' | 'tense' | 'sad' | 'exhausted' | 'angry' | 'bored';
 
 export interface MoodInfo {
   type: MoodType;
@@ -70,8 +71,24 @@ export class Moods {
           type: 'sad',
           label: 'Traurig',
           color: '#3498db',
-          plumbobColor: '#f1c40f',
-          description: 'Fühlt sich niedergeschlagen.'
+          plumbobColor: '#6c8ebf',
+          description: 'Fühlt sich niedergeschlagen und leer.'
+        };
+      case 'angry':
+        return {
+          type: 'angry',
+          label: 'Wütend',
+          color: '#c0392b',
+          plumbobColor: '#e74c3c',
+          description: 'Hochgradig verärgert – droht mit negativen Aktionen!'
+        };
+      case 'bored':
+        return {
+          type: 'bored',
+          label: 'Gelangweilt',
+          color: '#95a5a6',
+          plumbobColor: '#bdc3c7',
+          description: 'Braucht dringend Unterhaltung oder soziale Interaktion.'
         };
       case 'happy':
       default:
@@ -90,10 +107,26 @@ export class Moods {
       if (lowestNeedName === 'energy') {
         return this.getMoodInfo('exhausted');
       }
+      if (lowestNeedName === 'social') {
+        return this.getMoodInfo('sad');
+      }
+      if (lowestNeedName === 'fun') {
+        return this.getMoodInfo('bored');
+      }
       return {
         ...this.getMoodInfo('tense'),
         description: `Dringendes Bedürfnis unerfüllt: ${lowestNeedName.toUpperCase()}`
       };
+    }
+
+    // Angry mood triggers from very low social + moderate satisfaction
+    if (lowestNeedName === 'social' && lowestNeedVal < 25 && overallSatisfaction < 40) {
+      return this.getMoodInfo('angry');
+    }
+
+    // Bored mood triggers when fun is the lowest and below 20
+    if (lowestNeedName === 'fun' && lowestNeedVal < 20) {
+      return this.getMoodInfo('bored');
     }
 
     if (dominantMoodlet) {
@@ -108,6 +141,10 @@ export class Moods {
       return this.getMoodInfo('happy');
     }
 
-    return this.getMoodInfo('sad');
+    if (overallSatisfaction >= 30) {
+      return this.getMoodInfo('sad');
+    }
+
+    return this.getMoodInfo('tense');
   }
 }

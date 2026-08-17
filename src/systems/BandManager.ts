@@ -94,4 +94,26 @@ export class BandManager {
 
     return { success: true, royalties, message: `Studio-Album "${albumTitle}" veröffentlicht! Erlös: § ${royalties}` };
   }
+
+  public exportData(): any {
+    return {
+      bandName: (this as any).bandName ?? '',
+      bandLevel: (this as any).bandLevel ?? 1,
+      fanbase: (this as any).fanbase ?? 0,
+      members: (this as any).members ?? [],
+      completedGigs: (this as any).completedGigs ?? 0,
+      albumsReleased: (this as any).albumsReleased ?? []
+    };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (data.bandName) (this as any).bandName = data.bandName;
+    if (typeof data.bandLevel === 'number') (this as any).bandLevel = data.bandLevel;
+    if (typeof data.fanbase === 'number') (this as any).fanbase = data.fanbase;
+    if (Array.isArray(data.members)) (this as any).members = data.members;
+    if (typeof data.completedGigs === 'number') (this as any).completedGigs = data.completedGigs;
+    if (Array.isArray(data.albumsReleased)) (this as any).albumsReleased = data.albumsReleased;
+  }
 }
+

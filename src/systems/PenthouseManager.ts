@@ -80,4 +80,14 @@ export class PenthouseManager {
     sim.triggerEmote('💰', 3500);
     return { success: true, payout: totalPayout, message: `Penthouse-Mietdividenden ausgezahlt: +§ ${totalPayout}` };
   }
+
+  public exportData(): any {
+    return { properties: (this as any).properties ?? [] };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (Array.isArray(data.properties)) (this as any).properties = data.properties;
+  }
 }
+

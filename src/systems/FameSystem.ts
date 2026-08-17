@@ -39,4 +39,16 @@ export class FameSystem {
     toastManager.showToast('⭐️ Promi-Vorteil', `Vorteil "${perkId}" erfolgreich freigeschaltet!`, '✨', 'success');
     return true;
   }
+
+  public exportData(): any {
+    return { fameRank: this.fameRank, fameXP: this.fameXP, unlockedPerks: this.unlockedPerks };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (typeof data.fameRank === 'number') this.fameRank = data.fameRank;
+    if (typeof data.fameXP === 'number') this.fameXP = data.fameXP;
+    if (Array.isArray(data.unlockedPerks)) this.unlockedPerks = data.unlockedPerks;
+  }
 }
+

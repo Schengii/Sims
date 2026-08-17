@@ -1,7 +1,7 @@
 /**
  * Sim Character Entity
  * Represents an active Sim in the game world, including customization options,
- * real-time movement, needs decay, skills, aspirations, and action queue execution.
+ * real-time movement, needs decay (with trait multipliers), skills, aspirations, and action queue execution.
  */
 
 import { Needs } from './Needs';
@@ -12,6 +12,7 @@ import { Sanitizer } from '../security/Sanitizer';
 import { LifeStage, type LifeStageType } from './LifeStage';
 import { Inventory } from './Inventory';
 import { MoodletManager } from './Moodlets';
+import { TRAIT_CATALOG } from '../systems/TraitSystem';
 
 export interface SimCustomization {
   name: string;
@@ -19,8 +20,11 @@ export interface SimCustomization {
   skinColor: string;
   hairColor: string;
   outfitColor: string;
+  /** Primary trait ID/name (kept for backward compatibility) */
   trait: string;
   aspiration: string;
+  /** Up to 3 active trait IDs (takes priority over single trait if populated) */
+  traits?: string[];
 }
 
 export interface SimSkills {
@@ -29,6 +33,13 @@ export interface SimSkills {
   painting: number;
   fitness: number;
   charisma: number;
+  // Extended skills (v18.0.0)
+  music: number;
+  gardening: number;
+  logic: number;
+  handiness: number;
+  fishing: number;
+  riding: number;
 }
 
 export class Sim {
@@ -36,7 +47,7 @@ export class Sim {
   public customization: SimCustomization;
   public gridPos: Point = { x: 5, y: 5 };
   public renderPos: { x: number; y: number } = { x: 5, y: 5 };
-  
+
   public lifeStage: LifeStageType = 'adult';
   public ageDays: number = 0;
   public partnerName?: string;
@@ -57,12 +68,20 @@ export class Sim {
     programming: 1,
     painting: 1,
     fitness: 1,
-    charisma: 1
+    charisma: 1,
+    music: 0,
+    gardening: 0,
+    logic: 0,
+    handiness: 0,
+    fishing: 0,
+    riding: 0
   };
 
   public currentPath: Point[] = [];
-  public animState: 'idle' | 'walking' | 'acting' = 'idle';
+  public animState: 'idle' | 'walking' | 'acting' | 'fainting' = 'idle';
   public facing: 'south' | 'east' | 'north' | 'west' = 'south';
+  /** Set to true when sim has critically low needs for 5+ game minutes */
+  public isFainting: boolean = false;
 
   constructor(customization?: Partial<SimCustomization>) {
     this.id = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
@@ -73,7 +92,8 @@ export class Sim {
       hairColor: customization?.hairColor || '#2c3e50',
       outfitColor: customization?.outfitColor || '#e74c3c',
       trait: customization?.trait || 'Genial',
-      aspiration: customization?.aspiration || 'Meisterköchin'
+      aspiration: customization?.aspiration || 'Meisterköchin',
+      traits: customization?.traits || []
     };
 
     this.needs = new Needs();
@@ -99,15 +119,53 @@ export class Sim {
     };
   }
 
+  /**
+   * Resolve all active trait IDs for this Sim.
+   * Returns traits array if populated, falls back to single trait field.
+   */
+  public getActiveTraitIds(): string[] {
+    const traitsArr = this.customization.traits;
+    if (traitsArr && traitsArr.length > 0) return traitsArr;
+    // Map legacy name -> id by searching catalog
+    const legacyName = this.customization.trait;
+    const found = Object.values(TRAIT_CATALOG).find(t => t.name === legacyName || t.id === legacyName);
+    return found ? [found.id] : [];
+  }
+
+  /**
+   * Build combined decay multipliers from all active traits.
+   * Multiple traits stack multiplicatively per need.
+   */
+  private resolveTraitMultipliers() {
+    const ids = this.getActiveTraitIds();
+    const combined: Record<string, number> = {};
+    for (const id of ids) {
+      const def = TRAIT_CATALOG[id];
+      if (!def) continue;
+      for (const [need, mult] of Object.entries(def.needDecayMultipliers)) {
+        combined[need] = (combined[need] ?? 1) * (mult ?? 1);
+      }
+    }
+    return combined;
+  }
+
   public update(deltaSec: number, deltaMinutes: number): void {
     // 0. Check active emote expiry
     if (this.activeEmote && Date.now() > this.activeEmote.expiresAt) {
       this.activeEmote = null;
     }
 
-    // 1. Needs & Moodlets decay
-    this.needs.update(deltaMinutes);
+    // 1. Needs & Moodlets decay — now with trait-based multipliers!
+    const traitMultipliers = this.resolveTraitMultipliers();
+    this.needs.update(deltaMinutes, traitMultipliers);
     this.moodletManager.update(deltaSec);
+
+    // 1b. Faint check: critically low for 5+ game minutes
+    if (this.needs.criticalMinutes >= 5 && !this.isFainting) {
+      this.isFainting = true;
+    } else if (this.needs.getOverallSatisfaction() > 20) {
+      this.isFainting = false;
+    }
 
     // 2. Movement along path
     if (this.currentPath.length > 0) {
@@ -129,7 +187,9 @@ export class Sim {
         this.renderPos.y += (dy / dist) * speed;
       }
     } else {
-      if (this.actionQueue.getCurrentAction()) {
+      if (this.isFainting) {
+        this.animState = 'fainting';
+      } else if (this.actionQueue.getCurrentAction()) {
         this.animState = 'acting';
       } else {
         this.animState = 'idle';
@@ -154,7 +214,7 @@ export class Sim {
     const nextStage = LifeStage.getNextStage(this.lifeStage);
     this.lifeStage = nextStage;
     this.ageDays = 0;
-    
+
     // Change hair to grey if senior
     if (nextStage === 'senior') {
       this.customization.hairColor = '#bdc3c7';
@@ -166,6 +226,8 @@ export class Sim {
     if (this.skills[skill] !== undefined) {
       const oldLevel = Math.floor(this.skills[skill]);
       this.skills[skill] += amount / 100;
+      // Cap skills at level 10
+      this.skills[skill] = Math.min(this.skills[skill], 10);
       const newLevel = Math.floor(this.skills[skill]);
       return newLevel > oldLevel; // Returns true if leveled up!
     }

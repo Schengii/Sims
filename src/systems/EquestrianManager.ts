@@ -76,4 +76,15 @@ export class EquestrianManager {
 
     return { success: true, prize, message: `Goldmedaille gewonnen! Preisgeld: § ${prize}` };
   }
+
+  public exportData(): any {
+    return { horse: (this as any).horse, tournamentsWon: (this as any).tournamentsWon ?? 0 };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (data.horse) (this as any).horse = data.horse;
+    if (typeof data.tournamentsWon === 'number') (this as any).tournamentsWon = data.tournamentsWon;
+  }
 }
+

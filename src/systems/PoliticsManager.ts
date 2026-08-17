@@ -116,4 +116,22 @@ export class PoliticsManager {
 
     return { success: true, message: `${ord.name} wurde ${statusText}!` };
   }
+
+  public exportData(): any {
+    return {
+      politicalRank: this.politicalRank,
+      voterSupport: this.voterSupport,
+      campaignFunds: this.campaignFunds,
+      ordinances: this.ordinances
+    };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (typeof data.politicalRank === 'number') this.politicalRank = data.politicalRank;
+    if (typeof data.voterSupport === 'number') this.voterSupport = data.voterSupport;
+    if (typeof data.campaignFunds === 'number') this.campaignFunds = data.campaignFunds;
+    if (Array.isArray(data.ordinances)) this.ordinances = data.ordinances;
+  }
 }
+

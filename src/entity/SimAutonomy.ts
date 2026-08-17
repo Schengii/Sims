@@ -1,6 +1,7 @@
 /**
  * Sim Autonomy Engine
  * Automatically triggers actions for the Sim when idle if needs drop below critical thresholds.
+ * v18: Social autonomy case added. Sims now seek social interaction autonomously.
  */
 
 import type { Sim } from './Sim';
@@ -22,6 +23,9 @@ export class SimAutonomy {
       return;
     }
 
+    // Fainting sims can't perform autonomous actions
+    if (sim.isFainting) return;
+
     const lowest = sim.needs.getLowestNeed();
     if (lowest.value >= 55) {
       // Needs are sufficiently high, no autonomous action required
@@ -40,6 +44,11 @@ export class SimAutonomy {
       targetFurnitureIds = ['shower_glass', 'pool_ladder'];
     } else if (lowest.need === 'fun') {
       targetFurnitureIds = ['tv_smart', 'pc_station', 'stereo_hifi', 'easel_artist'];
+    } else if (lowest.need === 'social') {
+      // Bug #4 fix: Social autonomy — sim moves toward stereo or phone to initiate contact
+      // Try furniture that boosts social (stereo for dancing) first
+      targetFurnitureIds = ['stereo_hifi', 'pc_station'];
+      // Note: NPC interaction is triggered via NPCAutonomy; here we boost fun via social furniture
     }
 
     if (targetFurnitureIds.length === 0) return;
@@ -63,7 +72,12 @@ export class SimAutonomy {
     const def = FURNITURE_CATALOG[nearestFurniture.furnitureId];
     if (!def || def.interactions.length === 0) return;
 
-    const interaction = def.interactions[0]; // Primary interaction
+    // For social need, prefer interactions that boost social need
+    let interaction = def.interactions[0]; // Primary interaction
+    if (lowest.need === 'social') {
+      const socialInteraction = def.interactions.find(i => i.needEffects?.social && i.needEffects.social > 0);
+      if (socialInteraction) interaction = socialInteraction;
+    }
 
     // Plan path to furniture
     const path = Pathfinding.findPath(
@@ -86,6 +100,10 @@ export class SimAutonomy {
           Object.entries(interaction.needEffects).forEach(([needKey, val]) => {
             if (val) sim.needs.modify(needKey as any, val);
           });
+          // Small social boost from autonomous social action
+          if (lowest.need === 'social') {
+            sim.needs.modify('social', 15);
+          }
         }
       });
       // Set a short cooldown before next autonomy check

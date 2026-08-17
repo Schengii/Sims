@@ -102,13 +102,52 @@ export class NPCManager {
           npc.renderPos.y += (dy / dist) * speed;
         }
       } else {
-        // Occasionally wander around neighborhood outdoor grid
-        if (Math.random() < 0.002) {
-          const randomX = Math.floor(Math.random() * 14) + 1;
-          const randomY = Math.floor(Math.random() * 14) + 1;
-          npc.targetPath = [{ x: randomX, y: randomY }];
+        // Improved NPC behavior state machine
+        const behaviorTimer = ((npc as any).behaviorTimer ?? 0) - deltaSec;
+        (npc as any).behaviorTimer = behaviorTimer;
+
+        if (behaviorTimer <= 0) {
+          const roll = Math.random();
+
+          if (roll < 0.5) {
+            // State: Wander to a random nearby position
+            (npc as any).behaviorState = 'wander';
+            (npc as any).behaviorTimer = 5 + Math.random() * 10;
+            const randomX = Math.floor(Math.random() * 14) + 1;
+            const randomY = Math.floor(Math.random() * 14) + 1;
+            npc.targetPath = [{ x: randomX, y: randomY }];
+          } else if (roll < 0.7 && (npc as any).playerRef) {
+            // State: Socialize - move toward the active player sim
+            (npc as any).behaviorState = 'socialize';
+            (npc as any).behaviorTimer = 8 + Math.random() * 5;
+            const player = (npc as any).playerRef;
+            if (player?.gridPos) {
+              const tx = Math.round(player.gridPos.x + (Math.random() > 0.5 ? 1 : -1));
+              const ty = Math.round(player.gridPos.y + (Math.random() > 0.5 ? 1 : -1));
+              npc.targetPath = [{ x: Math.max(1, Math.min(14, tx)), y: Math.max(1, Math.min(14, ty)) }];
+              // Trigger a friendly emote
+              if (Math.random() < 0.4) {
+                const emotes = ['👋', '😊', '💬', '🙂', '✌️'];
+                npc.activeEmote = { symbol: emotes[Math.floor(Math.random() * emotes.length)], expiresAt: Date.now() + 3500 };
+              }
+            }
+          } else {
+            // State: Idle - stand still briefly
+            (npc as any).behaviorState = 'idle';
+            (npc as any).behaviorTimer = 3 + Math.random() * 5;
+          }
         }
       }
+    });
+  }
+
+  /**
+   * Set a reference to the player sim for social AI targeting.
+   * Should be called whenever the active sim changes.
+   */
+  public setPlayerReference(playerSim: any): void {
+    this.npcs.forEach(npc => {
+      (npc as any).playerRef = playerSim;
     });
   }
 
@@ -132,3 +171,4 @@ export class NPCManager {
     return null;
   }
 }
+
