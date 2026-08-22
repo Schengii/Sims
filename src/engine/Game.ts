@@ -159,6 +159,8 @@ import { GOAPAutonomy } from '../entity/GOAPAutonomy';
 import { CloudGalleryModal } from '../ui/CloudGalleryModal';
 import { EconomyMarketSystem } from '../systems/EconomyMarketSystem';
 import { MarketModal } from '../ui/MarketModal';
+import { MultiplayerSystem } from '../systems/MultiplayerSystem';
+import { MultiplayerModal } from '../ui/MultiplayerModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -304,6 +306,8 @@ export class Game {
   public cloudGalleryModal: CloudGalleryModal;
   public marketSystem: EconomyMarketSystem;
   public marketModal: MarketModal;
+  public multiplayerSystem: MultiplayerSystem;
+  public multiplayerModal: MultiplayerModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;

@@ -87,6 +87,7 @@ export class HUDManager {
   public onOpenModding?: () => void;
   public onOpenCloudGallery?: () => void;
   public onOpenMarket?: () => void;
+  public onOpenMultiplayer?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;

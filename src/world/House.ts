@@ -160,6 +160,13 @@ export class House {
     }
   }
 
+  public setWallPattern(x: number, y: number, pattern: WallPattern, color?: string): void {
+    if (x >= 0 && x < this.width && y >= 0 && y < this.height) {
+      this.tiles[x][y].wallPattern = pattern;
+      if (color) this.tiles[x][y].wallColor = color;
+    }
+  }
+
   /**
    * Builds an entire enclosed room rectangle with floors and enclosing boundary walls
    */

@@ -120,10 +120,10 @@ export class IsometricRenderer {
           );
 
           if (tile.hasWallNorth) {
-            this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth, isCutaway, isOccludingEntity);
+            this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth, isCutaway, isOccludingEntity, tile.wallPattern);
           }
           if (tile.hasWallWest) {
-            this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest, isCutaway, isOccludingEntity);
+            this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest, isCutaway, isOccludingEntity, tile.wallPattern);
           }
         }
       }
@@ -282,7 +282,8 @@ export class IsometricRenderer {
     wallColor: string,
     opening?: 'door' | 'window',
     isCutaway: boolean = false,
-    isOccludingEntity: boolean = false
+    isOccludingEntity: boolean = false,
+    wallPattern?: string
   ): void {
     const ctx = this.ctx;
     const hw = this.tileWidth / 2;
@@ -308,6 +309,34 @@ export class IsometricRenderer {
       ctx.strokeStyle = 'rgba(0,0,0,0.3)';
       ctx.stroke();
 
+      // Procedural Wall Patterns
+      if (!isCutaway && wallPattern && wallPattern !== 'plain') {
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = 1;
+        if (wallPattern === 'brick') {
+          for (let row = 1; row <= 4; row++) {
+            const py = isoY - (row * 8);
+            ctx.beginPath();
+            ctx.moveTo(isoX - hw, py + hh);
+            ctx.lineTo(isoX, py);
+            ctx.stroke();
+          }
+        } else if (wallPattern === 'wood_panel') {
+          for (let col = 1; col <= 3; col++) {
+            const px = isoX - hw + (col * 8);
+            const py = isoY + hh - (col * 4);
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(px, py - wallH);
+            ctx.stroke();
+          }
+        } else if (wallPattern === 'wallpaper_floral') {
+          ctx.font = '9px sans-serif';
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          ctx.fillText('🌸', isoX - (hw / 2), isoY - 15);
+        }
+      }
+
       if (!isCutaway) {
         if (opening === 'door') {
           ctx.fillStyle = '#8d5524';
@@ -330,6 +359,34 @@ export class IsometricRenderer {
       ctx.fill();
       ctx.strokeStyle = 'rgba(0,0,0,0.3)';
       ctx.stroke();
+
+      // Procedural Wall Patterns (West Wall)
+      if (!isCutaway && wallPattern && wallPattern !== 'plain') {
+        ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+        ctx.lineWidth = 1;
+        if (wallPattern === 'brick') {
+          for (let row = 1; row <= 4; row++) {
+            const py = isoY - (row * 8);
+            ctx.beginPath();
+            ctx.moveTo(isoX, py);
+            ctx.lineTo(isoX + hw, py + hh);
+            ctx.stroke();
+          }
+        } else if (wallPattern === 'wood_panel') {
+          for (let col = 1; col <= 3; col++) {
+            const px = isoX + (col * 8);
+            const py = isoY + (col * 4);
+            ctx.beginPath();
+            ctx.moveTo(px, py);
+            ctx.lineTo(px, py - wallH);
+            ctx.stroke();
+          }
+        } else if (wallPattern === 'wallpaper_floral') {
+          ctx.font = '9px sans-serif';
+          ctx.fillStyle = 'rgba(255,255,255,0.4)';
+          ctx.fillText('🌸', isoX + (hw / 2), isoY - 15);
+        }
+      }
 
       if (!isCutaway) {
         if (opening === 'door') {
