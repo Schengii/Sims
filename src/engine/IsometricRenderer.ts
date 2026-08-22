@@ -95,7 +95,16 @@ export class IsometricRenderer {
       });
     }
 
-    // 2. Render Walls & Openings (respecting house.wallDisplayMode)
+    // 2. Render Walls & Openings (respecting house.wallDisplayMode with dynamic occlusion culling)
+    const entityPositions = [
+      { x: sim.gridPos.x, y: sim.gridPos.y },
+      ...(householdSims || []).map(s => ({ x: s.gridPos.x, y: s.gridPos.y })),
+      ...npcManager.npcs.map(n => ({ x: n.gridPos.x, y: n.gridPos.y }))
+    ];
+    if (this.hoverGrid) {
+      entityPositions.push({ x: this.hoverGrid.x, y: this.hoverGrid.y });
+    }
+
     if (house.wallDisplayMode !== 'hidden') {
       for (let x = 0; x < house.width; x++) {
         for (let y = 0; y < house.height; y++) {
@@ -105,11 +114,16 @@ export class IsometricRenderer {
           const isFrontWall = x >= 11 || y >= 11;
           const isCutaway = house.wallDisplayMode === 'cutaway' && isFrontWall;
 
+          // Dynamic Occlusion Culling check: is any entity directly behind this wall?
+          const isOccludingEntity = entityPositions.some(
+            pos => Math.floor(pos.x) === x && Math.floor(pos.y) === y
+          );
+
           if (tile.hasWallNorth) {
-            this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth, isCutaway);
+            this.drawWallSegment(iso.x, iso.y, 'north', tile.wallColor || '#2c3e50', tile.openingNorth, isCutaway, isOccludingEntity);
           }
           if (tile.hasWallWest) {
-            this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest, isCutaway);
+            this.drawWallSegment(iso.x, iso.y, 'west', tile.wallColor || '#2c3e50', tile.openingWest, isCutaway, isOccludingEntity);
           }
         }
       }
@@ -121,6 +135,7 @@ export class IsometricRenderer {
       if (!def) return;
       const iso = this.gridToIso(item.gridX, item.gridY);
       this.drawFurnitureBlock(iso.x, iso.y, def, item.rotation);
+      this.drawFurnitureParticles(iso.x, iso.y, def);
     });
 
     // 4. Render Pets (Dogs & Cats)
@@ -153,8 +168,8 @@ export class IsometricRenderer {
 
     ctx.restore();
 
-    // 7. Lighting Overlay, Weather Effects, Disco Lights & Sunbeams
-    this.renderLightingOverlay(timeOfDay, house.activeFloor);
+    // 7. Lighting Overlay (with Dynamic Point-Lights), Weather Effects, Disco Lights & Sunbeams
+    this.renderLightingOverlay(timeOfDay, house.activeFloor, house, camera);
     this.renderSunbeams(timeOfDay);
 
     if (radioManager && radioManager.getIsPlaying()) {
@@ -266,7 +281,8 @@ export class IsometricRenderer {
     direction: 'north' | 'west',
     wallColor: string,
     opening?: 'door' | 'window',
-    isCutaway: boolean = false
+    isCutaway: boolean = false,
+    isOccludingEntity: boolean = false
   ): void {
     const ctx = this.ctx;
     const hw = this.tileWidth / 2;
@@ -274,6 +290,11 @@ export class IsometricRenderer {
     const wallH = isCutaway ? 15 : 45;
 
     ctx.save();
+
+    // Dynamic Occlusion Culling: if an entity or cursor is behind this wall, render translucent
+    if (isOccludingEntity && !isCutaway) {
+      ctx.globalAlpha = 0.32;
+    }
 
     if (direction === 'north') {
       ctx.fillStyle = wallColor;
@@ -324,6 +345,47 @@ export class IsometricRenderer {
     }
 
     ctx.restore();
+  }
+
+  private drawFurnitureParticles(isoX: number, isoY: number, def: typeof FURNITURE_CATALOG[string]): void {
+    const ctx = this.ctx;
+    const time = Date.now() / 180;
+
+    // Fireplace Animated Fire
+    if (def.id.includes('fireplace') || def.id.includes('kamin')) {
+      ctx.save();
+      for (let i = 0; i < 3; i++) {
+        const fx = isoX + Math.sin(time + i * 2) * 5;
+        const fy = isoY - 12 - Math.abs(Math.cos(time * 1.5 + i)) * 8;
+        ctx.fillStyle = i % 2 === 0 ? 'rgba(249, 115, 22, 0.85)' : 'rgba(234, 179, 8, 0.9)';
+        ctx.beginPath();
+        ctx.arc(fx, fy, 3.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Stove cooking steam
+    if (def.id.includes('stove') || def.id.includes('herd') || def.id.includes('coffee')) {
+      ctx.save();
+      const sy = isoY - 25 - (Math.sin(time * 0.8) * 6);
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.font = '12px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('♨️', isoX, sy);
+      ctx.restore();
+    }
+
+    // Stereo / Piano / Guitar musical notes
+    if (def.id.includes('stereo') || def.id.includes('piano') || def.id.includes('guitar')) {
+      ctx.save();
+      const ny = isoY - 28 - (Math.sin(time) * 8);
+      ctx.font = '11px sans-serif';
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.8)';
+      ctx.textAlign = 'center';
+      ctx.fillText(Math.sin(time) > 0 ? '🎵' : '🎶', isoX + Math.sin(time) * 6, ny);
+      ctx.restore();
+    }
   }
 
   private drawFurnitureBlock(isoX: number, isoY: number, def: typeof FURNITURE_CATALOG[string], rotation: number = 0): void {
@@ -677,24 +739,70 @@ export class IsometricRenderer {
     ctx.restore();
   }
 
-  private renderLightingOverlay(timeOfDay: number, activeFloor: number = 0): void {
+  private renderLightingOverlay(timeOfDay: number, activeFloor: number = 0, house?: House, camera?: Camera): void {
     let darkness = 0;
     if (activeFloor === -1) {
       darkness = 0.55; // Cellar ambient lighting
     } else {
       if (timeOfDay >= 22 || timeOfDay <= 5) {
-        darkness = 0.45;
+        darkness = 0.5;
       } else if (timeOfDay > 5 && timeOfDay < 8) {
-        darkness = 0.45 * (1 - (timeOfDay - 5) / 3);
+        darkness = 0.5 * (1 - (timeOfDay - 5) / 3);
       } else if (timeOfDay > 19 && timeOfDay < 22) {
-        darkness = 0.45 * ((timeOfDay - 19) / 3);
+        darkness = 0.5 * ((timeOfDay - 19) / 3);
       }
     }
 
-    if (darkness > 0) {
-      this.ctx.fillStyle = activeFloor === -1 ? `rgba(10, 15, 30, ${darkness})` : `rgba(15, 25, 60, ${darkness})`;
-      this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+    if (darkness <= 0) return;
+
+    const ctx = this.ctx;
+    ctx.save();
+
+    // 1. Draw ambient darkness base
+    ctx.fillStyle = activeFloor === -1 ? `rgba(10, 15, 30, ${darkness})` : `rgba(15, 25, 60, ${darkness})`;
+    ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // 2. Dynamic Point-Lights (Lamps, Fireplace, TV, Computer, Candle)
+    if (house && camera) {
+      const floorYOffset = house.activeFloor * -40;
+      const screenOriginX = this.canvas.width / 2 + camera.x;
+      const screenOriginY = (this.canvas.height / 2 - 100) + camera.y + floorYOffset;
+
+      const lightSources = house.placedFurniture.filter(item => {
+        const id = item.furnitureId.toLowerCase();
+        return id.includes('lamp') || id.includes('kamin') || id.includes('fireplace') ||
+               id.includes('tv') || id.includes('computer') || id.includes('pc') ||
+               id.includes('candle') || id.includes('stereo');
+      });
+
+      if (lightSources.length > 0) {
+        ctx.globalCompositeOperation = 'screen';
+
+        lightSources.forEach(item => {
+          const iso = this.gridToIso(item.gridX, item.gridY);
+          const screenX = screenOriginX + (iso.x * camera.zoom);
+          const screenY = screenOriginY + (iso.y * camera.zoom);
+
+          const isFire = item.furnitureId.includes('kamin') || item.furnitureId.includes('fireplace');
+          const isTV = item.furnitureId.includes('tv') || item.furnitureId.includes('computer') || item.furnitureId.includes('pc');
+          
+          let radius = (isFire ? 130 : isTV ? 90 : 110) * camera.zoom;
+          let glowColor = isFire ? 'rgba(251, 146, 60, 0.45)' : isTV ? 'rgba(56, 189, 248, 0.35)' : 'rgba(253, 224, 71, 0.4)';
+
+          const grad = ctx.createRadialGradient(screenX, screenY, 4 * camera.zoom, screenX, screenY, radius);
+          grad.addColorStop(0, glowColor);
+          grad.addColorStop(0.5, glowColor.replace(/[\d\.]+\)$/, '0.15)'));
+          grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
+
+          ctx.fillStyle = grad;
+          ctx.beginPath();
+          ctx.arc(screenX, screenY, radius, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
     }
+
+    ctx.restore();
   }
 
   private renderWeatherParticles(weatherSystem: WeatherSystem): void {

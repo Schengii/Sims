@@ -84,6 +84,7 @@ export class HUDManager {
   public onOpenScuba?: () => void;
   public onOpenPenthouse?: () => void;
   public onOpenPrivateChef?: () => void;
+  public onOpenModding?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -167,6 +168,7 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-fest" title="Saisonale Feste & Marktstände" style="background: rgba(232, 67, 147, 0.25); color: #fd79a8; font-weight: bold;">🎡 Festival</button>
             <button class="btn-hud" id="btn-open-vet" title="Tierklinik & Haustier-Arzt" style="background: rgba(20, 184, 166, 0.25); color: #2dd4bf; font-weight: bold;">🐾 Tierklinik</button>
             <button class="btn-hud" id="btn-open-health" title="Gesundheit & Medizin-Zentrum" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-weight: bold;">🩺 Gesundheit</button>
+            <button class="btn-hud" id="btn-open-modding" title="Custom Content (CC) & Baupläne" style="background: rgba(168, 85, 247, 0.25); color: #c084fc; font-weight: bold;">📦 CC / Mods</button>
             <button class="btn-hud" id="btn-open-cheats" title="Sims Cheat Konsole (Strg + Umschalt + C)" style="background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">💻 Cheats</button>
             <button class="btn-hud" id="btn-audio-settings" aria-label="Audio Einstellungen">🔊 Audio</button>
             <button class="btn-hud" id="btn-save" aria-label="Spielstand speichern">💾 Speichern</button>
@@ -443,6 +445,11 @@ export class HUDManager {
     document.getElementById('btn-open-event')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenEvent) this.onOpenEvent();
+    });
+
+    document.getElementById('btn-open-modding')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenModding) this.onOpenModding();
     });
 
     // Floor Switcher Listeners

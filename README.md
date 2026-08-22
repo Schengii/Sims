@@ -269,7 +269,26 @@ Sims/
 - **[Feature] Notfälle, Schicksal & Geister-Spuk (`EventSystem.ts`, `EventModal.ts`)**: Küchenbrände (🔥), Einbrecher (🥷) & Geister-Spuk um Grabsteine (`gravestone`). Notfall-Eingreifen & Polizei-Belohnungen.
 - **[Feature] Gedankenblasen & Emote FX Engine (`ThoughtBubbleSystem.ts`, `IsometricRenderer.ts`)**: Dynamische Gedankenblasen (🍕 Hunger, 💤 Energie, 🎮 Spaß, 🪙 Simoleons, 💖 Romantik) über den Köpfen der Sims.
 
-### Version 5.0.0 (University, Renters, Traits, Outfits, Blueprints & Gallery Expansion)
+### Version 19.0.0 (Pro-Engine, GOAP Autonomy, Dynamic Lighting, CC Modding & PWA Offline Upgrade)
+- **[Architektur & UI-Framework] BaseModal & ModalManager (`BaseModal.ts`, `ModalManager.ts`)**:
+  - Standardisiertes Lifecycle-Management (`renderHTML()`, `onMount()`, `onDestroy()`, `listen()`) mit automatischer Entsorgung von Event-Listenern gegen Memory-Leaks.
+  - Zentraler `ModalManager` für ESC-Steuerung, Dialog-Stacking und Tastatur-Fokustrapping.
+- **[Grafik & Canvas-Engine] Dynamische Point-Lights & Occlusion Culling (`IsometricRenderer.ts`)**:
+  - Echte 2.5D Punktlicht-Kegel und Glow-Halos für platzierte Lampen, Kamine, Fernseher und Computer bei Nacht & im Keller mit `globalCompositeOperation = 'screen'`.
+  - Intelligentes **Wall Occlusion Culling**: Wände werden automatisch transparent (Alpha 0.32), wenn ein Sim oder der Mauszeiger sich dahinter befindet.
+  - Animierte Möbel-Partikel: Kaminfeuer 🔥, Herd-/Kaffee-Dampf ♨️ und schwebende Musiknoten 🎵.
+- **[Gameplay & KI] GOAP-Autonomie & Raum-Atmosphäre (`GOAPAutonomy.ts`, `EnvironmentScoring.ts`)**:
+  - Goal-Oriented Action Planning (GOAP) für mehrstufige Aktionsketten (*Hunger* -> Kühlschrank -> Zubereitung -> Tisch -> Essen).
+  - NPC Townie Tagesabläufe (Morgen-Fitness 🏃, Büro/Uni 💼, Abend-Socializing 🎉, Schlafen 💤).
+  - Dynamische Raum-Bewertung (*Environment Scoring*): Marmorböden, Pflanzen und Luxusmöbel vergeben Stimmungs-Moodlets wie *💎 Luxuriöse Umgebung (+2 Glücklich)*.
+- **[Audio] Oberflächen-Trittschall & Stimm-Profile (`SoundManager.ts`)**:
+  - Prozeduraler Schritt-Synthesizer mit differenzierten Tönen für Holz, Fliesen, Marmor, Teppich, Gras und Wasser.
+  - Alters- und emotionsabhängige Simlish-Sprachmodulation (Babys, Kinder, Erwachsene, Senioren).
+- **[Modding & Blueprints] Custom Content (CC) & Bauplan-Export (`ModdingSystem.ts`, `BlueprintSystem.ts`, `ModdingModal.ts`)**:
+  - JSON-Mod-Schnittstelle zur Installation externer Möbelpakete und Karrieren.
+  - 1-Klick-Export und -Import von Haus-Bauplänen inklusive Wänden, Böden und Möbeln als JSON-Text/Zwischenablage.
+- **[PWA & Offline-Support] Service Worker & Web App Manifest (`manifest.json`, `sw.js`)**:
+  - Offline-Cache aller Assets und vollständige Installierbarkeit als eigenständige Desktop-/Mobile-App.
 - **[Feature] Schule & Universitäts-System (`EducationSystem.ts`, `EducationModal.ts`)**: Schulnoten-Verwaltung (1.0 bis 6.0), Hausaufgaben machen sowie Einschreiben in Studiengänge (Informatik, Gourmet-Kochkunst, Bildende Kunst) mit Karrierestufe-3-Bonus.
 - **[Feature] Vermietung & Mitbewohner (`RentersSystem.ts`, `RentersModal.ts`)**: Vermietung von Räumen/Etagen an NPC-Untermieter (Mortimer Goth, Summer Holiday), wöchentliche Mieteinnahmen & Mieter-Kündigung.
 - **[Feature] Charakter-Merkmale & Persönlichkeit (`TraitSystem.ts`)**: 10 Merkmale (Genial, Romantisch, Aktiv, Partylöwe, Kreativ, Perfektionist, Chaot, Einsamer Wolf, Tech-Geek, Tierliebhaber) mit Auswirkungen auf Bedürfnissenkung & Skill-Geschwindigkeiten.

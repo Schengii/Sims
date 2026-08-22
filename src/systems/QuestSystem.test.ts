@@ -19,7 +19,8 @@ describe('QuestSystem - Daily Reset & Pool (Bug #3 Fix)', () => {
     const day0Ids = qm.getQuests().map(q => q.id).join(',');
     qm.checkDailyReset(1); // new day
     const day1Ids = qm.getQuests().map(q => q.id).join(',');
-    // IDs may differ (random pool selection)
+    expect(day0Ids.length).toBeGreaterThan(0);
+    expect(day1Ids.length).toBeGreaterThan(0);
     expect(qm.getQuests().length).toBe(5);
     // Day 2 should reset again
     const didReset = qm.checkDailyReset(2);

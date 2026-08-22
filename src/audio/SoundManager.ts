@@ -210,5 +210,103 @@ export class SoundManager {
     osc.start(now);
     osc.stop(now + 0.12);
   }
+
+  /**
+   * Footstep Synthesizer
+   * Produces realistic surface-dependent footstep sound effects
+   */
+  public playFootstep(surfaceType: 'wood' | 'tile' | 'carpet' | 'grass' | 'pool' | 'marble' = 'wood'): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    if (surfaceType === 'wood') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(140, now);
+      osc.frequency.exponentialRampToValueAtTime(60, now + 0.06);
+      gain.gain.setValueAtTime(0.12 * this.sfxVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    } else if (surfaceType === 'tile' || surfaceType === 'marble') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(420, now);
+      osc.frequency.exponentialRampToValueAtTime(180, now + 0.05);
+      gain.gain.setValueAtTime(0.09 * this.sfxVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.05);
+    } else if (surfaceType === 'carpet') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(80, now);
+      osc.frequency.exponentialRampToValueAtTime(40, now + 0.07);
+      gain.gain.setValueAtTime(0.07 * this.sfxVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.07);
+    } else if (surfaceType === 'grass') {
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, now);
+      osc.frequency.exponentialRampToValueAtTime(110, now + 0.06);
+      gain.gain.setValueAtTime(0.08 * this.sfxVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.06);
+    } else if (surfaceType === 'pool') {
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(300, now);
+      osc.frequency.exponentialRampToValueAtTime(120, now + 0.12);
+      gain.gain.setValueAtTime(0.15 * this.sfxVolume, now);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
+    }
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.12);
+  }
+
+  /**
+   * Plays Build/Buy Mode tool sound effect
+   */
+  public playBuildTool(): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(280, now);
+    osc.frequency.exponentialRampToValueAtTime(90, now + 0.08);
+
+    gain.gain.setValueAtTime(0.2 * this.sfxVolume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.08);
+  }
+
+  /**
+   * Life stage aware Simlish vocalization
+   */
+  public playSimlishByLifeStage(lifeStage: string, mood: string = 'happy'): void {
+    let pitchMod = 1.0;
+    if (lifeStage === 'baby') pitchMod = 2.4;
+    else if (lifeStage === 'toddler') pitchMod = 1.8;
+    else if (lifeStage === 'child') pitchMod = 1.4;
+    else if (lifeStage === 'teen') pitchMod = 1.1;
+    else if (lifeStage === 'senior') pitchMod = 0.82;
+
+    let emotion: 'happy' | 'flirty' | 'angry' | 'tired' = 'happy';
+    if (mood === 'tense' || mood === 'angry') emotion = 'angry';
+    else if (mood === 'exhausted') emotion = 'tired';
+    else if (mood === 'flirty' || mood === 'romantic') emotion = 'flirty';
+
+    this.playSimlish(pitchMod, emotion);
+  }
 }
+
 

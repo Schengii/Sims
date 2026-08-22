@@ -79,6 +79,7 @@ export class Sim {
 
   public currentPath: Point[] = [];
   public animState: 'idle' | 'walking' | 'acting' | 'fainting' = 'idle';
+  public onStep?: (gridPos: { x: number; y: number }) => void;
   public facing: 'south' | 'east' | 'north' | 'west' = 'south';
   /** Set to true when sim has critically low needs for 5+ game minutes */
   public isFainting: boolean = false;
@@ -182,6 +183,9 @@ export class Sim {
         this.renderPos.y = targetPoint.y;
         this.gridPos = { x: targetPoint.x, y: targetPoint.y };
         this.currentPath.shift(); // Reached waypoint
+        if (this.onStep) {
+          this.onStep(this.gridPos);
+        }
       } else {
         this.renderPos.x += (dx / dist) * speed;
         this.renderPos.y += (dy / dist) * speed;

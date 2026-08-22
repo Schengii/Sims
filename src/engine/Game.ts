@@ -153,6 +153,9 @@ import { PenthouseModal } from '../ui/PenthouseModal';
 import { PrivateChefManager } from '../systems/PrivateChefManager';
 import { PrivateChefModal } from '../ui/PrivateChefModal';
 import { Minimap } from '../ui/Minimap';
+import { ModdingModal } from '../ui/ModdingModal';
+import { EnvironmentScoring } from '../world/EnvironmentScoring';
+import { GOAPAutonomy } from '../entity/GOAPAutonomy';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -294,6 +297,7 @@ export class Game {
   public penthouseModal: PenthouseModal;
   public privateChefManager: PrivateChefManager;
   public privateChefModal: PrivateChefModal;
+  public moddingModal: ModdingModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -452,6 +456,7 @@ export class Game {
     this.penthouseModal = new PenthouseModal(uiContainer, this.soundManager);
     this.privateChefManager = new PrivateChefManager();
     this.privateChefModal = new PrivateChefModal(uiContainer, this.soundManager);
+    this.moddingModal = new ModdingModal(uiContainer, this, this.toastManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -475,6 +480,14 @@ export class Game {
 
     // Wire NPC player reference for social AI (Verbesserung #7)
     this.npcManager.setPlayerReference(this.sim);
+
+    // Wire footsteps audio based on active floor tile surface
+    this.sim.onStep = (pos) => {
+      const tile = this.house.tiles[Math.floor(pos.x)]?.[Math.floor(pos.y)];
+      if (tile) {
+        this.soundManager.playFootstep(tile.type as any);
+      }
+    };
 
     // Initialize minimap (Verbesserung #16)
     this.minimap = new Minimap(uiContainer);
@@ -985,6 +998,7 @@ export class Game {
     this.hud.onOpenOccult = () => this.occultModal.open(this.occultSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenProm = () => this.promModal.open(this.highSchoolSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenRestaurant = () => this.restaurantModal.open(this.restaurantSystem, this.sim, this.toastManager, this.soundManager);
+    this.hud.onOpenModding = () => this.moddingModal.open();
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
@@ -1106,6 +1120,23 @@ export class Game {
     this.household.sims.forEach(hSim => {
       hSim.update(deltaSec, timeResult.deltaMinutes);
       SimAutonomy.update(hSim, this.house, deltaSec);
+      GOAPAutonomy.planAndExecute(hSim, this.house);
+
+      // Environment Scoring & Room Atmosphere
+      if (hSim === this.sim && Math.random() < 0.02) {
+        const envResult = EnvironmentScoring.evaluateArea(this.house, this.sim.gridPos.x, this.sim.gridPos.y);
+        if (envResult.moodletTitle && envResult.moodletEffect) {
+          this.sim.moodletManager.addMoodlet({
+            id: 'env_decor_moodlet',
+            name: envResult.moodletTitle,
+            emotion: envResult.moodletEffect.mood as any,
+            weight: Math.abs(envResult.moodletEffect.value),
+            durationSec: 45,
+            icon: envResult.tier === 'luxurious' ? '💎' : envResult.tier === 'nice' ? '🌿' : '🤢',
+            description: `Raum-Atmosphäre: ${envResult.score} Punkte`
+          });
+        }
+      }
 
       // Bug #9 fix: Faint warning when critically low needs
       if (hSim.isFainting) {
@@ -1151,7 +1182,7 @@ export class Game {
       }
     }
 
-    // 5. Party & NPC Updates
+    // 5. Party & NPC Schedule Routine Updates
     const partyResult = this.partyManager.update(timeResult.deltaMinutes);
     if (partyResult.partyEnded) {
       this.sim.simoleons += partyResult.rewardSimoleons || 0;
@@ -1159,6 +1190,16 @@ export class Game {
       this.toastManager.showToast('🎉 PARTY BEENDET!', `${partyResult.finalStars} ⭐ Sterne erzielt! Gewinn: § ${partyResult.rewardSimoleons}`, '🏆', 'levelUp');
     }
     this.npcManager.update(deltaSec);
+
+    // NPC Townie Daily Routines
+    if (Math.random() < 0.01) {
+      this.npcManager.npcs.forEach(npc => {
+        const routine = GOAPAutonomy.evaluateNPCRoutine(npc, this.timeSystem.hour);
+        if ((!npc.activeEmote || npc.activeEmote.symbol !== routine.emote) && Math.random() < 0.25) {
+          this.npcManager.triggerEmote(npc.id, routine.emote, 6000);
+        }
+      });
+    }
 
     // 6. Check Aspiration Milestones
     const newlyCompleted = AspirationManager.checkMilestones(this.sim, this);
