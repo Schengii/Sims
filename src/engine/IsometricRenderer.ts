@@ -517,46 +517,128 @@ export class IsometricRenderer {
     const scale = stageInfo.renderScale;
 
     const currentAction = sim.actionQueue.getCurrentAction();
-    const isDancing = currentAction && (currentAction.name.includes('tanzen') || currentAction.name.includes('Dance'));
+    const actName = currentAction ? currentAction.name.toLowerCase() : '';
+    const isDancing = actName.includes('tanzen') || actName.includes('dance');
+    const isSitting = actName.includes('sitz') || actName.includes('chair') || actName.includes('sofa') || actName.includes('pc') || actName.includes('essen');
+    const isSleeping = actName.includes('schlaf') || actName.includes('sleep') || actName.includes('nap');
+    const isWalking = sim.animState === 'walking';
 
     const danceOffset = isDancing ? Math.sin(Date.now() / 150) * 4 : 0;
-    const yOffset = isSwimming ? 10 : danceOffset;
+    const yOffset = isSwimming ? 10 : (isSitting ? 6 : danceOffset);
 
     ctx.save();
     ctx.translate(isoX, isoY);
     ctx.scale(scale, scale);
 
-    if (!isSwimming) {
+    // 1. Water wake & Swimming Ripples
+    if (isSwimming) {
+      const rippleTime = Date.now() / 300;
+      ctx.save();
+      for (let r = 1; r <= 2; r++) {
+        const radX = 16 + (Math.sin(rippleTime + r) * 6) + (r * 6);
+        const radY = 8 + (Math.sin(rippleTime + r) * 3) + (r * 3);
+        ctx.beginPath();
+        ctx.ellipse(0, 8, radX, radY, 0, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.4 - (r * 0.15)})`;
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      ctx.restore();
+    } else {
+      // Ground drop shadow
       ctx.beginPath();
       ctx.ellipse(0, 14, 14, 7, 0, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
       ctx.fill();
     }
 
-    ctx.fillStyle = sim.customization.outfitColor;
-    ctx.fillRect(-8, -26 + yOffset, 16, 26 - yOffset);
-    ctx.strokeStyle = isActive ? '#00e5ff' : '#111';
-    ctx.lineWidth = isActive ? 2 : 1;
-    ctx.strokeRect(-8, -26 + yOffset, 16, 26 - yOffset);
+    if (isSleeping) {
+      // Horizontal Sleeping Pose
+      ctx.save();
+      ctx.rotate(Math.PI / 2);
+      ctx.translate(0, -10);
 
-    ctx.beginPath();
-    ctx.arc(0, -36 + yOffset, 10, 0, Math.PI * 2);
-    ctx.fillStyle = sim.customization.skinColor;
-    ctx.fill();
-    ctx.stroke();
+      // Pillow / Head
+      ctx.beginPath();
+      ctx.arc(10, 0, 9, 0, Math.PI * 2);
+      ctx.fillStyle = sim.customization.skinColor;
+      ctx.fill();
 
-    ctx.beginPath();
-    ctx.arc(0, -40 + yOffset, 10, Math.PI, Math.PI * 2);
-    ctx.fillStyle = sim.customization.hairColor;
-    ctx.fill();
+      // Blanket overlay
+      ctx.fillStyle = '#60a5fa';
+      ctx.fillRect(-18, -10, 22, 20);
+      ctx.strokeStyle = '#2563eb';
+      ctx.strokeRect(-18, -10, 22, 20);
+
+      // Zzz particle floating up
+      ctx.font = 'bold 12px sans-serif';
+      ctx.fillStyle = '#93c5fd';
+      ctx.fillText('Zzz', 12, -15 - Math.sin(Date.now() / 200) * 4);
+
+      ctx.restore();
+    } else {
+      // Legs (with walking stride cycle)
+      const legStride = isWalking ? Math.sin(Date.now() / 80) * 7 : 0;
+      if (!isSwimming && !isSitting) {
+        // Left Leg
+        ctx.fillStyle = this.adjustColorBrightness(sim.customization.outfitColor, -30);
+        ctx.fillRect(-6, -8 + yOffset, 4, 12 + legStride);
+        // Right Leg
+        ctx.fillRect(2, -8 + yOffset, 4, 12 - legStride);
+      }
+
+      // Torso / Outfit
+      const torsoH = isSitting ? 18 : 22;
+      ctx.fillStyle = sim.customization.outfitColor;
+      ctx.fillRect(-8, -26 + yOffset, 16, torsoH);
+      ctx.strokeStyle = isActive ? '#00e5ff' : '#111';
+      ctx.lineWidth = isActive ? 2 : 1;
+      ctx.strokeRect(-8, -26 + yOffset, 16, torsoH);
+
+      // Arms (swinging when walking)
+      const armSwing = isWalking ? Math.cos(Date.now() / 80) * 5 : 0;
+      ctx.fillStyle = sim.customization.skinColor;
+      // Left Arm
+      ctx.fillRect(-11, -24 + yOffset - armSwing, 3, 14);
+      // Right Arm
+      ctx.fillRect(8, -24 + yOffset + armSwing, 3, 14);
+
+      // Head
+      ctx.beginPath();
+      ctx.arc(0, -36 + yOffset, 10, 0, Math.PI * 2);
+      ctx.fillStyle = sim.customization.skinColor;
+      ctx.fill();
+      ctx.stroke();
+
+      // Facial Features / Hair based on Facing Direction
+      ctx.beginPath();
+      if (sim.facing === 'north') {
+        // Back of head - full hair
+        ctx.arc(0, -36 + yOffset, 10, 0, Math.PI * 2);
+      } else {
+        // Front / Side hair
+        ctx.arc(0, -40 + yOffset, 10, Math.PI, Math.PI * 2);
+      }
+      ctx.fillStyle = sim.customization.hairColor;
+      ctx.fill();
+
+      // Eyes if facing south/east/west
+      if (sim.facing !== 'north') {
+        ctx.fillStyle = '#1e293b';
+        const eyeOffsetX = sim.facing === 'east' ? 3 : (sim.facing === 'west' ? -3 : 0);
+        ctx.beginPath();
+        ctx.arc(-3 + eyeOffsetX, -36 + yOffset, 1.5, 0, Math.PI * 2);
+        ctx.arc(3 + eyeOffsetX, -36 + yOffset, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
 
     const plumbobY = -65 + yOffset + Math.sin(Date.now() / 250) * 4;
     this.drawPlumbob(0, plumbobY, isActive ? mood.plumbobColor : 'rgba(200,200,200,0.5)');
 
     // Render Action Item Prop in hand
-    if (currentAction) {
+    if (currentAction && !isSleeping) {
       let propSymbol = '';
-      const actName = currentAction.name.toLowerCase();
       if (actName.includes('malen') || actName.includes('paint') || actName.includes('staffelei')) propSymbol = '🎨';
       else if (actName.includes('gitarre') || actName.includes('guitar') || actName.includes('musik')) propSymbol = '🎸';
       else if (actName.includes('kochen') || actName.includes('essen') || actName.includes('cook')) propSymbol = '🍳';

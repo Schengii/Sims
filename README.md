@@ -269,6 +269,21 @@ Sims/
 - **[Feature] Notfälle, Schicksal & Geister-Spuk (`EventSystem.ts`, `EventModal.ts`)**: Küchenbrände (🔥), Einbrecher (🥷) & Geister-Spuk um Grabsteine (`gravestone`). Notfall-Eingreifen & Polizei-Belohnungen.
 - **[Feature] Gedankenblasen & Emote FX Engine (`ThoughtBubbleSystem.ts`, `IsometricRenderer.ts`)**: Dynamische Gedankenblasen (🍕 Hunger, 💤 Energie, 🎮 Spaß, 🪙 Simoleons, 💖 Romantik) über den Köpfen der Sims.
 
+### Version 20.0.0 (Procedural Pose Renderer, Community Cloud Hub, Multi-Gen Genetics & Dynamic Market Economy)
+- **[Grafik & Animation] Prozeduraler Skelett- & Posen-Renderer (`IsometricRenderer.ts`)**:
+  - Dynamische Schrittzyklen mit schwingenden Armen und Beinen beim Laufen (`animState === 'walking'`).
+  - 4-Richtungs-Blickwinkel (`facing: south / north / east / west`) mit Augen- und Haar-Rundung.
+  - Kontextsensitive Posen: Sitzen auf Stühlen/Sofas (abgewinkelte Knie), Liegen im Bett (horizontale Drehung mit Bettdecken-Overlay `Zzz`), und konzentrische Wasserwellen beim Schwimmen im Pool.
+- **[Community] Cloud-Galerie & Lot-Showcase Hub (`CloudGallerySystem.ts`, `CloudGalleryModal.ts`)**:
+  - Galerie-Browser mit kuratierten Luxus-Villen (Villa Bella Vista, Landhaus) und legendären Familien (Goth-Dynastie).
+  - Like-System (❤️ Upvotes), Download-Zähler und 1-Klick-Direktplatzierung auf dem Grundstück.
+- **[Genetik] Multi-Generations-Vererbung & Stammbaum-Allele (`Genetics.ts`)**:
+  - Mendel'sche Genetik mit dominanten und rezessiven Allelen für Haarfarben (Schwarz/Braun dominant, Blond/Rot rezessiv) und Augenfarben (Braun dominant, Blau/Grün rezessiv).
+  - Generationen-Zähler (Gen 1 bis Gen 5+) und Vorfahren-Aufzeichnung.
+- **[Wirtschaft] Dynamische Warenbörse & Aktien-Investments (`EconomyMarketSystem.ts`, `MarketModal.ts`)**:
+  - Täglich schwankende Marktpreise für Gartenbau-Ernte, Honig, Gemälde und Tränke mit Nachfrage-Indizes (Hoch, Normal, Niedrig).
+  - SimCity Aktienmarkt (LlamaTech AI `LLMA`, Plumbob Green Energy `PGRN`, Goth Real Estate `GOTH`) mit Kauf/Verkauf von Anteilen und wöchentlichen Dividenden-Auszahlungen an jedem 7. Tag!
+
 ### Version 19.0.0 (Pro-Engine, GOAP Autonomy, Dynamic Lighting, CC Modding & PWA Offline Upgrade)
 - **[Architektur & UI-Framework] BaseModal & ModalManager (`BaseModal.ts`, `ModalManager.ts`)**:
   - Standardisiertes Lifecycle-Management (`renderHTML()`, `onMount()`, `onDestroy()`, `listen()`) mit automatischer Entsorgung von Event-Listenern gegen Memory-Leaks.

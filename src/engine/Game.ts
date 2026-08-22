@@ -156,6 +156,9 @@ import { Minimap } from '../ui/Minimap';
 import { ModdingModal } from '../ui/ModdingModal';
 import { EnvironmentScoring } from '../world/EnvironmentScoring';
 import { GOAPAutonomy } from '../entity/GOAPAutonomy';
+import { CloudGalleryModal } from '../ui/CloudGalleryModal';
+import { EconomyMarketSystem } from '../systems/EconomyMarketSystem';
+import { MarketModal } from '../ui/MarketModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -298,6 +301,9 @@ export class Game {
   public privateChefManager: PrivateChefManager;
   public privateChefModal: PrivateChefModal;
   public moddingModal: ModdingModal;
+  public cloudGalleryModal: CloudGalleryModal;
+  public marketSystem: EconomyMarketSystem;
+  public marketModal: MarketModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -457,6 +463,9 @@ export class Game {
     this.privateChefManager = new PrivateChefManager();
     this.privateChefModal = new PrivateChefModal(uiContainer, this.soundManager);
     this.moddingModal = new ModdingModal(uiContainer, this, this.toastManager);
+    this.cloudGalleryModal = new CloudGalleryModal(uiContainer, this, this.toastManager);
+    this.marketSystem = new EconomyMarketSystem();
+    this.marketModal = new MarketModal(uiContainer, this.marketSystem, this.sim, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -999,6 +1008,8 @@ export class Game {
     this.hud.onOpenProm = () => this.promModal.open(this.highSchoolSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenRestaurant = () => this.restaurantModal.open(this.restaurantSystem, this.sim, this.toastManager, this.soundManager);
     this.hud.onOpenModding = () => this.moddingModal.open();
+    this.hud.onOpenCloudGallery = () => this.cloudGalleryModal.open();
+    this.hud.onOpenMarket = () => this.marketModal.open();
 
     this.hud.onChangeFloor = (level) => {
       this.house.setFloor(level);
@@ -1099,6 +1110,14 @@ export class Game {
     this.magicManager.updateTime(timeResult.deltaMinutes);
     this.neighborhoodProgression.update(timeResult.deltaMinutes, this.sim, this.toastManager, this.soundManager);
     this.ambientAudio.updateSoundscape(this.timeSystem.hour, this.weatherSystem.currentWeather as any);
+
+    // Update Daily Financial Market & Dividends
+    const marketRes = this.marketSystem.updateDailyMarket(this.timeSystem.day);
+    if (marketRes.dividendPaid > 0) {
+      this.sim.simoleons += marketRes.dividendPaid;
+      this.soundManager.playBuySound();
+      this.toastManager.showToast('📈 DIVIDENDE ERHALTEN!', marketRes.summary, '💰', 'levelUp');
+    }
 
     // Bug #3 fix: Daily quest reset check
     const questReset = this.questManager.checkDailyReset(this.timeSystem.day, this.sim.getActiveTraitIds()[0]);

@@ -85,6 +85,8 @@ export class HUDManager {
   public onOpenPenthouse?: () => void;
   public onOpenPrivateChef?: () => void;
   public onOpenModding?: () => void;
+  public onOpenCloudGallery?: () => void;
+  public onOpenMarket?: () => void;
 
   constructor(container: HTMLElement, soundManager: SoundManager) {
     this.container = container;
@@ -167,7 +169,8 @@ export class HUDManager {
             <button class="btn-hud" id="btn-open-school" title="Schule & Hausaufgaben" style="background: rgba(52, 152, 219, 0.25); color: #74b9ff; font-weight: bold;">🏫 Schule</button>
             <button class="btn-hud" id="btn-open-fest" title="Saisonale Feste & Marktstände" style="background: rgba(232, 67, 147, 0.25); color: #fd79a8; font-weight: bold;">🎡 Festival</button>
             <button class="btn-hud" id="btn-open-vet" title="Tierklinik & Haustier-Arzt" style="background: rgba(20, 184, 166, 0.25); color: #2dd4bf; font-weight: bold;">🐾 Tierklinik</button>
-            <button class="btn-hud" id="btn-open-health" title="Gesundheit & Medizin-Zentrum" style="background: rgba(239, 68, 68, 0.2); color: #f87171; font-weight: bold;">🩺 Gesundheit</button>
+            <button class="btn-hud" id="btn-open-cloud" title="Community Cloud Galerie & Lot-Download" style="background: rgba(14, 165, 233, 0.25); color: #38bdf8; font-weight: bold;">🌐 Cloud-Hub</button>
+            <button class="btn-hud" id="btn-open-market" title="Finanzbörse & Rohstoffhandel" style="background: rgba(34, 197, 94, 0.25); color: #4ade80; font-weight: bold;">📈 Börse</button>
             <button class="btn-hud" id="btn-open-modding" title="Custom Content (CC) & Baupläne" style="background: rgba(168, 85, 247, 0.25); color: #c084fc; font-weight: bold;">📦 CC / Mods</button>
             <button class="btn-hud" id="btn-open-cheats" title="Sims Cheat Konsole (Strg + Umschalt + C)" style="background: rgba(56, 189, 248, 0.2); border-color: rgba(56, 189, 248, 0.4); color: #38bdf8;">💻 Cheats</button>
             <button class="btn-hud" id="btn-audio-settings" aria-label="Audio Einstellungen">🔊 Audio</button>
@@ -450,6 +453,16 @@ export class HUDManager {
     document.getElementById('btn-open-modding')?.addEventListener('click', () => {
       this.soundManager.playUIClick();
       if (this.onOpenModding) this.onOpenModding();
+    });
+
+    document.getElementById('btn-open-cloud')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenCloudGallery) this.onOpenCloudGallery();
+    });
+
+    document.getElementById('btn-open-market')?.addEventListener('click', () => {
+      this.soundManager.playUIClick();
+      if (this.onOpenMarket) this.onOpenMarket();
     });
 
     // Floor Switcher Listeners
