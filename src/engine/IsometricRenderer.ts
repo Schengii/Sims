@@ -1099,28 +1099,65 @@ export class IsometricRenderer {
     const isoWest = this.gridToIso(3, 12);
 
     const roofPeakHeight = 60;
+    const isGlass = house.roofStyle === 'skylight' || house.roofStyle === 'glass_roof';
 
-    // Roof Left Slope
-    ctx.fillStyle = house.roofColor;
-    ctx.beginPath();
-    ctx.moveTo(isoNorth.x, isoNorth.y - 45);
-    ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
-    ctx.lineTo(isoWest.x, isoWest.y - 45);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-    ctx.stroke();
+    if (isGlass) {
+      // Glass Roof Skylight Rendering
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.35)';
+      ctx.beginPath();
+      ctx.moveTo(isoNorth.x, isoNorth.y - 45);
+      ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
+      ctx.lineTo(isoWest.x, isoWest.y - 45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#00e5ff';
+      ctx.lineWidth = 2;
+      ctx.stroke();
 
-    // Roof Right Slope
-    ctx.fillStyle = this.adjustColorBrightness(house.roofColor, -25);
-    ctx.beginPath();
-    ctx.moveTo(isoEast.x, isoEast.y - 45);
-    ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
-    ctx.lineTo(isoSouth.x, isoSouth.y - 45);
-    ctx.closePath();
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(0,0,0,0.4)';
-    ctx.stroke();
+      // Right slope
+      ctx.fillStyle = 'rgba(14, 165, 233, 0.28)';
+      ctx.beginPath();
+      ctx.moveTo(isoEast.x, isoEast.y - 45);
+      ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
+      ctx.lineTo(isoSouth.x, isoSouth.y - 45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.stroke();
+
+      // Mullion Grid Lines
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
+      ctx.lineWidth = 1;
+      for (let i = 1; i <= 3; i++) {
+        const t = i / 4;
+        ctx.beginPath();
+        ctx.moveTo(isoNorth.x + (isoWest.x - isoNorth.x) * t, (isoNorth.y - 45) + (isoWest.y - isoNorth.y) * t);
+        ctx.lineTo(((isoNorth.x + isoSouth.x) / 2) + (isoWest.x - isoNorth.x) * t * 0.5, (((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight) + (isoWest.y - isoNorth.y) * t * 0.5);
+        ctx.stroke();
+      }
+    } else {
+      // Roof Left Slope (Solid)
+      ctx.fillStyle = house.roofColor;
+      ctx.beginPath();
+      ctx.moveTo(isoNorth.x, isoNorth.y - 45);
+      ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
+      ctx.lineTo(isoWest.x, isoWest.y - 45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.stroke();
+
+      // Roof Right Slope (Solid)
+      ctx.fillStyle = this.adjustColorBrightness(house.roofColor, -25);
+      ctx.beginPath();
+      ctx.moveTo(isoEast.x, isoEast.y - 45);
+      ctx.lineTo((isoNorth.x + isoSouth.x) / 2, ((isoNorth.y + isoSouth.y) / 2) - 45 - roofPeakHeight);
+      ctx.lineTo(isoSouth.x, isoSouth.y - 45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(0,0,0,0.4)';
+      ctx.stroke();
+    }
 
     ctx.restore();
   }

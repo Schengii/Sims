@@ -7,8 +7,8 @@
 
 import { FURNITURE_CATALOG, type PlacedFurniture } from './Furniture';
 
-export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool';
-export type RoofStyle = 'gabled' | 'flat' | 'hipped' | 'none';
+export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool' | 'parquet_herringbone' | 'terracotta';
+export type RoofStyle = 'gabled' | 'flat' | 'hipped' | 'skylight' | 'glass_roof' | 'none';
 export type WallPattern = 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile';
 
 export interface FloorTile {

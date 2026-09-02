@@ -175,6 +175,21 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 20.0.0 (Interactive 2.5D World Pie Menu, Multi-Sim Group Dynamics & Glass Skylight Architecture)
+- **[UI & Interaktion] Kontextuelles 2.5D World Pie Menu (`WorldPieMenu.ts`, `Game.ts`)**:
+  - Dynamisches, kreisförmiges Radial-Menü (*Die Sims 4*-Stil), das sich direkt an der 2.5D-Weltkoordinate von angeklickten Möbeln, Sims, NPCs, Haustieren und Gartenbeeten öffnet.
+  - Symmetrisch angeordnete Glassmorphismus-Aktions-Slices mit Icons, Need-Vorschau-Badges und Audio-Feedback.
+  - Auto-Dismiss bei Klicks außerhalb oder per `Escape`-Taste.
+- **[Haushalt & Gruppe] Multi-Sim Gruppen-Aktivitäten & Haushaltsdynamik (`Game.ts`, `Sim.ts`)**:
+  - **Familien-Dinner zubereiten** (`group_cooking`): Kochen einer großen Mahlzeit am Herd/Kühlschrank mit Brutzel-SFX; alle hungrigen Haushaltsmitglieder versammeln sich autonom am Esstisch (`+45 Hunger`, `+20 Sozial`, `🍲` / `😋` Emotes).
+  - **Gemeinsamer TV- & Filmabend** (`group_tv`): Haushaltsmitglieder setzen sich gemeinsam aufs Sofa (`+35 Spaß`, `+25 Sozial`, `🍿` / `📺` / `😄` Emotes).
+  - **Haustier-Radialpflege**: Knuddeln (`+30 Liebe`), Gourmet-Leckerli füttern (`+25 Hunger`), Kunststücke trainieren (`+20 Spiel`), Fell bürsten.
+- **[Architektur & Bauen] Glasdach, Skylights & Luxus-Böden (`House.ts`, `IsometricRenderer.ts`)**:
+  - Neue Dach-Stile `skylight` und `glass_roof` mit transluzentem Glas-Shader (`rgba(56, 189, 248, 0.35)`), Stahl-Gittersprossen und Lichtdurchlässigkeit.
+  - Neue Luxus-Bodentypen `parquet_herringbone` (Fischgrät-Parkett) und `terracotta` (Terracotta-Fliesen).
+- **[Testing] 40 Testsuiten & 91 Tests**:
+  - Vollständige Vitest-Unit-Tests für `WorldPieMenu.test.ts` und alle Subsysteme.
+
 ### Version 19.0.0 (SimOS 15 Pro Hub, Per-Sim Trait Autonomy, Multi-Touch Engine & Web Audio Soundfx)
 - **[Feature] SimOS 15 Pro Smartphone Hub (`SmartphoneModal.ts`, `Game.ts`)**:
   - Zentrales smartes Betriebssystem im Glasmorphismus-Design mit 30+ integrierten Apps in 5 übersichtlichen Kategorien (Finanzen & Börse 📈, Reisen & Abenteuer 🌴, Smart Home & Design 🏡, Freizeit & Kultur 🎭, Familie & Gesundheit 🩺).

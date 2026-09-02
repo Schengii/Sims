@@ -161,6 +161,7 @@ import { EconomyMarketSystem } from '../systems/EconomyMarketSystem';
 import { MarketModal } from '../ui/MarketModal';
 import { MultiplayerSystem } from '../systems/MultiplayerSystem';
 import { MultiplayerModal } from '../ui/MultiplayerModal';
+import { WorldPieMenu, type WorldPieOption } from '../ui/WorldPieMenu';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -308,6 +309,7 @@ export class Game {
   public marketModal: MarketModal;
   public multiplayerSystem: MultiplayerSystem;
   public multiplayerModal: MultiplayerModal;
+  public worldPieMenu: WorldPieMenu;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -472,6 +474,7 @@ export class Game {
     this.marketModal = new MarketModal(uiContainer, this.marketSystem, this.sim, this.toastManager, this.soundManager);
     this.multiplayerSystem = new MultiplayerSystem();
     this.multiplayerModal = new MultiplayerModal(uiContainer, this.multiplayerSystem, this.npcManager, this.sim, this.toastManager, this.soundManager);
+    this.worldPieMenu = new WorldPieMenu(uiContainer, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -629,66 +632,170 @@ export class Game {
         return;
       }
 
+      // Convert 2.5D grid coords to Screen Coordinates for World Pie Menu positioning
+      const iso = this.renderer.gridToIso(gridX, gridY);
+      const floorYOffset = this.house.activeFloor * -40;
+      const screenX = this.canvas.width / 2 + this.camera.x + (iso.x * this.camera.zoom);
+      const screenY = (this.canvas.height / 2 - 100) + this.camera.y + floorYOffset + (iso.y * this.camera.zoom);
+      const clickPos = { x: screenX, y: screenY };
+
       // 1. Check if clicked a Pet (Dog / Cat)
       const pet = this.petManager.getPetAt(gridX, gridY);
       if (pet) {
-        const path = Pathfinding.findPath(
-          this.sim.gridPos,
-          { x: Math.floor(pet.gridPos.x), y: Math.floor(pet.gridPos.y) },
-          this.house.width,
-          this.house.height,
-          (x, y) => this.house.isWalkable(x, y)
-        );
-        this.sim.setPath(path);
-
-        pet.needs.modify('affection', 25);
-        pet.needs.modify('hunger', 15);
-        pet.triggerEmote('❤️', 3000);
-        this.soundManager.playSimlish(1.3, 'happy');
-        this.toastManager.showToast(`Haustier Interaktion`, `Du hast ${pet.name} geknuddelt & gefüttert! ❤️`, pet.species === 'dog' ? '🐕' : '🐈', 'success');
+        const options: WorldPieOption[] = [
+          {
+            id: 'cuddle', label: 'Knuddeln & Streicheln', icon: '❤️', color: '#ec4899', badge: '+30 Liebe',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(pet.gridPos.x), y: Math.floor(pet.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              pet.needs.modify('affection', 30);
+              pet.triggerEmote('❤️', 3500);
+              this.soundManager.playSimlish(1.3, 'happy');
+              this.toastManager.showToast('Haustier geknuddelt', `${pet.name} schnurrt glücklich! ❤️`, '❤️', 'success');
+            }
+          },
+          {
+            id: 'feed', label: 'Leckerli füttern', icon: '🍖', color: '#10b981', badge: '+25 Hunger',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(pet.gridPos.x), y: Math.floor(pet.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              pet.needs.modify('hunger', 25);
+              pet.needs.modify('affection', 15);
+              pet.triggerEmote('😋', 3000);
+              this.soundManager.playBuySound();
+              this.toastManager.showToast('Leckerli serviert', `${pet.name} hat ein Gourmet-Leckerli genossen!`, '🍖', 'success');
+            }
+          },
+          {
+            id: 'trick', label: 'Kunststück üben', icon: '🎾', color: '#f59e0b', badge: '+20 Spiel',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(pet.gridPos.x), y: Math.floor(pet.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              pet.needs.modify('play', 25);
+              pet.triggerEmote('⭐', 3500);
+              this.soundManager.playLevelUp();
+              this.toastManager.showToast('Dressur-Training', `${pet.name} hat das Kunststück perfekt gelernt!`, '🏆', 'levelUp');
+            }
+          }
+        ];
+        this.worldPieMenu.open(options, clickPos, pet.name, pet.species === 'dog' ? '🐕' : '🐈');
         return;
       }
 
-      // 2. Check if clicked an NPC Townie
+      // 2. Check if clicked an NPC Townie or Household Sim
       const npc = this.npcManager.getNPCAt(gridX, gridY);
       if (npc) {
-        const path = Pathfinding.findPath(
-          this.sim.gridPos,
-          { x: Math.floor(npc.gridPos.x), y: Math.floor(npc.gridPos.y) },
-          this.house.width,
-          this.house.height,
-          (x, y) => this.house.isWalkable(x, y)
-        );
-        this.sim.setPath(path);
-        this.socialWheel.open(this.sim, npc);
+        const options: WorldPieOption[] = [
+          {
+            id: 'chat', label: 'Freundlich plaudern', icon: '💬', color: '#38bdf8', badge: '+15 Freundschaft',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(npc.gridPos.x), y: Math.floor(npc.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              npc.relationship.modifyFriendship(15);
+              npc.activeEmote = { symbol: '💬', expiresAt: Date.now() + 4000 };
+              this.sim.triggerEmote('😊', 3500);
+              this.soundManager.playSimlish(1.0, 'happy');
+              this.toastManager.showToast('Nettes Gespräch', `Du hast dich wunderbar mit ${npc.name} unterhalten!`, '💬', 'success');
+            }
+          },
+          {
+            id: 'joke', label: 'Witz erzählen', icon: '🎭', color: '#eab308', badge: '+20 Spaß',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(npc.gridPos.x), y: Math.floor(npc.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              npc.relationship.modifyFriendship(20);
+              this.sim.needs.modify('fun', 20);
+              npc.activeEmote = { symbol: '😂', expiresAt: Date.now() + 4000 };
+              this.sim.triggerEmote('🤣', 3500);
+              this.soundManager.playSimlish(1.2, 'happy');
+              this.toastManager.showToast('Witz erzählt', `${npc.name} lacht sich schlapp! 😂`, '🎭', 'success');
+            }
+          },
+          {
+            id: 'compliment', label: 'Kompliment machen', icon: '❤️', color: '#ec4899', badge: '+15 Romantik',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(npc.gridPos.x), y: Math.floor(npc.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              npc.relationship.modifyRomance(15);
+              npc.relationship.modifyFriendship(10);
+              npc.activeEmote = { symbol: '😍', expiresAt: Date.now() + 4000 };
+              this.sim.triggerEmote('🥰', 3500);
+              this.soundManager.playSimlish(1.1, 'flirty');
+              this.toastManager.showToast('Schmeichelei', `${npc.name} errötet geschmeichelt! 💕`, '❤️', 'success');
+            }
+          },
+          {
+            id: 'deep_talk', label: 'Tiefes Gespräch', icon: '💭', color: '#a855f7', badge: '+Charisma',
+            onExecute: () => {
+              const path = Pathfinding.findPath(this.sim.gridPos, { x: Math.floor(npc.gridPos.x), y: Math.floor(npc.gridPos.y) }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+              this.sim.setPath(path);
+              npc.relationship.modifyFriendship(25);
+              this.sim.skills.charisma = Math.min(10, (this.sim.skills.charisma || 1) + 0.1);
+              this.soundManager.playSimlish(0.9, 'happy');
+              this.toastManager.showToast('Tiefgründiger Austausch', 'Charisma & Beziehungsband gestärkt!', '💭', 'success');
+            }
+          },
+          {
+            id: 'more_social', label: 'Alle Dialoge...', icon: '📜', color: '#64748b',
+            onExecute: () => {
+              this.socialWheel.open(this.sim, npc);
+            }
+          }
+        ];
+        this.worldPieMenu.open(options, clickPos, npc.name, '👤');
         return;
       }
 
       // 3. Check if clicked a Garden Plot
       const gardenPlot = this.gardenSystem.plots.find(p => p.gridX === gridX && p.gridY === gridY);
       if (gardenPlot) {
+        const options: WorldPieOption[] = [];
         if (gardenPlot.isHarvestable) {
-          const crop = this.gardenSystem.harvestCrop(gridX, gridY);
-          if (crop) {
-            this.sim.inventory.addItem({
-              name: crop.name,
-              type: 'crop',
-              icon: crop.icon,
-              value: crop.value,
-              description: 'Frisch geerntetes Bio-Gemüse aus deinem Garten.'
-            });
-            this.soundManager.playLevelUp();
-            this.toastManager.showToast('Ernte erfolgreich!', `${crop.name} wurde deinem Inventar hinzugefügt!`, crop.icon, 'success');
-          }
-        } else if (!gardenPlot.cropType) {
-          this.gardenSystem.plantSeed(gridX, gridY, 'tomatoes');
-          this.soundManager.playUIClick();
-          this.toastManager.showToast('Samen gepflanzt', 'Tomatensamen ins Beet gesät!', '🍅', 'info');
-        } else {
-          this.gardenSystem.waterPlot(gridX, gridY);
-          this.soundManager.playUIClick();
-          this.toastManager.showToast('Beet gegossen', 'Pflanzen wurden gegossen!', '💧', 'info');
+          options.push({
+            id: 'harvest', label: 'Ernte einbringen', icon: '🧺', color: '#10b981', badge: 'Erntereif',
+            onExecute: () => {
+              const crop = this.gardenSystem.harvestCrop(gridX, gridY);
+              if (crop) {
+                this.sim.inventory.addItem({
+                  name: crop.name,
+                  type: 'crop',
+                  icon: crop.icon,
+                  value: crop.value,
+                  description: 'Frisch geerntetes Bio-Gemüse aus deinem Garten.'
+                });
+                this.soundManager.playLevelUp();
+                this.toastManager.showToast('Ernte erfolgreich!', `${crop.name} geerntet!`, crop.icon, 'success');
+              }
+            }
+          });
         }
+        options.push({
+          id: 'water', label: 'Beet gießen', icon: '💧', color: '#0284c7', badge: '+Wasser',
+          onExecute: () => {
+            this.gardenSystem.waterPlot(gridX, gridY);
+            this.soundManager.playWaterSplash();
+            this.toastManager.showToast('Beet gegossen', 'Pflanzen wurden optimal bewässert!', '💧', 'info');
+          }
+        });
+        if (!gardenPlot.cropType) {
+          options.push({
+            id: 'plant_tomato', label: 'Tomaten säen', icon: '🍅', color: '#ef4444',
+            onExecute: () => {
+              this.gardenSystem.plantSeed(gridX, gridY, 'tomatoes');
+              this.soundManager.playUIClick();
+              this.toastManager.showToast('Samen gepflanzt', 'Tomatensamen ins Beet gesät!', '🍅', 'info');
+            }
+          });
+          options.push({
+            id: 'plant_strawberries', label: 'Erdbeeren säen', icon: '🍓', color: '#f43f5e',
+            onExecute: () => {
+              this.gardenSystem.plantSeed(gridX, gridY, 'strawberries');
+              this.soundManager.playUIClick();
+              this.toastManager.showToast('Erdbeeren gesät', 'Erdbeersamen ins Beet gesät!', '🍓', 'info');
+            }
+          });
+        }
+        this.worldPieMenu.open(options, clickPos, 'Gartenbeet', '🌱');
         return;
       }
 
@@ -698,160 +805,68 @@ export class Game {
         const def = FURNITURE_CATALOG[furniture.furnitureId];
         if (!def || def.interactions.length === 0) return;
 
-        this.furnitureModal.open(def, furniture.instanceId);
-        this.furnitureModal.onSelectInteraction = (interactionId) => {
-          const interaction = def.interactions.find(i => i.id === interactionId) || def.interactions[0];
+        const options: WorldPieOption[] = def.interactions.map(interaction => ({
+          id: interaction.id,
+          label: interaction.label,
+          icon: interaction.icon,
+          color: '#0284c7',
+          badge: `${interaction.duration}s`,
+          onExecute: () => {
+            this.executeFurnitureAction(furniture, def, interaction);
+          }
+        }));
 
-          const path = Pathfinding.findPath(
-            this.sim.gridPos,
-            { x: furniture.gridX, y: furniture.gridY },
-            this.house.width,
-            this.house.height,
-            (x, y) => this.house.isWalkable(x, y)
-          );
-          this.sim.setPath(path);
-
-          this.sim.actionQueue.enqueue({
-            id: `act_${Date.now()}`,
-            name: `${interaction.label} (${def.name})`,
-            icon: interaction.icon,
-            durationSeconds: interaction.duration,
-            elapsedSeconds: 0,
-            onExecuteTick: () => {
-              if (Math.random() < 0.05) {
-                this.soundManager.playSimlish(1.0, 'happy');
-              }
-            },
-            onComplete: () => {
-              Object.entries(interaction.needEffects).forEach(([need, val]) => {
-                this.sim.needs.modify(need as any, val!);
-              });
-
-              if (interaction.id === 'climb_stairs_up') {
-                const next = Math.min(2, this.house.activeFloor + 1);
-                this.house.setFloor(next);
-                this.soundManager.playLevelUp();
-                this.toastManager.showToast('Treppe gestiegen', `Du hast Etage ${next} betreten!`, '🪜', 'info');
-              } else if (interaction.id === 'climb_stairs_down') {
-                const prev = Math.max(-1, this.house.activeFloor - 1);
-                this.house.setFloor(prev);
-                this.soundManager.playUIClick();
-                this.toastManager.showToast('Treppe hinabgestiegen', `Du hast Etage ${prev} betreten!`, '🪜', 'info');
-              }
-
-              if (interaction.id === 'brew_potion' || interaction.id === 'study_spells') {
-                const leveledUp = this.magicManager.addMagicXP(20);
-                if (leveledUp) {
-                  this.soundManager.playLevelUp();
-                  this.toastManager.showToast('✨ MAGIE STUFE ERHÖHT!', `Du hast Magie-Stufe ${this.magicManager.magicLevel} erreicht & neue Zaubersprüche freigeschaltet!`, '🔮', 'levelUp');
-                }
-              }
-
-              if (interaction.id === 'paint') {
-                const paintingValue = 150 + Math.floor(this.sim.skills.painting * 50);
-                this.sim.inventory.addItem({
-                  name: 'Künstlerisches Gemälde',
-                  type: 'painting',
-                  icon: '🎨',
-                  value: paintingValue,
-                  description: 'Ein an der Staffelei erschaffenes Kunstwerk.'
-                });
-                this.toastManager.showToast('Gemälde fertig!', `Gemälde für § ${paintingValue} im Inventar abgelegt!`, '🎨', 'success');
-              }
-
-              if (interaction.id === 'toggle_radio') {
-                const playing = this.radioManager.toggleRadio();
-                const info = this.radioManager.getActiveStationInfo();
-                this.updateRadioHUD();
-                this.toastManager.showToast('Radio Status', `Radio ${playing ? 'Eingeschaltet' : 'Ausgeschaltet'} (${info.name})`, '📻', 'info');
-              } else if (interaction.id === 'cycle_station') {
-                const next = this.radioManager.cycleNextStation();
-                this.updateRadioHUD();
-                this.toastManager.showToast('Radiosender', `Gewechselt zu: ${next.icon} ${next.name}`, '🎛️', 'info');
-              }
-
-              if (interaction.id === 'hold_wedding') {
-                const res = this.weddingManager.holdCeremony(this.sim);
-                if (res.success) {
-                  this.soundManager.playLevelUp();
-                  this.toastManager.showToast('💒 Hochzeit', res.message, '💒', 'levelUp');
-                } else {
-                  this.toastManager.showToast('⚠️ Hochzeit', res.message, '💍', 'warning');
-                }
-              } else if (interaction.id === 'play_guitar') {
-                this.sim.simoleons += 80;
-                this.soundManager.playSimlish(1.2, 'happy');
-                this.toastManager.showToast('🎸 Gitarre', 'Gitarre gespielt & Straßenmusik-Trinkgeld kassiert: +§ 80', '🎵', 'success');
-              } else if (interaction.id === 'play_chess') {
-                this.sim.addSkillXP('programming', 15);
-                this.soundManager.playUIClick();
-                this.toastManager.showToast('♟️ Schach', 'Schachpartie gewonnen & Logik geschärft!', '🧠', 'info');
-              } else if (interaction.id === 'carve_wood') {
-                this.hobbyManager.addHandinessXP(30);
-                this.sim.inventory.addItem({
-                  name: 'Geschnitzte Holzfigur',
-                  type: 'painting',
-                  icon: '🪵',
-                  value: 120,
-                  description: 'Eine in Handarbeit gefertigte Skulptur.'
-                });
-                this.toastManager.showToast('🔨 Werkbank', 'Holzskulptur fertiggestellt! (+§ 120 Wert)', '🪚', 'success');
-              } else if (interaction.id === 'mourn_ghost') {
-                this.toastManager.showToast('🪦 Grabstein', 'Am Grabstein getrauert & Ahnen geehrt.', '👻', 'info');
-              }
-
-              if (interaction.id === 'collect_eggs') {
-                this.sim.inventory.addItem({
-                  name: 'Frische Landeier',
-                  type: 'crop',
-                  icon: '🥚',
-                  value: 40,
-                  description: 'Frisch von den Landhaus-Hühnern gelegte Eier.'
-                });
-                this.soundManager.playLevelUp();
-                this.toastManager.showToast('Hühnerstall', 'Frische Landeier eingesammelt! (+§ 40 Wert)', '🥚', 'success');
-              } else if (interaction.id === 'harvest_honey') {
-                this.sim.inventory.addItem({
-                  name: 'Süßer Bio-Honig',
-                  type: 'crop',
-                  icon: '🍯',
-                  value: 60,
-                  description: 'Reiner, biologischer Honig aus dem eigenen Bienenstock.'
-                });
-                this.soundManager.playLevelUp();
-                this.toastManager.showToast('Bienenstock', 'Süßen Bio-Honig geerntet! (+§ 60 Wert)', '🍯', 'success');
-              }
-
-              if (interaction.id === 'serve_buffet') {
-                this.partyManager.triggerGoal('p_buffet');
-                this.partyManager.triggerGoal('p_snack');
-              } else if (interaction.id === 'blow_candles') {
-                this.partyManager.triggerGoal('p_candles');
-                const newStage = this.sim.ageUp();
-                this.soundManager.playLevelUp();
-                this.toastManager.showToast('🎉 GEBURTSTAG!', `${this.sim.customization.name} ist in die Lebensphase "${newStage.toUpperCase()}" aufgestiegen!`, '🎂', 'levelUp');
-              }
-
-              if (interaction.skillGain) {
-                const leveledUp = this.sim.addSkillXP(interaction.skillGain.skill, interaction.skillGain.amount);
-                if (leveledUp) {
-                  this.soundManager.playLevelUp();
-                  this.toastManager.showToast('✨ LEVEL UP!', `Stufe ${Math.floor(this.sim.skills[interaction.skillGain.skill])} in ${interaction.skillGain.skill.toUpperCase()} erreicht!`, '⭐', 'levelUp');
-                }
-              }
+        // Group meal cooking option for fridge / stove
+        if (furniture.furnitureId.includes('fridge') || furniture.furnitureId.includes('stove') || furniture.furnitureId.includes('herd')) {
+          options.push({
+            id: 'group_cooking', label: '🍲 Familien-Dinner kochen', icon: '🍲', color: '#a855f7', badge: 'Gruppe',
+            onExecute: () => {
+              this.executeGroupMeal(furniture, def);
             }
           });
-        };
-      } else {
-        // Walk active Sim to clicked tile
-        const path = Pathfinding.findPath(
-          this.sim.gridPos,
-          { x: gridX, y: gridY },
-          this.house.width,
-          this.house.height,
-          (x, y) => this.house.isWalkable(x, y)
-        );
-        this.sim.setPath(path);
+        }
+
+        // Group TV watch option for sofa / tv
+        if (furniture.furnitureId.includes('tv') || furniture.furnitureId.includes('sofa')) {
+          options.push({
+            id: 'group_tv', label: '🍿 Zusammen TV schauen', icon: '🍿', color: '#ec4899', badge: 'Gruppe',
+            onExecute: () => {
+              this.executeGroupTVSession(furniture, def);
+            }
+          });
+        }
+
+        this.worldPieMenu.open(options, clickPos, def.name, def.icon);
+        return;
+      }
+
+      // 5. Check if clicked floor / pool tile
+      const tile = this.house.tiles[gridX]?.[gridY];
+      if (tile) {
+        if (tile.type === 'pool') {
+          const options: WorldPieOption[] = [
+            {
+              id: 'swim', label: 'Schwimmen & Bahnen ziehen', icon: '🏊', color: '#00e5ff', badge: '+Fitness',
+              onExecute: () => {
+                const path = Pathfinding.findPath(this.sim.gridPos, { x: gridX, y: gridY }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+                this.sim.setPath(path);
+                this.soundManager.playWaterSplash();
+                this.sim.needs.modify('hygiene', 20);
+                this.sim.needs.modify('fun', 25);
+                this.toastManager.showToast('Erfrischendes Bad', 'Herrliche Abkühlung im Swimmingpool!', '🏊', 'info');
+              }
+            }
+          ];
+          this.worldPieMenu.open(options, clickPos, 'Swimmingpool', '🏊');
+        } else {
+          // Direct walk
+          const path = Pathfinding.findPath(this.sim.gridPos, { x: gridX, y: gridY }, this.house.width, this.house.height, (x, y) => this.house.isWalkable(x, y));
+          if (path.length > 0) {
+            this.sim.setPath(path);
+            this.soundManager.playUIClick();
+          }
+        }
+        return;
       }
     };
 
@@ -1119,6 +1134,242 @@ export class Game {
 
     this.inputHandler.onKeyboardSpeedToggle = (speed) => this.timeSystem.setSpeed(speed);
     this.inputHandler.onKeyboardPauseToggle = () => this.timeSystem.togglePause();
+  }
+
+  private executeFurnitureAction(furniture: any, def: any, interaction: any): void {
+    const path = Pathfinding.findPath(
+      this.sim.gridPos,
+      { x: furniture.gridX, y: furniture.gridY },
+      this.house.width,
+      this.house.height,
+      (x, y) => this.house.isWalkable(x, y)
+    );
+    this.sim.setPath(path);
+
+    this.sim.actionQueue.enqueue({
+      id: `act_${Date.now()}`,
+      name: `${interaction.label} (${def.name})`,
+      icon: interaction.icon,
+      durationSeconds: interaction.duration || 3,
+      elapsedSeconds: 0,
+      onExecuteTick: () => {
+        if (Math.random() < 0.08) {
+          if (furniture.furnitureId.includes('stove') || furniture.furnitureId.includes('fridge') || furniture.furnitureId.includes('kitchen')) {
+            this.soundManager.playCookingSizzle();
+          } else if (furniture.furnitureId.includes('shower') || furniture.furnitureId.includes('tub') || furniture.furnitureId.includes('pool')) {
+            this.soundManager.playWaterSplash();
+          } else if (furniture.furnitureId.includes('pc') || furniture.furnitureId.includes('computer') || furniture.furnitureId.includes('desk')) {
+            this.soundManager.playTypingSound();
+          } else if (furniture.furnitureId.includes('fireplace') || furniture.furnitureId.includes('kamin')) {
+            this.soundManager.playFireplaceCrackling();
+          } else {
+            this.soundManager.playSimlish(1.0, 'happy');
+          }
+        }
+      },
+      onComplete: () => {
+        if (interaction.needEffects) {
+          Object.entries(interaction.needEffects).forEach(([need, val]) => {
+            this.sim.needs.modify(need as any, val as number);
+          });
+        }
+
+        if (interaction.id === 'climb_stairs_up') {
+          const next = Math.min(2, this.house.activeFloor + 1);
+          this.house.setFloor(next);
+          this.soundManager.playLevelUp();
+          this.toastManager.showToast('Treppe gestiegen', `Du hast Etage ${next} betreten!`, '🪜', 'info');
+        } else if (interaction.id === 'climb_stairs_down') {
+          const prev = Math.max(-1, this.house.activeFloor - 1);
+          this.house.setFloor(prev);
+          this.soundManager.playUIClick();
+          this.toastManager.showToast('Treppe hinabgestiegen', `Du hast Etage ${prev} betreten!`, '🪜', 'info');
+        }
+
+        if (interaction.id === 'brew_potion' || interaction.id === 'study_spells') {
+          const leveledUp = this.magicManager.addMagicXP(20);
+          if (leveledUp) {
+            this.soundManager.playLevelUp();
+            this.toastManager.showToast('✨ MAGIE STUFE ERHÖHT!', `Du hast Magie-Stufe ${this.magicManager.magicLevel} erreicht & neue Zaubersprüche freigeschaltet!`, '🔮', 'levelUp');
+          }
+        }
+
+        if (interaction.id === 'paint') {
+          const paintingValue = 150 + Math.floor(this.sim.skills.painting * 50);
+          this.sim.inventory.addItem({
+            name: 'Künstlerisches Gemälde',
+            type: 'painting',
+            icon: '🎨',
+            value: paintingValue,
+            description: 'Ein an der Staffelei erschaffenes Kunstwerk.'
+          });
+          this.toastManager.showToast('Gemälde fertig!', `Gemälde für § ${paintingValue} im Inventar abgelegt!`, '🎨', 'success');
+        }
+
+        if (interaction.id === 'toggle_radio') {
+          const playing = this.radioManager.toggleRadio();
+          const info = this.radioManager.getActiveStationInfo();
+          this.updateRadioHUD();
+          this.toastManager.showToast('Radio Status', `Radio ${playing ? 'Eingeschaltet' : 'Ausgeschaltet'} (${info.name})`, '📻', 'info');
+        } else if (interaction.id === 'cycle_station') {
+          const next = this.radioManager.cycleNextStation();
+          this.updateRadioHUD();
+          this.toastManager.showToast('Radiosender', `Gewechselt zu: ${next.icon} ${next.name}`, '🎛️', 'info');
+        }
+
+        if (interaction.id === 'hold_wedding') {
+          const res = this.weddingManager.holdCeremony(this.sim);
+          if (res.success) {
+            this.soundManager.playLevelUp();
+            this.toastManager.showToast('💒 Hochzeit', res.message, '💒', 'levelUp');
+          } else {
+            this.toastManager.showToast('⚠️ Hochzeit', res.message, '💍', 'warning');
+          }
+        } else if (interaction.id === 'play_guitar') {
+          this.sim.simoleons += 80;
+          this.soundManager.playSimlish(1.2, 'happy');
+          this.toastManager.showToast('🎸 Gitarre', 'Gitarre gespielt & Straßenmusik-Trinkgeld kassiert: +§ 80', '🎵', 'success');
+        } else if (interaction.id === 'play_chess') {
+          this.sim.addSkillXP('programming', 15);
+          this.soundManager.playUIClick();
+          this.toastManager.showToast('♟️ Schach', 'Schachpartie gewonnen & Logik geschärft!', '🧠', 'info');
+        } else if (interaction.id === 'carve_wood') {
+          this.hobbyManager.addHandinessXP(30);
+          this.sim.inventory.addItem({
+            name: 'Geschnitzte Holzfigur',
+            type: 'painting',
+            icon: '🪵',
+            value: 120,
+            description: 'Eine in Handarbeit gefertigte Skulptur.'
+          });
+          this.toastManager.showToast('🔨 Werkbank', 'Holzskulptur fertiggestellt! (+§ 120 Wert)', '🪚', 'success');
+        } else if (interaction.id === 'mourn_ghost') {
+          this.toastManager.showToast('🪦 Grabstein', 'Am Grabstein getrauert & Ahnen geehrt.', '👻', 'info');
+        }
+
+        if (interaction.id === 'collect_eggs') {
+          this.sim.inventory.addItem({
+            name: 'Frische Landeier',
+            type: 'crop',
+            icon: '🥚',
+            value: 40,
+            description: 'Frisch von den Landhaus-Hühnern gelegte Eier.'
+          });
+          this.soundManager.playLevelUp();
+          this.toastManager.showToast('Hühnerstall', 'Frische Landeier eingesammelt! (+§ 40 Wert)', '🥚', 'success');
+        } else if (interaction.id === 'harvest_honey') {
+          this.sim.inventory.addItem({
+            name: 'Süßer Bio-Honig',
+            type: 'crop',
+            icon: '🍯',
+            value: 60,
+            description: 'Reiner, biologischer Honig aus dem eigenen Bienenstock.'
+          });
+          this.soundManager.playLevelUp();
+          this.toastManager.showToast('Bienenstock', 'Süßen Bio-Honig geerntet! (+§ 60 Wert)', '🍯', 'success');
+        }
+
+        if (interaction.id === 'serve_buffet') {
+          this.partyManager.triggerGoal('p_buffet');
+          this.partyManager.triggerGoal('p_snack');
+        } else if (interaction.id === 'blow_candles') {
+          this.partyManager.triggerGoal('p_candles');
+          const newStage = this.sim.ageUp();
+          this.soundManager.playLevelUp();
+          this.toastManager.showToast('🎉 GEBURTSTAG!', `${this.sim.customization.name} ist in die Lebensphase "${newStage.toUpperCase()}" aufgestiegen!`, '🎂', 'levelUp');
+        }
+
+        if (interaction.skillGain) {
+          const leveledUp = this.sim.addSkillXP(interaction.skillGain.skill, interaction.skillGain.amount);
+          if (leveledUp) {
+            this.soundManager.playLevelUp();
+            const skillLevel = Math.floor(this.sim.skills[interaction.skillGain.skill as keyof typeof this.sim.skills] || 1);
+            this.toastManager.showToast('✨ LEVEL UP!', `Stufe ${skillLevel} in ${interaction.skillGain.skill.toUpperCase()} erreicht!`, '⭐', 'levelUp');
+          }
+        }
+      }
+    });
+  }
+
+  private executeGroupMeal(furniture: any, _def?: any): void {
+    const path = Pathfinding.findPath(
+      this.sim.gridPos,
+      { x: furniture.gridX, y: furniture.gridY },
+      this.house.width,
+      this.house.height,
+      (x, y) => this.house.isWalkable(x, y)
+    );
+    this.sim.setPath(path);
+    this.soundManager.playCookingSizzle();
+
+    this.sim.actionQueue.enqueue({
+      id: `act_group_cooking_${Date.now()}`,
+      name: '🍲 Familienmahlzeit kochen',
+      icon: '🍲',
+      durationSeconds: 4,
+      elapsedSeconds: 0,
+      onExecuteTick: () => {
+        if (Math.random() < 0.15) this.soundManager.playCookingSizzle();
+      },
+      onComplete: () => {
+        this.sim.needs.modify('hunger', 45);
+        this.sim.needs.modify('social', 20);
+        this.sim.addSkillXP('cooking', 25);
+        this.sim.triggerEmote('🍲', 4000);
+
+        // Notify all other household Sims to join the meal
+        this.household.sims.forEach(otherSim => {
+          if (otherSim.id !== this.sim.id) {
+            otherSim.needs.modify('hunger', 45);
+            otherSim.needs.modify('social', 20);
+            otherSim.triggerEmote('😋', 4000);
+          }
+        });
+
+        this.soundManager.playLevelUp();
+        this.toastManager.showToast('🍲 Großes Familien-Essen serviert!', 'Alle Haushaltsmitglieder haben gemeinsam gegessen (+45 Hunger, +20 Sozial)!', '🍲', 'success');
+      }
+    });
+  }
+
+  private executeGroupTVSession(furniture: any, _def?: any): void {
+    const path = Pathfinding.findPath(
+      this.sim.gridPos,
+      { x: furniture.gridX, y: furniture.gridY },
+      this.house.width,
+      this.house.height,
+      (x, y) => this.house.isWalkable(x, y)
+    );
+    this.sim.setPath(path);
+    this.soundManager.playUIClick();
+
+    this.sim.actionQueue.enqueue({
+      id: `act_group_tv_${Date.now()}`,
+      name: '🍿 Zusammen fernsehen',
+      icon: '🍿',
+      durationSeconds: 4,
+      elapsedSeconds: 0,
+      onExecuteTick: () => {
+        if (Math.random() < 0.1) this.soundManager.playSimlish(1.1, 'happy');
+      },
+      onComplete: () => {
+        this.sim.needs.modify('fun', 35);
+        this.sim.needs.modify('social', 25);
+        this.sim.triggerEmote('🍿', 4000);
+
+        // Nearby household members join
+        this.household.sims.forEach(otherSim => {
+          if (otherSim.id !== this.sim.id) {
+            otherSim.needs.modify('fun', 35);
+            otherSim.needs.modify('social', 25);
+            otherSim.triggerEmote('😄', 4000);
+          }
+        });
+
+        this.soundManager.playLevelUp();
+        this.toastManager.showToast('🍿 Gemütlicher TV-Abend', 'Die Familie hat zusammen ferngesehen (+35 Spaß, +25 Sozial)!', '📺', 'success');
+      }
+    });
   }
 
   private updateRadioHUD(): void {
