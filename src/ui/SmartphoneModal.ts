@@ -54,6 +54,7 @@ export class SmartphoneModal {
     { id: 'travel', name: 'Urlaubswelten', category: 'travel', icon: '✈️', color: '#ec4899', description: 'Tropenstrände & Bergresorts' },
 
     // Smart Home & Lifestyle
+    { id: 'wall_designer', name: 'Wand-Designer', category: 'home', icon: '🧱', badge: 'NEU', color: '#0284c7', description: 'Tapeten, Klinker & Marmor-Muster' },
     { id: 'greenhouse', name: 'Gewächshaus', category: 'home', icon: '🌿', badge: 'NEU', color: '#4ade80', description: 'Botanik-Kreuzung & Veredelung' },
     { id: 'city_council', name: 'Stadt-Rat & Öko', category: 'home', icon: '🏛️', badge: 'NEU', color: '#0284c7', description: 'Viertel-Ökologie & Stadtverordnungen' },
     { id: 'smart_garden', name: 'Smart Garden', category: 'home', icon: '🌱', color: '#22c55e', description: 'Smarte Sprinkler & Bodenfeuchte' },
@@ -62,6 +63,7 @@ export class SmartphoneModal {
     { id: 'pet_shelter', name: 'Tierheim & Zucht', category: 'home', icon: '🐾', color: '#f43f5e', description: 'Welpen adoptieren & Stammbaum' },
 
     // Kultur, Freizeit & Social
+    { id: 'alchemy', name: 'Alchemie-Kessel', category: 'culture', icon: '🔮', badge: 'NEU', color: '#c084fc', description: 'Tränke brauen & Elixiere alchemieren' },
     { id: 'invite_guest', name: 'Freunde einladen', category: 'culture', icon: '💌', badge: 'NEU', color: '#ec4899', description: 'Dinner, Gaming & Pool-Besuche' },
     { id: 'band', name: 'Band-Studio', category: 'culture', icon: '🎸', color: '#ef4444', description: 'Songs aufnehmen & Konzerte geben' },
     { id: 'director', name: 'Filmstudio', category: 'culture', icon: '🎬', color: '#e11d48', description: 'Regie führen & Blockbuster drehen' },
@@ -74,6 +76,7 @@ export class SmartphoneModal {
     { id: 'cloud_gallery', name: 'Cloud-Galerie', category: 'culture', icon: '☁️', color: '#38bdf8', description: 'Häuser der Community teilen' },
 
     // Gesundheit, Familie & Skills
+    { id: 'pet_nursery', name: 'Welpen-Kinderstube', category: 'family', icon: '🍼', badge: 'NEU', color: '#f43f5e', description: 'Haustiere verpaaren & Welpen aufziehen' },
     { id: 'health', name: 'Gesundheit', category: 'family', icon: '🏥', color: '#10b981', description: 'Krankheiten heilen & Vorsorge' },
     { id: 'vet', name: 'Tierklinik', category: 'family', icon: '🩺', color: '#14b8a6', description: 'Haustiere untersuchen & impfen' },
     { id: 'school', name: 'Bildungs-Portal', category: 'family', icon: '🎓', color: '#4f46e5', description: 'Noten, Hausaufgaben & Abschlüsse' },

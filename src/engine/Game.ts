@@ -170,6 +170,11 @@ import { GuestInvitationSystem } from '../systems/GuestInvitationSystem';
 import { GuestInviteModal } from '../ui/GuestInviteModal';
 import { BankingVaultSystem } from '../systems/BankingVaultSystem';
 import { VaultModal } from '../ui/VaultModal';
+import { AlchemyBrewingSystem } from '../systems/AlchemyBrewingSystem';
+import { AlchemyModal } from '../ui/AlchemyModal';
+import { WallPatternModal } from '../ui/WallPatternModal';
+import { PetNurserySystem } from '../systems/PetNurserySystem';
+import { PetNurseryModal } from '../ui/PetNurseryModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -326,6 +331,11 @@ export class Game {
   public guestModal: GuestInviteModal;
   public vaultSystem: BankingVaultSystem;
   public vaultModal: VaultModal;
+  public alchemySystem: AlchemyBrewingSystem;
+  public alchemyModal: AlchemyModal;
+  public wallPatternModal: WallPatternModal;
+  public petNurserySystem: PetNurserySystem;
+  public petNurseryModal: PetNurseryModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -499,6 +509,11 @@ export class Game {
     this.guestModal = new GuestInviteModal(uiContainer, this.guestSystem, this.npcManager, this.sim, this.toastManager, this.soundManager);
     this.vaultSystem = new BankingVaultSystem();
     this.vaultModal = new VaultModal(uiContainer, this.vaultSystem, this.sim, this.toastManager, this.soundManager);
+    this.alchemySystem = new AlchemyBrewingSystem();
+    this.alchemyModal = new AlchemyModal(uiContainer, this.alchemySystem, this.sim, this.toastManager, this.soundManager);
+    this.wallPatternModal = new WallPatternModal(uiContainer, this.house, this.sim, this.toastManager, this.soundManager);
+    this.petNurserySystem = new PetNurserySystem();
+    this.petNurseryModal = new PetNurseryModal(uiContainer, this.petNurserySystem, this.petManager, this.sim, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -1077,6 +1092,9 @@ export class Game {
         case 'bank_vault': this.vaultModal.open(); break;
         case 'greenhouse': this.greenhouseModal.open(); break;
         case 'invite_guest': this.guestModal.open(); break;
+        case 'alchemy': this.alchemyModal.open(); break;
+        case 'wall_designer': this.wallPatternModal.open(); break;
+        case 'pet_nursery': this.petNurseryModal.open(this.timeSystem.day); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
@@ -1322,6 +1340,10 @@ export class Game {
           this.soundManager.playBuySound();
           this.sim.triggerEmote('✨', 3500);
           this.toastManager.showToast('🏆 Luxus-Aura', 'Goldene Schauvitrine bewundert! (+30 Spaß, Reichtum-Moodlet)', '🪙', 'success');
+        } else if (interaction.id === 'open_alchemy' || interaction.id === 'inspect_potions') {
+          this.alchemyModal.open();
+        } else if (interaction.id === 'open_nursery') {
+          this.petNurseryModal.open(this.timeSystem.day);
         }
 
         if (interaction.id === 'serve_buffet') {

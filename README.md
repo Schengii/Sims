@@ -175,6 +175,21 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 23.0.0 (Magical Alchemy Cauldron, Wallpaper Pattern Designer & Pet Nursery Litters)
+- **[Magie & Alchemie] Magischer Alchemie-Kessel & Elixiere (`AlchemyBrewingSystem.ts`, `AlchemyModal.ts`, `Furniture.ts`)**:
+  - Alchemie-Kessel (`alchemy_cauldron`, § 1.200) und Apothekerschrank (`potion_cabinet`, § 650) zum Brauen von Elixieren aus Botanik-Hybridfrüchten, Honig und Edelmetallen.
+  - 4 mächtige Elixiere: *Elixier der ewigen Jugend* (🧪 Vitalitäts-Boost & Verjüngung), *Glückseligkeits-Nektar* (✨ Füllt alle 6 Bedürfnisse sofort auf 100%), *Midas-Goldelixier* (🪙 +§ 2.500 Barauszahlung & Reichtum-Aura), *Amor Liebes-Philter* (💖 +50% Romantik-Erfolgsquote).
+  - Trank-Verwaltung & direktes Trinken mit Emote- und Partikel-Animationen.
+- **[Architektur & Bauen] Wand-Tapeten & Muster-Designer (`WallPatternModal.ts`, `House.ts`, `IsometricRenderer.ts`)**:
+  - SimOS-App *"Wand-Designer"* (`wall_designer`) zum Auswählen und Anwenden von individuellen Wand-Texturen: *Backstein-Mauerwerk* (🧱), *Skandinavische Holzvertäfelung* (🪵), *Vintage Blumen-Tapete* (🌸) und *Carrara Marmor-Fliesen* (🏛️).
+  - Integrierter Farbwähler für Grundtönungen mit Batch-Applikation auf alle Wandsegmente des Hauses.
+- **[Haustiere & Familie] Haustier-Kinderstube & Welpen-Zucht (`PetNurserySystem.ts`, `PetNurseryModal.ts`, `Furniture.ts`)**:
+  - Haustier-Wärmenest (`pet_nursery_nest`, § 450) für Verpaarung kompatibler Haustiere und Trächtigkeit.
+  - Geburt von Welpen & Kätzchen mit vererbbaren Fellfarben, Charaktereigenschaften und Zucht-Stammbaum.
+  - Automatische Registrierung des Nachwuchses im `PetManager` mit direktem 100% Zuneigungs-Startwert.
+- **[Testing & Persistenz] 46 Testsuiten & 106 Tests (100% grün)**:
+  - Vollständige Persistenz aller Alchemie- und Haustier-Kinderstube-Daten im `SaveManager.ts`.
+
 ### Version 22.0.0 (Botany Greenhouse & Splicing, Guest Invitations & Bank Vault Savings System)
 - **[Botanik & Gewächshaus] Seltene Kreuzungen & Bio-Dünger (`BotanyGreenhouseSystem.ts`, `GreenhouseModal.ts`, `GardenSystem.ts`)**:
   - Pflanzen-Veredelung & Pfropfen (*Grafting & Splicing*): Tomaten + Erdbeeren zu exotischer Drachenfrucht (🐉 § 350), Drachenfrucht + Blumen zu legendärem Geldbaum (💸 § 500), Blumen + Erdbeeren zu Edelorchideen (🌺 § 280).

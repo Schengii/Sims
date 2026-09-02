@@ -1098,5 +1098,71 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 30, social: 10 }
       }
     ]
+  },
+
+  alchemy_cauldron: {
+    id: 'alchemy_cauldron',
+    name: 'Alchemie-Kessel',
+    category: 'appliances',
+    price: 1200,
+    width: 1,
+    height: 1,
+    color: '#3b0764',
+    accentColor: '#c084fc',
+    icon: '🔮',
+    description: 'Brodelnder Kessel zum Brauen von Verjüngungs-, Glücks- und Midas-Elixieren.',
+    interactions: [
+      {
+        id: 'open_alchemy',
+        label: 'Trank brauen & alchemieren',
+        icon: '⚗️',
+        duration: 5,
+        needEffects: { fun: 25, energy: -5 }
+      }
+    ]
+  },
+
+  potion_cabinet: {
+    id: 'potion_cabinet',
+    name: 'Apothekerschrank',
+    category: 'surfaces',
+    price: 650,
+    width: 1,
+    height: 1,
+    color: '#1e1b4b',
+    accentColor: '#818cf8',
+    icon: '🧪',
+    description: 'Aufbewahrungsschrank für gebraute Elixiere, Kräuter und Tinkturen.',
+    interactions: [
+      {
+        id: 'inspect_potions',
+        label: 'Trankbestand prüfen',
+        icon: '🔍',
+        duration: 3,
+        needEffects: { fun: 15 }
+      }
+    ]
+  },
+
+  pet_nursery_nest: {
+    id: 'pet_nursery_nest',
+    name: 'Haustier-Kinderstube & Nest',
+    category: 'comfort',
+    price: 450,
+    width: 1,
+    height: 1,
+    color: '#831843',
+    accentColor: '#f43f5e',
+    icon: '🍼',
+    description: 'Kuscheliges Wärmenest für trächtige Haustiere und neugeborene Welpen & Kätzchen.',
+    interactions: [
+      {
+        id: 'open_nursery',
+        label: 'Kinderstube & Nest öffnen',
+        icon: '🐾',
+        duration: 3,
+        needEffects: { fun: 25, social: 15 }
+      }
+    ]
   }
 };

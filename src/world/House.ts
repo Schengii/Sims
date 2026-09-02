@@ -251,6 +251,21 @@ export class House {
     }
   }
 
+  public applyPatternToAllWalls(pattern: WallPattern, color?: string): number {
+    let count = 0;
+    for (let x = 0; x < this.width; x++) {
+      for (let y = 0; y < this.height; y++) {
+        const tile = this.tiles[x]?.[y];
+        if (tile && (tile.hasWallNorth || tile.hasWallWest)) {
+          tile.wallPattern = pattern;
+          if (color) tile.wallColor = color;
+          count++;
+        }
+      }
+    }
+    return count;
+  }
+
   public addFurniture(furnitureId: string, gridX: number, gridY: number): PlacedFurniture | null {
     const def = FURNITURE_CATALOG[furnitureId];
     if (!def) return null;
