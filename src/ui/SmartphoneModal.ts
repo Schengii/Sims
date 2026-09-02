@@ -54,6 +54,7 @@ export class SmartphoneModal {
     { id: 'travel', name: 'Urlaubswelten', category: 'travel', icon: '✈️', color: '#ec4899', description: 'Tropenstrände & Bergresorts' },
 
     // Smart Home & Lifestyle
+    { id: 'bakery', name: 'Gourmet-Bäckerei', category: 'home', icon: '🥐', badge: 'NEU', color: '#f59e0b', description: 'Torten, Croissants & Konditorei' },
     { id: 'wall_designer', name: 'Wand-Designer', category: 'home', icon: '🧱', badge: 'NEU', color: '#0284c7', description: 'Tapeten, Klinker & Marmor-Muster' },
     { id: 'greenhouse', name: 'Gewächshaus', category: 'home', icon: '🌿', badge: 'NEU', color: '#4ade80', description: 'Botanik-Kreuzung & Veredelung' },
     { id: 'city_council', name: 'Stadt-Rat & Öko', category: 'home', icon: '🏛️', badge: 'NEU', color: '#0284c7', description: 'Viertel-Ökologie & Stadtverordnungen' },
@@ -63,6 +64,7 @@ export class SmartphoneModal {
     { id: 'pet_shelter', name: 'Tierheim & Zucht', category: 'home', icon: '🐾', color: '#f43f5e', description: 'Welpen adoptieren & Stammbaum' },
 
     // Kultur, Freizeit & Social
+    { id: 'cinema', name: 'Heimkino-Saal', category: 'culture', icon: '🎬', badge: 'NEU', color: '#ec4899', description: 'Filmvorführungen, Popcorn & Kino' },
     { id: 'magic_duel', name: 'Magier-Duellarena', category: 'culture', icon: '🪄', badge: 'NEU', color: '#c084fc', description: 'Zauberspruch-Duelle & Turniere' },
     { id: 'alchemy', name: 'Alchemie-Kessel', category: 'culture', icon: '🔮', badge: 'NEU', color: '#c084fc', description: 'Tränke brauen & Elixiere alchemieren' },
     { id: 'invite_guest', name: 'Freunde einladen', category: 'culture', icon: '💌', badge: 'NEU', color: '#ec4899', description: 'Dinner, Gaming & Pool-Besuche' },
@@ -77,6 +79,7 @@ export class SmartphoneModal {
     { id: 'cloud_gallery', name: 'Cloud-Galerie', category: 'culture', icon: '☁️', color: '#38bdf8', description: 'Häuser der Community teilen' },
 
     // Gesundheit, Familie & Skills
+    { id: 'pet_agility', name: 'Haustier-Agility', category: 'family', icon: '🐕', badge: 'NEU', color: '#10b981', description: 'Parcours trainieren & Pokale gewinnen' },
     { id: 'photo_studio', name: 'Fotostudio & Album', category: 'family', icon: '📷', badge: 'NEU', color: '#38bdf8', description: 'Porträts schießen & Fotoalbum' },
     { id: 'pet_nursery', name: 'Welpen-Kinderstube', category: 'family', icon: '🍼', badge: 'NEU', color: '#f43f5e', description: 'Haustiere verpaaren & Welpen aufziehen' },
     { id: 'health', name: 'Gesundheit', category: 'family', icon: '🏥', color: '#10b981', description: 'Krankheiten heilen & Vorsorge' },

@@ -1208,5 +1208,181 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 20 }
       }
     ]
+  },
+
+  bakery_oven: {
+    id: 'bakery_oven',
+    name: 'Gourmet-Backofen',
+    category: 'appliances',
+    price: 1400,
+    width: 1,
+    height: 1,
+    color: '#b45309',
+    accentColor: '#fbbf24',
+    icon: '🥐',
+    description: 'Leistungsstarker Konvektionsofen zum Backen von Torten, Croissants und Baguettes.',
+    interactions: [
+      {
+        id: 'open_bakery',
+        label: 'Bäckerei & Rezepte öffnen',
+        icon: '👩‍🍳',
+        duration: 4,
+        needEffects: { hunger: 20, fun: 15 }
+      }
+    ]
+  },
+
+  pastry_display_case: {
+    id: 'pastry_display_case',
+    name: 'Konditorei-Glaskuchentheke',
+    category: 'surfaces',
+    price: 750,
+    width: 2,
+    height: 1,
+    color: '#78350f',
+    accentColor: '#fde68a',
+    icon: '🍰',
+    description: 'Gekühlte Verkaufsvitrine für frisch gebackene Hochzeitstorten und Gebäck.',
+    interactions: [
+      {
+        id: 'open_bakery',
+        label: 'Vitrine bestücken & Erlöse prüfen',
+        icon: '💰',
+        duration: 3,
+        needEffects: { fun: 10 }
+      }
+    ]
+  },
+
+  cinema_projector_screen: {
+    id: 'cinema_projector_screen',
+    name: 'Heimkino-Leinwand & Beamer',
+    category: 'entertainment',
+    price: 2200,
+    width: 3,
+    height: 1,
+    color: '#0f172a',
+    accentColor: '#ec4899',
+    icon: '🎬',
+    description: '4K Laser-Projektionsleinwand für echtes Kinosaal-Feeling im eigenen Zuhause.',
+    interactions: [
+      {
+        id: 'open_cinema',
+        label: 'Heimkino starten',
+        icon: '🎥',
+        duration: 5,
+        needEffects: { fun: 40, social: 25 }
+      }
+    ]
+  },
+
+  popcorn_maker: {
+    id: 'popcorn_maker',
+    name: 'Retro-Popcorn-Maschine',
+    category: 'appliances',
+    price: 350,
+    width: 1,
+    height: 1,
+    color: '#dc2626',
+    accentColor: '#fef08a',
+    icon: '🍿',
+    description: 'Klassische Popcorn-Maschine mit knisterndem Heißluft-Kessel.',
+    interactions: [
+      {
+        id: 'open_cinema',
+        label: 'Popcorn zubereiten',
+        icon: '🍿',
+        duration: 3,
+        needEffects: { hunger: 15, fun: 10 }
+      }
+    ]
+  },
+
+  luxury_cinema_seats: {
+    id: 'luxury_cinema_seats',
+    name: 'Luxus-Kinosaalsessel',
+    category: 'comfort',
+    price: 600,
+    width: 2,
+    height: 1,
+    color: '#831843',
+    accentColor: '#f43f5e',
+    icon: '💺',
+    description: 'Bequeme rote Samtsessel mit Getränkehaltern für den perfekten Filmgenuss.',
+    interactions: [
+      {
+        id: 'open_cinema',
+        label: 'In Kinosessel entspannen',
+        icon: '🍿',
+        duration: 4,
+        needEffects: { energy: 25, fun: 20 }
+      }
+    ]
+  },
+
+  agility_hurdle: {
+    id: 'agility_hurdle',
+    name: 'Agility-Sprunghürde',
+    category: 'entertainment',
+    price: 300,
+    width: 1,
+    height: 1,
+    color: '#0284c7',
+    accentColor: '#38bdf8',
+    icon: '🚧',
+    description: 'Verstellbare Trainingshürde für Sprung- und Geschicklichkeitstraining von Haustieren.',
+    interactions: [
+      {
+        id: 'open_agility',
+        label: 'Agility-Training starten',
+        icon: '🐕',
+        duration: 4,
+        needEffects: { fun: 25, social: 20 }
+      }
+    ]
+  },
+
+  agility_slalom_poles: {
+    id: 'agility_slalom_poles',
+    name: 'Agility-Slalomstangen',
+    category: 'entertainment',
+    price: 350,
+    width: 2,
+    height: 1,
+    color: '#eab308',
+    accentColor: '#fde047',
+    icon: '🚩',
+    description: 'Reihe farbiger Slalomstangen für präzise Wendemanöver.',
+    interactions: [
+      {
+        id: 'open_agility',
+        label: 'Slalom trainieren',
+        icon: '🐾',
+        duration: 4,
+        needEffects: { fun: 25, social: 20 }
+      }
+    ]
+  },
+
+  agility_tunnel: {
+    id: 'agility_tunnel',
+    name: 'Agility-Kriechtunnel',
+    category: 'entertainment',
+    price: 400,
+    width: 2,
+    height: 1,
+    color: '#16a34a',
+    accentColor: '#86efac',
+    icon: '🚇',
+    description: 'Flexibler Stofftunnel für schnelles Hindernistraining.',
+    interactions: [
+      {
+        id: 'open_agility',
+        label: 'Tunnellauf trainieren',
+        icon: '🏃',
+        duration: 4,
+        needEffects: { fun: 25, social: 20 }
+      }
+    ]
   }
 };

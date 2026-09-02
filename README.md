@@ -175,6 +175,23 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 25.0.0 (Gourmet Bakery & Pastry Shop, Home Cinema Screening Room & Pet Agility Tournaments)
+- **[Konditorei & Backen] Gourmet-Bäckerei & Verkaufsvitrine (`BakerySystem.ts`, `BakeryModal.ts`, `Furniture.ts`)**:
+  - Neue Bäckerei-Möbel: **Gourmet-Backofen** (`bakery_oven`, § 1.400) und **Konditorei-Glaskuchentheke** (`pastry_display_case`, § 750).
+  - 4 handwerkliche Backrezepte: *Dreistöckige Hochzeitstorte* (🎂 § 450), *Gourmet-Cupcakes* (🧁 § 120), *Französische Butter-Croissants* (🥐 § 80) und *Rustikales Sauerteig-Baguette* (🥖 § 95).
+  - Frisch gebackenes Backwerk in die Verkaufsvitrine legen, Kundschaft bedienen und Einnahmen auf das Haushaltskonto auszahlen.
+  - SimOS-App *"Gourmet-Bäckerei"* (`bakery`).
+- **[Entertainment & Film] Heimkino-Saal, Popcorn-Maschine & Filmabende (`HomeCinemaSystem.ts`, `HomeCinemaModal.ts`, `Furniture.ts`)**:
+  - Neue Kino-Möbel: **Heimkino-Leinwand & Beamer** (`cinema_projector_screen`, § 2.200), **Retro-Popcorn-Maschine** (`popcorn_maker`, § 350) und **Luxus-Kinosaalsessel** (`luxury_cinema_seats`, § 600).
+  - 4 Film-Genres mit kollektiven Haushalts-Emotes und Bedürfnis-Boosts: *Mitternachts-Spuk* (😱 Horror), *Liebe unter Sternen* (😍 Romanze), *Die Lachnummer* (🤣 Comedy) und *Interstellarer Warp* (🛸 Sci-Fi).
+  - SimOS-App *"Heimkino-Saal"* (`cinema`).
+- **[Haustiere & Sport] Haustier-Agility Parcours & Meisterschaften (`PetAgilitySystem.ts`, `PetAgilityModal.ts`, `Furniture.ts`)**:
+  - Neue Parcours-Trainingsgeräte im Katalog: **Agility-Sprunghürde** (`agility_hurdle`, § 300), **Agility-Slalomstangen** (`agility_slalom_poles`, § 350) und **Agility-Kriechtunnel** (`agility_tunnel`, § 400).
+  - Agility-Skilltraining (Stufen 1–5) und 3 offizielle Meisterschaftsturniere: *Bronze Pokal* (🥉 § 500), *Silber Medaille* (🥈 § 1.200) und *Goldener Champions-Cup* (🏆 § 2.500).
+  - SimOS-App *"Haustier-Agility"* (`pet_agility`).
+- **[Testing & Persistenz] 51 Testsuiten & 115 Tests (100% grün)**:
+  - Vollständige Persistenz aller Bäckerei-, Kino- und Agility-Daten im `SaveManager.ts`.
+
 ### Version 24.0.0 (Glass Pavilion Architecture, Magic Duels & Photo Studio Wall Art)
 - **[Architektur & Pavillons] Glaspavillons, Schiebetüren & Glasböden (`House.ts`, `IsometricRenderer.ts`, `SaveManager.ts`)**:
   - Neuer Bodentyp `glass_floor` (transluzenter Glasboden mit Mullion-Gittern).

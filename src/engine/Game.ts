@@ -179,6 +179,12 @@ import { MagicDuelSystem } from '../systems/MagicDuelSystem';
 import { MagicDuelModal } from '../ui/MagicDuelModal';
 import { PhotoStudioSystem } from '../systems/PhotoStudioSystem';
 import { PhotoStudioModal } from '../ui/PhotoStudioModal';
+import { BakerySystem } from '../systems/BakerySystem';
+import { BakeryModal } from '../ui/BakeryModal';
+import { HomeCinemaSystem } from '../systems/HomeCinemaSystem';
+import { HomeCinemaModal } from '../ui/HomeCinemaModal';
+import { PetAgilitySystem } from '../systems/PetAgilitySystem';
+import { PetAgilityModal } from '../ui/PetAgilityModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -344,6 +350,12 @@ export class Game {
   public duelModal: MagicDuelModal;
   public studioSystem: PhotoStudioSystem;
   public studioModal: PhotoStudioModal;
+  public bakerySystem: BakerySystem;
+  public bakeryModal: BakeryModal;
+  public cinemaSystem: HomeCinemaSystem;
+  public cinemaModal: HomeCinemaModal;
+  public agilitySystem: PetAgilitySystem;
+  public agilityModal: PetAgilityModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -526,6 +538,12 @@ export class Game {
     this.duelModal = new MagicDuelModal(uiContainer, this.duelSystem, this.sim, this.toastManager, this.soundManager);
     this.studioSystem = new PhotoStudioSystem();
     this.studioModal = new PhotoStudioModal(uiContainer, this.studioSystem, this.sim, this.house, this.toastManager, this.soundManager);
+    this.bakerySystem = new BakerySystem();
+    this.bakeryModal = new BakeryModal(uiContainer, this.bakerySystem, this.sim, this.toastManager, this.soundManager);
+    this.cinemaSystem = new HomeCinemaSystem();
+    this.cinemaModal = new HomeCinemaModal(uiContainer, this.cinemaSystem, this.household, this.sim, this.toastManager, this.soundManager);
+    this.agilitySystem = new PetAgilitySystem();
+    this.agilityModal = new PetAgilityModal(uiContainer, this.agilitySystem, this.petManager, this.sim, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -1109,6 +1127,9 @@ export class Game {
         case 'pet_nursery': this.petNurseryModal.open(this.timeSystem.day); break;
         case 'magic_duel': this.duelModal.open(); break;
         case 'photo_studio': this.studioModal.open(); break;
+        case 'bakery': this.bakeryModal.open(); break;
+        case 'cinema': this.cinemaModal.open(); break;
+        case 'pet_agility': this.agilityModal.open(); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
@@ -1364,6 +1385,12 @@ export class Game {
           this.soundManager.playBuySound();
           this.sim.triggerEmote('🕺', 3500);
           this.toastManager.showToast('📸 Posieren', 'Perfekt vor der Fotoleinwand posiert! (+20 Spaß)', '✨', 'info');
+        } else if (interaction.id === 'open_bakery') {
+          this.bakeryModal.open();
+        } else if (interaction.id === 'open_cinema') {
+          this.cinemaModal.open();
+        } else if (interaction.id === 'open_agility') {
+          this.agilityModal.open();
         }
 
         if (interaction.id === 'serve_buffet') {
