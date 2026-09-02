@@ -11,6 +11,17 @@ export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool'
 export type RoofStyle = 'gabled' | 'flat' | 'hipped' | 'skylight' | 'glass_roof' | 'none';
 export type WallPattern = 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile';
 
+export interface WallArtPiece {
+  id: string;
+  gridX: number;
+  gridY: number;
+  wall: 'north' | 'west';
+  title: string;
+  icon: string;
+  artType: 'photo' | 'painting';
+  auraBuff: number;
+}
+
 export interface FloorTile {
   x: number;
   y: number;
@@ -34,10 +45,30 @@ export class House {
   public floorTilesMap: Record<number, FloorTile[][]> = {};
   public floorFurnitureMap: Record<number, PlacedFurniture[]> = {};
   public wallDisplayMode: 'full' | 'cutaway' | 'hidden' = 'cutaway';
+  public wallMountedArt: WallArtPiece[] = [];
 
   constructor() {
     this.initFloor(0);
     this.initDefaultHouse();
+    // Starter framed art
+    this.wallMountedArt.push({
+      id: 'starter_art_1',
+      gridX: 6,
+      gridY: 3,
+      wall: 'north',
+      title: 'Familien-Meisterwerk',
+      icon: '🖼️',
+      artType: 'painting',
+      auraBuff: 15
+    });
+  }
+
+  public addWallArt(piece: WallArtPiece): void {
+    this.wallMountedArt.push(piece);
+  }
+
+  public getWallArtAt(gridX: number, gridY: number, wall?: 'north' | 'west'): WallArtPiece | undefined {
+    return this.wallMountedArt.find(a => a.gridX === gridX && a.gridY === gridY && (!wall || a.wall === wall));
   }
 
   public get tiles(): FloorTile[][] {

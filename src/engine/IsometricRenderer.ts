@@ -127,6 +127,40 @@ export class IsometricRenderer {
           }
         }
       }
+
+      // 2b. Render Wall Mounted Art Pieces (Framed Paintings & Photos)
+      if (house.wallMountedArt && house.wallMountedArt.length > 0) {
+        house.wallMountedArt.forEach(art => {
+          const iso = this.gridToIso(art.gridX, art.gridY);
+          const hw = this.tileWidth / 2;
+          const hh = this.tileHeight / 2;
+
+          this.ctx.save();
+          if (art.wall === 'north') {
+            const artX = iso.x - (hw / 2);
+            const artY = iso.y + (hh / 2) - 26;
+            // Frame Shadow & Border
+            this.ctx.fillStyle = '#b45309'; // Gold/wood frame
+            this.ctx.fillRect(artX - 8, artY - 8, 16, 16);
+            this.ctx.fillStyle = '#1e293b';
+            this.ctx.fillRect(artX - 6, artY - 6, 12, 12);
+            this.ctx.font = '10px sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(art.icon, artX, artY + 4);
+          } else {
+            const artX = iso.x + (hw / 2);
+            const artY = iso.y + (hh / 2) - 26;
+            this.ctx.fillStyle = '#b45309';
+            this.ctx.fillRect(artX - 8, artY - 8, 16, 16);
+            this.ctx.fillStyle = '#1e293b';
+            this.ctx.fillRect(artX - 6, artY - 6, 12, 12);
+            this.ctx.font = '10px sans-serif';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(art.icon, artX, artY + 4);
+          }
+          this.ctx.restore();
+        });
+      }
     }
 
     // 3. Render Placed Furniture
@@ -687,6 +721,26 @@ export class IsometricRenderer {
         ctx.arc(-3 + eyeOffsetX, -36 + yOffset, 1.5, 0, Math.PI * 2);
         ctx.arc(3 + eyeOffsetX, -36 + yOffset, 1.5, 0, Math.PI * 2);
         ctx.fill();
+
+        // Glasses rendering (CAS 2.0)
+        if (sim.customization.glasses && sim.customization.glasses !== 'none') {
+          ctx.strokeStyle = sim.customization.glasses === 'sunglasses_aviator' ? '#0f172a' : '#38bdf8';
+          ctx.lineWidth = 1.5;
+          ctx.strokeRect(-6 + eyeOffsetX, -39 + yOffset, 5, 5);
+          ctx.strokeRect(1 + eyeOffsetX, -39 + yOffset, 5, 5);
+          ctx.beginPath();
+          ctx.moveTo(-1 + eyeOffsetX, -36 + yOffset);
+          ctx.lineTo(1 + eyeOffsetX, -36 + yOffset);
+          ctx.stroke();
+        }
+      }
+
+      // Hat / Cap rendering (CAS 2.0)
+      if (sim.customization.hat && sim.customization.hat !== 'none') {
+        const hatSymbol = sim.customization.hat === 'baseball_cap' ? '🧢' : sim.customization.hat === 'beanie' ? '🧶' : sim.customization.hat === 'fedora' ? '🎩' : '🎉';
+        ctx.font = '14px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(hatSymbol, 0, -42 + yOffset);
       }
     }
 

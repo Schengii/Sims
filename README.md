@@ -175,6 +175,19 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 21.0.0 (City Ecosystem & Council, Wall Art Gallery & Create-A-Sim 2.0 Upgrade)
+- **[Ökosystem & Stadtverwaltung] Nachbarschafts-Ökologie & Ratsbeschlüsse (`CityEcoSystem.ts`, `CityCouncilModal.ts`)**:
+  - 3 individuelle Stadtbezirke (*Willow Creek*, *Oasis Springs*, *Newcrest Heights*) mit dynamischen Kennzahlen für Öko-Fußabdruck (Grün 🌱 vs. Industriell 🏭), Sicherheits-Index (🛡️), Bürger-Zufriedenheit (⭐) und Immobilienwert-Index (§).
+  - Wöchentliche Bürgerabstimmungen & aktive Stadtverordnungen (*Ökostrom & Solarförderung*, *Nachbarschafts-Wache*, *Digital- & Startup-Förderprogramm*, *Mittelstands-Steuersenkung*, *Kulturstipendium*).
+- **[Wanddekor & Fotostudio] Gerahmte Wandkunst & Inspirierende Wandgalerie (`House.ts`, `IsometricRenderer.ts`)**:
+  - Hängende Wandkunstwerke (`wallMountedArt`) mit Holz-/Goldrahmen an Nord- und Westwänden im 2.5D-Isometrie-Renderer.
+  - Interaktives "Wandkunst bewundern" im 2.5D World Pie Menü (+25 Spaß, +10 Sozial, Inspirations-Aura).
+- **[CAS 2.0] Erweiterter Create-A-Sim Editor (`CASModal.ts`, `Sim.ts`, `IsometricRenderer.ts`)**:
+  - Individuelle Simlish-Stimmhöhen-Regulierung (`voicePitch`: 0.7x Tief bis 1.6x Hoch) mit Live-Audio-Testbutton.
+  - Modische Accessoires direkt im CAS wählbar: Brillen (👓 Moderne Brille, 🕶️ Piloten-Sonnenbrille, 🥽 Retro-Brille) und Kopfbedeckungen (🧢 Baseball Cap, 🧶 Beanie, 🎩 Fedora, 🎉 Partyhut) mit sichtbarem Rendering auf dem Sim-Kopf.
+- **[Testing & Build] 41 Testsuiten mit 94 Tests**:
+  - 100% grün durchlaufende Testsuite und verifizierte Save/Load-Persistenz.
+
 ### Version 20.0.0 (Interactive 2.5D World Pie Menu, Multi-Sim Group Dynamics & Glass Skylight Architecture)
 - **[UI & Interaktion] Kontextuelles 2.5D World Pie Menu (`WorldPieMenu.ts`, `Game.ts`)**:
   - Dynamisches, kreisförmiges Radial-Menü (*Die Sims 4*-Stil), das sich direkt an der 2.5D-Weltkoordinate von angeklickten Möbeln, Sims, NPCs, Haustieren und Gartenbeeten öffnet.

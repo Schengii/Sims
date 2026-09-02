@@ -381,6 +381,8 @@ export class SaveManager {
         hobbyData:       g.hobbyManager?.exportData?.(),
         marketData:      g.marketSystem?.exportData?.(),
         smartGardenData: g.smartGarden?.exportData?.(),
+        cityData:        g.citySystem?.exportData?.(),
+        wallMountedArt:  g.house?.wallMountedArt,
       };
 
       // Merge into save object (skip undefined exports)
@@ -455,6 +457,7 @@ export class SaveManager {
         [g.hobbyManager,       'hobbyData'],
         [g.marketSystem,       'marketData'],
         [g.smartGarden,        'smartGardenData'],
+        [g.citySystem,         'cityData'],
       ];
 
       systemImports.forEach(([system, key]) => {
@@ -462,6 +465,10 @@ export class SaveManager {
           system.importData(data[key]);
         }
       });
+
+      if (data.wallMountedArt && g.house) {
+        g.house.wallMountedArt = data.wallMountedArt;
+      }
 
       return true;
     } catch (e) {

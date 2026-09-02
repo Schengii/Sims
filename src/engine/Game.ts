@@ -162,6 +162,8 @@ import { MarketModal } from '../ui/MarketModal';
 import { MultiplayerSystem } from '../systems/MultiplayerSystem';
 import { MultiplayerModal } from '../ui/MultiplayerModal';
 import { WorldPieMenu, type WorldPieOption } from '../ui/WorldPieMenu';
+import { CityEcoSystem } from '../systems/CityEcoSystem';
+import { CityCouncilModal } from '../ui/CityCouncilModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -310,6 +312,8 @@ export class Game {
   public multiplayerSystem: MultiplayerSystem;
   public multiplayerModal: MultiplayerModal;
   public worldPieMenu: WorldPieMenu;
+  public citySystem: CityEcoSystem;
+  public cityModal: CityCouncilModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -475,6 +479,8 @@ export class Game {
     this.multiplayerSystem = new MultiplayerSystem();
     this.multiplayerModal = new MultiplayerModal(uiContainer, this.multiplayerSystem, this.npcManager, this.sim, this.toastManager, this.soundManager);
     this.worldPieMenu = new WorldPieMenu(uiContainer, this.soundManager);
+    this.citySystem = new CityEcoSystem();
+    this.cityModal = new CityCouncilModal(uiContainer, this.citySystem, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -840,7 +846,26 @@ export class Game {
         return;
       }
 
-      // 5. Check if clicked floor / pool tile
+      // 5. Check if clicked wall with mounted art piece
+      const wallArt = this.house.getWallArtAt(gridX, gridY);
+      if (wallArt) {
+        const options: WorldPieOption[] = [
+          {
+            id: 'admire_art', label: '🖼️ Wandkunst bewundern', icon: '🖼️', color: '#a855f7', badge: '+Inspiration',
+            onExecute: () => {
+              this.sim.needs.modify('fun', 25);
+              this.sim.needs.modify('social', 10);
+              this.sim.triggerEmote('🎨', 3500);
+              this.soundManager.playSimlish(1.1, 'happy');
+              this.toastManager.showToast('Inspirierte Wandgalerie', `Du hast "${wallArt.title}" bewundert (+25 Spaß, Inspirations-Aura)!`, '🎨', 'success');
+            }
+          }
+        ];
+        this.worldPieMenu.open(options, clickPos, wallArt.title, wallArt.icon);
+        return;
+      }
+
+      // 6. Check if clicked floor / pool tile
       const tile = this.house.tiles[gridX]?.[gridY];
       if (tile) {
         if (tile.type === 'pool') {
@@ -1030,6 +1055,7 @@ export class Game {
         case 'archaeology': this.archaeologyModal.open(this.archaeologySystem, this.sim, this.toastManager); break;
         case 'scuba': this.scubaModal.open(this.scubaSystem, this.sim, this.toastManager); break;
         case 'travel': this.travelModal.open(this.travelManager, this.sim, this.toastManager); break;
+        case 'city_council': this.cityModal.open(); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');

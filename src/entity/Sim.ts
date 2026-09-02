@@ -25,6 +25,11 @@ export interface SimCustomization {
   aspiration: string;
   /** Up to 3 active trait IDs (takes priority over single trait if populated) */
   traits?: string[];
+  /** Voice Pitch multiplier (0.7 - 1.6) */
+  voicePitch?: number;
+  glasses?: 'none' | 'glasses_modern' | 'sunglasses_aviator' | 'retro_round';
+  hat?: 'none' | 'beanie' | 'fedora' | 'baseball_cap' | 'party_hat';
+  accessory?: 'none' | 'smartwatch' | 'gold_necklace';
 }
 
 export interface SimSkills {

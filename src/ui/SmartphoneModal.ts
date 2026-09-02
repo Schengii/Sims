@@ -53,6 +53,7 @@ export class SmartphoneModal {
     { id: 'travel', name: 'Urlaubswelten', category: 'travel', icon: '✈️', color: '#ec4899', description: 'Tropenstrände & Bergresorts' },
 
     // Smart Home & Lifestyle
+    { id: 'city_council', name: 'Stadt-Rat & Öko', category: 'home', icon: '🏛️', badge: 'NEU', color: '#0284c7', description: 'Viertel-Ökologie & Stadtverordnungen' },
     { id: 'smart_garden', name: 'Smart Garden', category: 'home', icon: '🌿', color: '#22c55e', description: 'Smarte Sprinkler & Bodenfeuchte' },
     { id: 'decorator', name: 'Design-Büro', category: 'home', icon: '🎨', color: '#a855f7', description: 'Innenarchitektur-Kundenaufträge' },
     { id: 'renters', name: 'Mietverwaltung', category: 'home', icon: '🚪', color: '#f97316', description: 'Mieter betreuen & Mieten kassieren' },

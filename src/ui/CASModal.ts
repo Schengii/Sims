@@ -115,6 +115,41 @@ export class CASModal {
               </div>
             </div>
 
+            <!-- CAS 2.0 Accessories & Voice Pitch -->
+            <div style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 12px;">
+              <label style="display: block; margin-bottom: 8px; font-weight: 600; font-size: 0.9rem; color: #38bdf8;">👓 Accessoires & Stimmhöhe</label>
+              
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 10px;">
+                <div>
+                  <label for="cas-glasses" style="font-size: 0.8rem; display: block; margin-bottom: 4px; color: #94a3b8;">Brille</label>
+                  <select id="cas-glasses" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white; font-size: 0.85rem;">
+                    <option value="none">Keine Brille</option>
+                    <option value="glasses_modern">👓 Moderne Brille</option>
+                    <option value="sunglasses_aviator">🕶️ Piloten-Sonnenbrille</option>
+                    <option value="retro_round">🥽 Retro Nerd-Brille</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="cas-hat" style="font-size: 0.8rem; display: block; margin-bottom: 4px; color: #94a3b8;">Kopfbedeckung</label>
+                  <select id="cas-hat" style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid var(--panel-border); background: rgba(0,0,0,0.4); color: white; font-size: 0.85rem;">
+                    <option value="none">Keine Mütze</option>
+                    <option value="baseball_cap">🧢 Baseball Cap</option>
+                    <option value="beanie">🧶 Warme Beanie</option>
+                    <option value="fedora">🎩 Eleganter Fedora</option>
+                    <option value="party_hat">🎉 Party-Hütchen</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                  <label for="cas-voice" style="font-size: 0.8rem; color: #94a3b8;">🗣️ Simlish Stimmhöhe: <span id="voice-pitch-label">Normal (1.0x)</span></label>
+                  <button type="button" id="btn-test-voice" style="background: rgba(56, 189, 248, 0.2); border: 1px solid #38bdf8; color: #38bdf8; border-radius: 4px; padding: 2px 8px; font-size: 11px; cursor: pointer;">🔊 Stimme testen</button>
+                </div>
+                <input type="range" id="cas-voice" min="0.7" max="1.6" step="0.1" value="1.0" style="width: 100%; accent-color: #38bdf8;" />
+              </div>
+            </div>
+
             <button type="submit" class="btn-hud" style="margin-top: 12px; justify-content: center; background: var(--simoleon-green);">
               💾 Sim Speichern & Übernehmen
             </button>
@@ -144,6 +179,29 @@ export class CASModal {
       if (asp) asp.value = sim.customization.aspiration;
     }
 
+    if (sim.customization.glasses) {
+      const gl = document.getElementById('cas-glasses') as HTMLSelectElement;
+      if (gl) gl.value = sim.customization.glasses;
+    }
+    if (sim.customization.hat) {
+      const ht = document.getElementById('cas-hat') as HTMLSelectElement;
+      if (ht) ht.value = sim.customization.hat;
+    }
+    const voiceInput = document.getElementById('cas-voice') as HTMLInputElement;
+    const voiceLabel = document.getElementById('voice-pitch-label');
+    if (voiceInput) {
+      voiceInput.value = (sim.customization.voicePitch || 1.0).toString();
+      if (voiceLabel) voiceLabel.innerText = `${sim.customization.voicePitch || 1.0}x`;
+      voiceInput.oninput = () => {
+        if (voiceLabel) voiceLabel.innerText = `${voiceInput.value}x`;
+      };
+    }
+
+    document.getElementById('btn-test-voice')?.addEventListener('click', () => {
+      const pitch = parseFloat((document.getElementById('cas-voice') as HTMLInputElement)?.value || '1.0');
+      this.soundManager.playSimlish(pitch, 'happy');
+    });
+
     // Populate trait slots
     const activeTraits = sim.customization.traits && sim.customization.traits.length > 0
       ? sim.customization.traits
@@ -170,6 +228,9 @@ export class CASModal {
       sim.customization.hairColor = (document.getElementById('cas-hair') as HTMLInputElement).value;
       sim.customization.outfitColor = (document.getElementById('cas-outfit') as HTMLInputElement).value;
       sim.customization.aspiration = (document.getElementById('cas-aspiration') as HTMLSelectElement)?.value ?? sim.customization.aspiration;
+      sim.customization.glasses = (document.getElementById('cas-glasses') as HTMLSelectElement)?.value as any;
+      sim.customization.hat = (document.getElementById('cas-hat') as HTMLSelectElement)?.value as any;
+      sim.customization.voicePitch = parseFloat((document.getElementById('cas-voice') as HTMLInputElement)?.value || '1.0');
 
       // Collect up to 3 traits
       const traits: string[] = [];
