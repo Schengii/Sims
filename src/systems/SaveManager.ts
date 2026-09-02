@@ -392,6 +392,9 @@ export class SaveManager {
         bakeryData:      g.bakerySystem?.exportData?.(),
         cinemaData:      g.cinemaSystem?.exportData?.(),
         agilityData:     g.agilitySystem?.exportData?.(),
+        observatoryData: g.observatorySystem?.exportData?.(),
+        spaData:         g.spaSystem?.exportData?.(),
+        treeData:        g.genealogySystem?.exportData?.(),
         wallMountedArt:  g.house?.wallMountedArt,
       };
 
@@ -478,6 +481,9 @@ export class SaveManager {
         [g.bakerySystem,       'bakeryData'],
         [g.cinemaSystem,       'cinemaData'],
         [g.agilitySystem,      'agilityData'],
+        [g.observatorySystem,  'observatoryData'],
+        [g.spaSystem,          'spaData'],
+        [g.genealogySystem,    'treeData'],
       ];
 
       systemImports.forEach(([system, key]) => {

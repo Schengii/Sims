@@ -185,6 +185,12 @@ import { HomeCinemaSystem } from '../systems/HomeCinemaSystem';
 import { HomeCinemaModal } from '../ui/HomeCinemaModal';
 import { PetAgilitySystem } from '../systems/PetAgilitySystem';
 import { PetAgilityModal } from '../ui/PetAgilityModal';
+import { ObservatorySystem } from '../systems/ObservatorySystem';
+import { ObservatoryModal } from '../ui/ObservatoryModal';
+import { HerbalSpaSystem } from '../systems/HerbalSpaSystem';
+import { HerbalSpaModal } from '../ui/HerbalSpaModal';
+import { GenealogyTreeSystem } from '../systems/GenealogyTreeSystem';
+import { GenealogyTreeModal } from '../ui/GenealogyTreeModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -356,6 +362,12 @@ export class Game {
   public cinemaModal: HomeCinemaModal;
   public agilitySystem: PetAgilitySystem;
   public agilityModal: PetAgilityModal;
+  public observatorySystem: ObservatorySystem;
+  public observatoryModal: ObservatoryModal;
+  public spaSystem: HerbalSpaSystem;
+  public spaModal: HerbalSpaModal;
+  public genealogySystem: GenealogyTreeSystem;
+  public genealogyModal: GenealogyTreeModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -544,6 +556,12 @@ export class Game {
     this.cinemaModal = new HomeCinemaModal(uiContainer, this.cinemaSystem, this.household, this.sim, this.toastManager, this.soundManager);
     this.agilitySystem = new PetAgilitySystem();
     this.agilityModal = new PetAgilityModal(uiContainer, this.agilitySystem, this.petManager, this.sim, this.toastManager, this.soundManager);
+    this.observatorySystem = new ObservatorySystem();
+    this.observatoryModal = new ObservatoryModal(uiContainer, this.observatorySystem, this.sim, this.toastManager, this.soundManager);
+    this.spaSystem = new HerbalSpaSystem();
+    this.spaModal = new HerbalSpaModal(uiContainer, this.spaSystem, this.sim, this.toastManager, this.soundManager);
+    this.genealogySystem = new GenealogyTreeSystem();
+    this.genealogyModal = new GenealogyTreeModal(uiContainer, this.genealogySystem, this.sim, this.household, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -1130,6 +1148,9 @@ export class Game {
         case 'bakery': this.bakeryModal.open(); break;
         case 'cinema': this.cinemaModal.open(); break;
         case 'pet_agility': this.agilityModal.open(); break;
+        case 'observatory': this.observatoryModal.open(); break;
+        case 'herbal_spa': this.spaModal.open(); break;
+        case 'genealogy_tree': this.genealogyModal.open(); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
@@ -1391,6 +1412,10 @@ export class Game {
           this.cinemaModal.open();
         } else if (interaction.id === 'open_agility') {
           this.agilityModal.open();
+        } else if (interaction.id === 'open_observatory') {
+          this.observatoryModal.open();
+        } else if (interaction.id === 'open_spa') {
+          this.spaModal.open();
         }
 
         if (interaction.id === 'serve_buffet') {

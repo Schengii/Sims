@@ -47,6 +47,7 @@ export class SmartphoneModal {
 
     // Reisen & Abenteuer
     { id: 'world_map', name: 'Weltkarte', category: 'travel', icon: '🗺️', color: '#0284c7', description: 'Reise zu Nachbarschaften & Lots' },
+    { id: 'observatory', name: 'Observatorium', category: 'travel', icon: '🔭', badge: 'NEU', color: '#0ea5e9', description: 'Sterne scannen & Meteoriten bergen' },
     { id: 'cruise', name: 'Luxuskreuzfahrt', category: 'travel', icon: '🚢', badge: 'VIP', color: '#0ea5e9', description: 'Yachtreisen & Ozean-Abenteuer' },
     { id: 'space', name: 'Weltraum', category: 'travel', icon: '🚀', color: '#6366f1', description: 'Raketenstarts & Alien-Erkundung' },
     { id: 'archaeology', name: 'Archäologie', category: 'travel', icon: '🏺', color: '#d97706', description: 'Antike Relikte & Ausgrabungen' },
@@ -79,6 +80,8 @@ export class SmartphoneModal {
     { id: 'cloud_gallery', name: 'Cloud-Galerie', category: 'culture', icon: '☁️', color: '#38bdf8', description: 'Häuser der Community teilen' },
 
     // Gesundheit, Familie & Skills
+    { id: 'genealogy_tree', name: 'Stammbaum 3.0', category: 'family', icon: '🌳', badge: 'NEU', color: '#c084fc', description: 'Dynastie, Ahnen & Generationen' },
+    { id: 'herbal_spa', name: 'Kräuter-Spa', category: 'family', icon: '🍵', badge: 'NEU', color: '#34d399', description: 'Bio-Tees, Aromatherapie & Massagen' },
     { id: 'pet_agility', name: 'Haustier-Agility', category: 'family', icon: '🐕', badge: 'NEU', color: '#10b981', description: 'Parcours trainieren & Pokale gewinnen' },
     { id: 'photo_studio', name: 'Fotostudio & Album', category: 'family', icon: '📷', badge: 'NEU', color: '#38bdf8', description: 'Porträts schießen & Fotoalbum' },
     { id: 'pet_nursery', name: 'Welpen-Kinderstube', category: 'family', icon: '🍼', badge: 'NEU', color: '#f43f5e', description: 'Haustiere verpaaren & Welpen aufziehen' },

@@ -1384,5 +1384,115 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 25, social: 20 }
       }
     ]
+  },
+
+  astronomy_telescope: {
+    id: 'astronomy_telescope',
+    name: 'Großes Spiegelteleskop',
+    category: 'entertainment',
+    price: 1350,
+    width: 1,
+    height: 1,
+    color: '#1e293b',
+    accentColor: '#38bdf8',
+    icon: '🔭',
+    description: 'Optisches Präzisions-Teleskop für Himmelsbeobachtungen und Asteroiden-Scans.',
+    interactions: [
+      {
+        id: 'open_observatory',
+        label: 'Observatorium & Himmel scannen',
+        icon: '🌌',
+        duration: 5,
+        needEffects: { fun: 30 }
+      }
+    ]
+  },
+
+  meteorite_display_stand: {
+    id: 'meteorite_display_stand',
+    name: 'Meteoriten-Schaupodest',
+    category: 'decor',
+    price: 450,
+    width: 1,
+    height: 1,
+    color: '#334155',
+    accentColor: '#fbbf24',
+    icon: '☄️',
+    description: 'Beleuchtetes Schaupodest für geborgene Meteoriten und Pallasit-Kristalle.',
+    interactions: [
+      {
+        id: 'open_observatory',
+        label: 'Entdeckungs-Archiv prüfen',
+        icon: '🪐',
+        duration: 3,
+        needEffects: { fun: 15 }
+      }
+    ]
+  },
+
+  tea_samovar: {
+    id: 'tea_samovar',
+    name: 'Kräuter-Teesamowar',
+    category: 'appliances',
+    price: 550,
+    width: 1,
+    height: 1,
+    color: '#b45309',
+    accentColor: '#fde68a',
+    icon: '🍵',
+    description: 'Traditioneller Samowar für frisch aufgebrühte Kräutertees und Bio-Aufgüsse.',
+    interactions: [
+      {
+        id: 'open_spa',
+        label: 'Tee aufbrühen & Teestube',
+        icon: '🍵',
+        duration: 3,
+        needEffects: { hunger: 15, energy: 20 }
+      }
+    ]
+  },
+
+  aromatherapy_diffuser: {
+    id: 'aromatherapy_diffuser',
+    name: 'Aromatherapie-Diffusor',
+    category: 'decor',
+    price: 300,
+    width: 1,
+    height: 1,
+    color: '#065f46',
+    accentColor: '#34d399',
+    icon: '🌿',
+    description: 'Ultraschall-Diffusor mit beruhigenden ätherischen Ölen.',
+    interactions: [
+      {
+        id: 'open_spa',
+        label: 'Aromatherapie starten',
+        icon: '🌸',
+        duration: 3,
+        needEffects: { fun: 20 }
+      }
+    ]
+  },
+
+  spa_massage_table: {
+    id: 'spa_massage_table',
+    name: 'Luxus-Massageliege',
+    category: 'comfort',
+    price: 1100,
+    width: 2,
+    height: 1,
+    color: '#1e3a8a',
+    accentColor: '#60a5fa',
+    icon: '💆',
+    description: 'Gepolsterte Wellness-Liege für Hot-Stone und Entspannungsmassagen.',
+    interactions: [
+      {
+        id: 'open_spa',
+        label: 'Massage-Behandlung buchen',
+        icon: '💆',
+        duration: 5,
+        needEffects: { energy: 40, fun: 35 }
+      }
+    ]
   }
 };

@@ -175,6 +175,22 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 26.0.0 (Astronomy Observatory, Herbal Spa Wellness & Multi-Gen Genealogy Tree 3.0)
+- **[Astronomie & Kosmos] Sternwarte, Meteoritenschauer & Alien-Signale (`ObservatorySystem.ts`, `ObservatoryModal.ts`, `Furniture.ts`)**:
+  - Neue Astronomie-Möbel: **Großes Spiegelteleskop** (`astronomy_telescope`, § 1.350) und **Meteoriten-Schaupodest** (`meteorite_display_stand`, § 450).
+  - Himmelskörper entdecken (*Ringplanet Chronos*, *Komet Halley-Beta*, *Asteroid Sim-2026*, *Pallasit-Kristallmeteorit*) mit Forschungsgeldern (§ 650–1.200), Meteoriten bergen und Alien-Signale aus der Galaxie empfangen (👽).
+  - SimOS-App *"Observatorium"* (`observatory`).
+- **[Wellness & Teestube] Kräuter-Teestube, Aromatherapie & Massagen (`HerbalSpaSystem.ts`, `HerbalSpaModal.ts`, `Furniture.ts`)**:
+  - Neue Spa-Möbel: **Kräuter-Teesamowar** (`tea_samovar`, § 550), **Aromatherapie-Diffusor** (`aromatherapy_diffuser`, § 300) und **Luxus-Massageliege** (`spa_massage_table`, § 1.100).
+  - 4 wohltuende Wellness-Behandlungen: *Kamillen-Entspannungstee* (🍵), *Matcha-Fokus-Elixier* (🍃), *Eukalyptus-Aromatherapie* (🌿) und *Lavendel-Tiefenentspannungsmassage* (🌸).
+  - SimOS-App *"Kräuter-Spa"* (`herbal_spa`).
+- **[Ahnengalerie & Dynastie] Familienstammbaum 3.0 (`GenealogyTreeSystem.ts`, `GenealogyTreeModal.ts`)**:
+  - Interaktive grafische Mehrebenen-Visualisierung über Generationen (Großeltern & Ahnen ➔ Aktuelles Familienoberhaupt & Partner ➔ Nachkommen & Erben).
+  - Verwaltung des Dynastie-Namens und der Generationen-Zählung.
+  - SimOS-App *"Stammbaum 3.0"* (`genealogy_tree`).
+- **[Testing & Persistenz] 54 Testsuiten & 120 Tests (100% grün)**:
+  - Vollständige Persistenz aller Observatoriums-, Spa- und Stammbaum-Daten im `SaveManager.ts`.
+
 ### Version 25.0.0 (Gourmet Bakery & Pastry Shop, Home Cinema Screening Room & Pet Agility Tournaments)
 - **[Konditorei & Backen] Gourmet-Bäckerei & Verkaufsvitrine (`BakerySystem.ts`, `BakeryModal.ts`, `Furniture.ts`)**:
   - Neue Bäckerei-Möbel: **Gourmet-Backofen** (`bakery_oven`, § 1.400) und **Konditorei-Glaskuchentheke** (`pastry_display_case`, § 750).
