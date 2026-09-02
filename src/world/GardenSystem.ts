@@ -3,7 +3,7 @@
  * Manages soil plots, seed planting, watering, growth cycles, and harvesting crops for Simoleons or cooking.
  */
 
-export type CropType = 'tomatoes' | 'strawberries' | 'flowers';
+export type CropType = 'tomatoes' | 'strawberries' | 'flowers' | 'dragonfruit' | 'money_tree' | 'orchid';
 
 export interface GardenPlot {
   id: string;
@@ -62,6 +62,12 @@ export class GardenSystem {
       harvestData = { name: 'Süße Erdbeeren', icon: '🍓', value: 180 };
     } else if (plot.cropType === 'flowers') {
       harvestData = { name: 'Duftende Blumen', icon: '💐', value: 150 };
+    } else if (plot.cropType === 'dragonfruit') {
+      harvestData = { name: 'Exotische Drachenfrucht', icon: '🐉', value: 350 };
+    } else if (plot.cropType === 'money_tree') {
+      harvestData = { name: 'Goldene Simoleon-Früchte', icon: '💸', value: 500 };
+    } else if (plot.cropType === 'orchid') {
+      harvestData = { name: 'Seltene Edelorchidee', icon: '🌺', value: 280 };
     }
 
     // Reset plot

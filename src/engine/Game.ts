@@ -164,6 +164,12 @@ import { MultiplayerModal } from '../ui/MultiplayerModal';
 import { WorldPieMenu, type WorldPieOption } from '../ui/WorldPieMenu';
 import { CityEcoSystem } from '../systems/CityEcoSystem';
 import { CityCouncilModal } from '../ui/CityCouncilModal';
+import { BotanyGreenhouseSystem } from '../systems/BotanyGreenhouseSystem';
+import { GreenhouseModal } from '../ui/GreenhouseModal';
+import { GuestInvitationSystem } from '../systems/GuestInvitationSystem';
+import { GuestInviteModal } from '../ui/GuestInviteModal';
+import { BankingVaultSystem } from '../systems/BankingVaultSystem';
+import { VaultModal } from '../ui/VaultModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -314,6 +320,12 @@ export class Game {
   public worldPieMenu: WorldPieMenu;
   public citySystem: CityEcoSystem;
   public cityModal: CityCouncilModal;
+  public botanySystem: BotanyGreenhouseSystem;
+  public greenhouseModal: GreenhouseModal;
+  public guestSystem: GuestInvitationSystem;
+  public guestModal: GuestInviteModal;
+  public vaultSystem: BankingVaultSystem;
+  public vaultModal: VaultModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -481,6 +493,12 @@ export class Game {
     this.worldPieMenu = new WorldPieMenu(uiContainer, this.soundManager);
     this.citySystem = new CityEcoSystem();
     this.cityModal = new CityCouncilModal(uiContainer, this.citySystem, this.toastManager, this.soundManager);
+    this.botanySystem = new BotanyGreenhouseSystem();
+    this.greenhouseModal = new GreenhouseModal(uiContainer, this.botanySystem, this.gardenSystem, this.sim, this.toastManager, this.soundManager);
+    this.guestSystem = new GuestInvitationSystem();
+    this.guestModal = new GuestInviteModal(uiContainer, this.guestSystem, this.npcManager, this.sim, this.toastManager, this.soundManager);
+    this.vaultSystem = new BankingVaultSystem();
+    this.vaultModal = new VaultModal(uiContainer, this.vaultSystem, this.sim, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -1056,6 +1074,9 @@ export class Game {
         case 'scuba': this.scubaModal.open(this.scubaSystem, this.sim, this.toastManager); break;
         case 'travel': this.travelModal.open(this.travelManager, this.sim, this.toastManager); break;
         case 'city_council': this.cityModal.open(); break;
+        case 'bank_vault': this.vaultModal.open(); break;
+        case 'greenhouse': this.greenhouseModal.open(); break;
+        case 'invite_guest': this.guestModal.open(); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
@@ -1295,6 +1316,14 @@ export class Game {
           this.toastManager.showToast('Bienenstock', 'Süßen Bio-Honig geerntet! (+§ 60 Wert)', '🍯', 'success');
         }
 
+        if (interaction.id === 'open_vault') {
+          this.vaultModal.open();
+        } else if (interaction.id === 'admire_gold') {
+          this.soundManager.playBuySound();
+          this.sim.triggerEmote('✨', 3500);
+          this.toastManager.showToast('🏆 Luxus-Aura', 'Goldene Schauvitrine bewundert! (+30 Spaß, Reichtum-Moodlet)', '🪙', 'success');
+        }
+
         if (interaction.id === 'serve_buffet') {
           this.partyManager.triggerGoal('p_buffet');
           this.partyManager.triggerGoal('p_snack');
@@ -1450,6 +1479,13 @@ export class Game {
       this.sim.simoleons += marketRes.dividendPaid;
       this.soundManager.playBuySound();
       this.toastManager.showToast('📈 DIVIDENDE ERHALTEN!', marketRes.summary, '💰', 'levelUp');
+    }
+
+    // Weekly Bank Vault Savings Interest
+    const interest = this.vaultSystem.applyWeeklyInterest(this.timeSystem.day);
+    if (interest > 0) {
+      this.soundManager.playBuySound();
+      this.toastManager.showToast('🏦 ZINS-GUTSCHRIFT!', `+§ ${interest.toLocaleString()} wöchentliche Zinsen auf dein Sparkonto gutgeschrieben!`, '💰', 'levelUp');
     }
 
     // Bug #3 fix: Daily quest reset check

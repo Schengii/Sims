@@ -1054,5 +1054,49 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 30, energy: -10 }
       }
     ]
+  },
+
+  safe_vault: {
+    id: 'safe_vault',
+    name: 'Titan Banktresor',
+    category: 'appliances',
+    price: 1500,
+    width: 1,
+    height: 1,
+    color: '#334155',
+    accentColor: '#fbbf24',
+    icon: '🏦',
+    description: 'Schwerer Panzertresor zur sicheren Aufbewahrung von Simoleons, Gold und Diamanten.',
+    interactions: [
+      {
+        id: 'open_vault',
+        label: 'Tresor öffnen & verwalten',
+        icon: '🔑',
+        duration: 3,
+        needEffects: { fun: 20 }
+      }
+    ]
+  },
+
+  gold_display_case: {
+    id: 'gold_display_case',
+    name: 'Gold-Schauvitrine',
+    category: 'decor',
+    price: 800,
+    width: 1,
+    height: 1,
+    color: '#b45309',
+    accentColor: '#fde68a',
+    icon: '🏆',
+    description: 'Edle beleuchtete Vitrine zur Schaukelung deiner Goldbarren und Edelsteine.',
+    interactions: [
+      {
+        id: 'admire_gold',
+        label: 'Goldbarren bewundern',
+        icon: '✨',
+        duration: 4,
+        needEffects: { fun: 30, social: 10 }
+      }
+    ]
   }
 };

@@ -382,6 +382,9 @@ export class SaveManager {
         marketData:      g.marketSystem?.exportData?.(),
         smartGardenData: g.smartGarden?.exportData?.(),
         cityData:        g.citySystem?.exportData?.(),
+        botanyData:      g.botanySystem?.exportData?.(),
+        guestData:       g.guestSystem?.exportData?.(),
+        bankingData:     g.vaultSystem?.exportData?.(),
         wallMountedArt:  g.house?.wallMountedArt,
       };
 
@@ -458,6 +461,9 @@ export class SaveManager {
         [g.marketSystem,       'marketData'],
         [g.smartGarden,        'smartGardenData'],
         [g.citySystem,         'cityData'],
+        [g.botanySystem,       'botanyData'],
+        [g.guestSystem,        'guestData'],
+        [g.vaultSystem,        'bankingData'],
       ];
 
       systemImports.forEach(([system, key]) => {

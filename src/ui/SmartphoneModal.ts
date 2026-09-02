@@ -38,6 +38,7 @@ export class SmartphoneModal {
 
   public readonly apps: PhoneAppItem[] = [
     // Finanzen & Wirtschaft
+    { id: 'bank_vault', name: 'Banktresor', category: 'finance', icon: '🏦', badge: 'NEU', color: '#fbbf24', description: '5% Zinsen, Goldbarren & Brillanten' },
     { id: 'market', name: 'Börsenmarkt', category: 'finance', icon: '📈', badge: 'NEU', color: '#10b981', description: 'Aktien handeln & Dividenden kassieren' },
     { id: 'bills', name: 'Rechnungen', category: 'finance', icon: '📑', color: '#f59e0b', description: 'Strom, Wasser & Steuern verwalten' },
     { id: 'business', name: 'Mein Laden', category: 'finance', icon: '🏢', color: '#06b6d4', description: 'Eigene Boutique & Mitarbeiter leiten' },
@@ -53,13 +54,15 @@ export class SmartphoneModal {
     { id: 'travel', name: 'Urlaubswelten', category: 'travel', icon: '✈️', color: '#ec4899', description: 'Tropenstrände & Bergresorts' },
 
     // Smart Home & Lifestyle
+    { id: 'greenhouse', name: 'Gewächshaus', category: 'home', icon: '🌿', badge: 'NEU', color: '#4ade80', description: 'Botanik-Kreuzung & Veredelung' },
     { id: 'city_council', name: 'Stadt-Rat & Öko', category: 'home', icon: '🏛️', badge: 'NEU', color: '#0284c7', description: 'Viertel-Ökologie & Stadtverordnungen' },
-    { id: 'smart_garden', name: 'Smart Garden', category: 'home', icon: '🌿', color: '#22c55e', description: 'Smarte Sprinkler & Bodenfeuchte' },
+    { id: 'smart_garden', name: 'Smart Garden', category: 'home', icon: '🌱', color: '#22c55e', description: 'Smarte Sprinkler & Bodenfeuchte' },
     { id: 'decorator', name: 'Design-Büro', category: 'home', icon: '🎨', color: '#a855f7', description: 'Innenarchitektur-Kundenaufträge' },
     { id: 'renters', name: 'Mietverwaltung', category: 'home', icon: '🚪', color: '#f97316', description: 'Mieter betreuen & Mieten kassieren' },
     { id: 'pet_shelter', name: 'Tierheim & Zucht', category: 'home', icon: '🐾', color: '#f43f5e', description: 'Welpen adoptieren & Stammbaum' },
 
     // Kultur, Freizeit & Social
+    { id: 'invite_guest', name: 'Freunde einladen', category: 'culture', icon: '💌', badge: 'NEU', color: '#ec4899', description: 'Dinner, Gaming & Pool-Besuche' },
     { id: 'band', name: 'Band-Studio', category: 'culture', icon: '🎸', color: '#ef4444', description: 'Songs aufnehmen & Konzerte geben' },
     { id: 'director', name: 'Filmstudio', category: 'culture', icon: '🎬', color: '#e11d48', description: 'Regie führen & Blockbuster drehen' },
     { id: 'politics', name: 'Politik-Büro', category: 'culture', icon: '🗳️', color: '#2563eb', description: 'Bürgermeister-Wahlkampf führen' },

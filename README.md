@@ -175,6 +175,22 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 22.0.0 (Botany Greenhouse & Splicing, Guest Invitations & Bank Vault Savings System)
+- **[Botanik & Gewächshaus] Seltene Kreuzungen & Bio-Dünger (`BotanyGreenhouseSystem.ts`, `GreenhouseModal.ts`, `GardenSystem.ts`)**:
+  - Pflanzen-Veredelung & Pfropfen (*Grafting & Splicing*): Tomaten + Erdbeeren zu exotischer Drachenfrucht (🐉 § 350), Drachenfrucht + Blumen zu legendärem Geldbaum (💸 § 500), Blumen + Erdbeeren zu Edelorchideen (🌺 § 280).
+  - Bio-Dünger-Inventar: Kompost (+50% Speed), Fisch-Dünger (+80% Speed & +60% Marktwert) und Kristall-Pulver (Sofort-Wachstum & Doppelertrag).
+  - Direktes Säen und Veredeln über die Gewächshaus-Werkbank mit Belohnung von Gärtnern-Skill-XP.
+- **[Social & Townies] Freunde-Einladungen & Spontane Nachbarschafts-Besuche (`GuestInvitationSystem.ts`, `GuestInviteModal.ts`, `Game.ts`)**:
+  - SimOS-App *"Freunde einladen"* (`invite_guest`): Einladen von bekannten Townies (Mortimer Goth, Bella Goth, Summer Holiday, Bob Pancakes, Travis Scott) mit thematischem Aktivitätsfokus (🍳 *Dinner*, 🎮 *Gaming-Session*, 🏊 *Pool-Party*, ☕ *Kaffeeklatsch*).
+  - Eingeladene Gäste spawnen am Hauseingang mit Telefon-Klingeln (`playPhoneRing`), Begrüßungs-Emotes und Boost für Freundschaft & Sozialbedürfnis (+25).
+- **[Finanzen & Luxus] Titan Banktresor & Sparkonto-Zinsen (`BankingVaultSystem.ts`, `VaultModal.ts`, `Furniture.ts`, `Game.ts`)**:
+  - Neue Luxus-Möbelstücke im Katalog: **Titan Banktresor** (`safe_vault`, § 1.500) und **Gold-Schauvitrine** (`gold_display_case`, § 800).
+  - High-Yield Sparkonto mit **5% wöchentlicher Zinsgutschrift** auf eingelagerte Simoleons.
+  - Physischer Handel & Einlagerung von 999 Feingoldbarren (🪙 § 1.000) und Brillanten (💎 § 2.500) im Panzertresor.
+  - Interaktives "Goldbarren bewundern" (+30 Spaß, Reichtum-Aura).
+- **[Testing & Persistenz] 44 Testsuiten & 102 Tests (100% grün)**:
+  - Vollständige Persistenz aller Botanik-, Gast- und Banktresor-Daten im `SaveManager.ts`.
+
 ### Version 21.0.0 (City Ecosystem & Council, Wall Art Gallery & Create-A-Sim 2.0 Upgrade)
 - **[Ökosystem & Stadtverwaltung] Nachbarschafts-Ökologie & Ratsbeschlüsse (`CityEcoSystem.ts`, `CityCouncilModal.ts`)**:
   - 3 individuelle Stadtbezirke (*Willow Creek*, *Oasis Springs*, *Newcrest Heights*) mit dynamischen Kennzahlen für Öko-Fußabdruck (Grün 🌱 vs. Industriell 🏭), Sicherheits-Index (🛡️), Bürger-Zufriedenheit (⭐) und Immobilienwert-Index (§).
