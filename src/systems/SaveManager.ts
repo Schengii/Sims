@@ -62,8 +62,8 @@ export interface GameSaveData {
       hasWallNorth?: boolean;
       hasWallWest?: boolean;
       wallColor?: string;
-      openingNorth?: 'door' | 'window';
-      openingWest?: 'door' | 'window';
+      openingNorth?: 'door' | 'window' | 'sliding_patio_door';
+      openingWest?: 'door' | 'window' | 'sliding_patio_door';
     }>>;
   };
   career?: {
@@ -387,6 +387,8 @@ export class SaveManager {
         bankingData:     g.vaultSystem?.exportData?.(),
         alchemyData:     g.alchemySystem?.exportData?.(),
         nurseryData:     g.petNurserySystem?.exportData?.(),
+        duelData:        g.duelSystem?.exportData?.(),
+        studioData:      g.studioSystem?.exportData?.(),
         wallMountedArt:  g.house?.wallMountedArt,
       };
 
@@ -468,6 +470,8 @@ export class SaveManager {
         [g.vaultSystem,        'bankingData'],
         [g.alchemySystem,      'alchemyData'],
         [g.petNurserySystem,   'nurseryData'],
+        [g.duelSystem,         'duelData'],
+        [g.studioSystem,       'studioData'],
       ];
 
       systemImports.forEach(([system, key]) => {

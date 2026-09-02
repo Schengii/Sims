@@ -175,6 +175,23 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 24.0.0 (Glass Pavilion Architecture, Magic Duels & Photo Studio Wall Art)
+- **[Architektur & Pavillons] Glaspavillons, Schiebetüren & Glasböden (`House.ts`, `IsometricRenderer.ts`, `SaveManager.ts`)**:
+  - Neuer Bodentyp `glass_floor` (transluzenter Glasboden mit Mullion-Gittern).
+  - Neuer Wand-Muster-Typ `glass_curtain_wall` (Aluminiumgerahmte Glas-Vorhangfassade) und neue Wandöffnung `sliding_patio_door` (moderne Terrassen-Glasschiebetür).
+  - Perfekt geeignet für den Bau wetterfester Wintergärten und transparenter Terrassenpavillons.
+- **[Magie & Duelle] Zauberspruch-Duellarena & Magier-Turniere (`MagicDuelSystem.ts`, `MagicDuelModal.ts`, `Game.ts`)**:
+  - Turn-based Magier-Duelle gegen rivalisierende NPC-Zauberer (*Morgyn Ember*, *Darrel Charm*, *L. Faba*).
+  - Taktische Zaubersprüche: *Blitzschlag* (35 DMG), *Prisma-Schild* (Reflexion & Schadensabwehr), *Frostnova* (25 DMG) und *Pyroschlag* (50 DMG).
+  - Aufstieg in Zauberer-Rängen (Novize ➔ Adept ➔ Meister ➔ Erzmagier) mit § 1.500 Siegprämien und Logik/Magie-XP.
+  - SimOS-App *"Magier-Duellarena"* (`magic_duel`).
+- **[Fotografie & Alben] Stativ-Fotostudio, Kulissen & Leinwände (`PhotoStudioSystem.ts`, `PhotoStudioModal.ts`, `Furniture.ts`)**:
+  - Neue Studio-Möbel: **Stativ-Studiokamera** (`studio_camera`, § 850) und **Foto-Studioleinwand** (`photo_backdrop`, § 400).
+  - Thematische Studio-Shootings (*Familienporträt*, *Haustier-Shooting*, *Romantisches Paarfoto*, *Glamour-Passbild*) mit automatischem Rahmen und Aufhängen an den Hauswänden (`house.wallMountedArt`).
+  - SimOS-App *"Fotostudio & Album"* (`photo_studio`) mit digitalem Familienalbum.
+- **[Testing & Persistenz] 48 Testsuiten & 109 Tests (100% grün)**:
+  - Vollständige Persistenz aller Duell- und Fotostudio-Daten im `SaveManager.ts`.
+
 ### Version 23.0.0 (Magical Alchemy Cauldron, Wallpaper Pattern Designer & Pet Nursery Litters)
 - **[Magie & Alchemie] Magischer Alchemie-Kessel & Elixiere (`AlchemyBrewingSystem.ts`, `AlchemyModal.ts`, `Furniture.ts`)**:
   - Alchemie-Kessel (`alchemy_cauldron`, § 1.200) und Apothekerschrank (`potion_cabinet`, § 650) zum Brauen von Elixieren aus Botanik-Hybridfrüchten, Honig und Edelmetallen.

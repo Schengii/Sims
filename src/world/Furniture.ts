@@ -1164,5 +1164,49 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { fun: 25, social: 15 }
       }
     ]
+  },
+
+  studio_camera: {
+    id: 'studio_camera',
+    name: 'Stativ-Studiokamera',
+    category: 'entertainment',
+    price: 850,
+    width: 1,
+    height: 1,
+    color: '#1e293b',
+    accentColor: '#38bdf8',
+    icon: '📷',
+    description: 'Professionelle Spiegelreflexkamera auf Dreibeinstativ für hochauflösende Porträtaufnahmen.',
+    interactions: [
+      {
+        id: 'open_studio',
+        label: 'Fotostudio & Shooting öffnen',
+        icon: '📸',
+        duration: 4,
+        needEffects: { fun: 30, social: 15 }
+      }
+    ]
+  },
+
+  photo_backdrop: {
+    id: 'photo_backdrop',
+    name: 'Foto-Studioleinwand',
+    category: 'decor',
+    price: 400,
+    width: 2,
+    height: 1,
+    color: '#334155',
+    accentColor: '#fbbf24',
+    icon: '🖼️',
+    description: 'Thematische Hintergrundkulisse für Porträts, Paar- und Haustiershootings.',
+    interactions: [
+      {
+        id: 'pose_backdrop',
+        label: 'Vor Leinwand posieren',
+        icon: '🕺',
+        duration: 3,
+        needEffects: { fun: 20 }
+      }
+    ]
   }
 };

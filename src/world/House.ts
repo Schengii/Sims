@@ -7,9 +7,9 @@
 
 import { FURNITURE_CATALOG, type PlacedFurniture } from './Furniture';
 
-export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool' | 'parquet_herringbone' | 'terracotta';
+export type FloorType = 'wood' | 'tile' | 'carpet' | 'grass' | 'marble' | 'pool' | 'parquet_herringbone' | 'terracotta' | 'glass_floor';
 export type RoofStyle = 'gabled' | 'flat' | 'hipped' | 'skylight' | 'glass_roof' | 'none';
-export type WallPattern = 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile';
+export type WallPattern = 'plain' | 'brick' | 'wood_panel' | 'wallpaper_floral' | 'marble_tile' | 'glass_curtain_wall';
 
 export interface WallArtPiece {
   id: string;
@@ -31,8 +31,8 @@ export interface FloorTile {
   hasWallWest?: boolean;
   wallColor?: string;
   wallPattern?: WallPattern;
-  openingNorth?: 'door' | 'window';
-  openingWest?: 'door' | 'window';
+  openingNorth?: 'door' | 'window' | 'sliding_patio_door';
+  openingWest?: 'door' | 'window' | 'sliding_patio_door';
 }
 
 export class House {

@@ -256,6 +256,17 @@ export class IsometricRenderer {
       ctx.strokeStyle = '#00e5ff';
       ctx.lineWidth = 1.5;
       ctx.stroke();
+    } else if (tile.type === 'glass_floor') {
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.4)';
+      ctx.fill();
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      // Grid Mullions on glass floor
+      ctx.beginPath();
+      ctx.moveTo(isoX, isoY);
+      ctx.lineTo(isoX, isoY + this.tileHeight);
+      ctx.stroke();
     } else {
       ctx.fillStyle = tile.color;
       ctx.fill();
@@ -314,7 +325,7 @@ export class IsometricRenderer {
     isoY: number,
     direction: 'north' | 'west',
     wallColor: string,
-    opening?: 'door' | 'window',
+    opening?: 'door' | 'window' | 'sliding_patio_door',
     isCutaway: boolean = false,
     isOccludingEntity: boolean = false,
     wallPattern?: string
@@ -368,6 +379,11 @@ export class IsometricRenderer {
           ctx.font = '9px sans-serif';
           ctx.fillStyle = 'rgba(255,255,255,0.4)';
           ctx.fillText('🌸', isoX - (hw / 2), isoY - 15);
+        } else if (wallPattern === 'glass_curtain_wall') {
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+          ctx.fillRect(isoX - hw + 2, isoY + hh - wallH + 4, hw - 4, wallH - 8);
+          ctx.strokeStyle = '#38bdf8';
+          ctx.strokeRect(isoX - hw + 2, isoY + hh - wallH + 4, hw - 4, wallH - 8);
         }
       }
 
@@ -376,6 +392,11 @@ export class IsometricRenderer {
           ctx.fillStyle = '#8d5524';
           ctx.fillRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
           ctx.strokeRect(isoX - hw + 8, isoY + hh - 30, 16, 25);
+        } else if (opening === 'sliding_patio_door') {
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
+          ctx.fillRect(isoX - hw + 4, isoY + hh - 32, 24, 28);
+          ctx.strokeStyle = '#0284c7';
+          ctx.strokeRect(isoX - hw + 4, isoY + hh - 32, 24, 28);
         } else if (opening === 'window') {
           ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
           ctx.fillRect(isoX - hw + 10, isoY + hh - 35, 14, 14);
@@ -419,6 +440,11 @@ export class IsometricRenderer {
           ctx.font = '9px sans-serif';
           ctx.fillStyle = 'rgba(255,255,255,0.4)';
           ctx.fillText('🌸', isoX + (hw / 2), isoY - 15);
+        } else if (wallPattern === 'glass_curtain_wall') {
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.45)';
+          ctx.fillRect(isoX + 2, isoY + hh - wallH + 4, hw - 4, wallH - 8);
+          ctx.strokeStyle = '#38bdf8';
+          ctx.strokeRect(isoX + 2, isoY + hh - wallH + 4, hw - 4, wallH - 8);
         }
       }
 
@@ -427,6 +453,11 @@ export class IsometricRenderer {
           ctx.fillStyle = '#8d5524';
           ctx.fillRect(isoX + 8, isoY + hh - 30, 16, 25);
           ctx.strokeRect(isoX + 8, isoY + hh - 30, 16, 25);
+        } else if (opening === 'sliding_patio_door') {
+          ctx.fillStyle = 'rgba(56, 189, 248, 0.5)';
+          ctx.fillRect(isoX + 4, isoY + hh - 32, 24, 28);
+          ctx.strokeStyle = '#0284c7';
+          ctx.strokeRect(isoX + 4, isoY + hh - 32, 24, 28);
         } else if (opening === 'window') {
           ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
           ctx.fillRect(isoX + 10, isoY + hh - 35, 14, 14);

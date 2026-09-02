@@ -175,6 +175,10 @@ import { AlchemyModal } from '../ui/AlchemyModal';
 import { WallPatternModal } from '../ui/WallPatternModal';
 import { PetNurserySystem } from '../systems/PetNurserySystem';
 import { PetNurseryModal } from '../ui/PetNurseryModal';
+import { MagicDuelSystem } from '../systems/MagicDuelSystem';
+import { MagicDuelModal } from '../ui/MagicDuelModal';
+import { PhotoStudioSystem } from '../systems/PhotoStudioSystem';
+import { PhotoStudioModal } from '../ui/PhotoStudioModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -336,6 +340,10 @@ export class Game {
   public wallPatternModal: WallPatternModal;
   public petNurserySystem: PetNurserySystem;
   public petNurseryModal: PetNurseryModal;
+  public duelSystem: MagicDuelSystem;
+  public duelModal: MagicDuelModal;
+  public studioSystem: PhotoStudioSystem;
+  public studioModal: PhotoStudioModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -514,6 +522,10 @@ export class Game {
     this.wallPatternModal = new WallPatternModal(uiContainer, this.house, this.sim, this.toastManager, this.soundManager);
     this.petNurserySystem = new PetNurserySystem();
     this.petNurseryModal = new PetNurseryModal(uiContainer, this.petNurserySystem, this.petManager, this.sim, this.toastManager, this.soundManager);
+    this.duelSystem = new MagicDuelSystem();
+    this.duelModal = new MagicDuelModal(uiContainer, this.duelSystem, this.sim, this.toastManager, this.soundManager);
+    this.studioSystem = new PhotoStudioSystem();
+    this.studioModal = new PhotoStudioModal(uiContainer, this.studioSystem, this.sim, this.house, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -1095,6 +1107,8 @@ export class Game {
         case 'alchemy': this.alchemyModal.open(); break;
         case 'wall_designer': this.wallPatternModal.open(); break;
         case 'pet_nursery': this.petNurseryModal.open(this.timeSystem.day); break;
+        case 'magic_duel': this.duelModal.open(); break;
+        case 'photo_studio': this.studioModal.open(); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
@@ -1344,6 +1358,12 @@ export class Game {
           this.alchemyModal.open();
         } else if (interaction.id === 'open_nursery') {
           this.petNurseryModal.open(this.timeSystem.day);
+        } else if (interaction.id === 'open_studio') {
+          this.studioModal.open();
+        } else if (interaction.id === 'pose_backdrop') {
+          this.soundManager.playBuySound();
+          this.sim.triggerEmote('🕺', 3500);
+          this.toastManager.showToast('📸 Posieren', 'Perfekt vor der Fotoleinwand posiert! (+20 Spaß)', '✨', 'info');
         }
 
         if (interaction.id === 'serve_buffet') {

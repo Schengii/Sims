@@ -63,6 +63,7 @@ export class SmartphoneModal {
     { id: 'pet_shelter', name: 'Tierheim & Zucht', category: 'home', icon: '🐾', color: '#f43f5e', description: 'Welpen adoptieren & Stammbaum' },
 
     // Kultur, Freizeit & Social
+    { id: 'magic_duel', name: 'Magier-Duellarena', category: 'culture', icon: '🪄', badge: 'NEU', color: '#c084fc', description: 'Zauberspruch-Duelle & Turniere' },
     { id: 'alchemy', name: 'Alchemie-Kessel', category: 'culture', icon: '🔮', badge: 'NEU', color: '#c084fc', description: 'Tränke brauen & Elixiere alchemieren' },
     { id: 'invite_guest', name: 'Freunde einladen', category: 'culture', icon: '💌', badge: 'NEU', color: '#ec4899', description: 'Dinner, Gaming & Pool-Besuche' },
     { id: 'band', name: 'Band-Studio', category: 'culture', icon: '🎸', color: '#ef4444', description: 'Songs aufnehmen & Konzerte geben' },
@@ -76,6 +77,7 @@ export class SmartphoneModal {
     { id: 'cloud_gallery', name: 'Cloud-Galerie', category: 'culture', icon: '☁️', color: '#38bdf8', description: 'Häuser der Community teilen' },
 
     // Gesundheit, Familie & Skills
+    { id: 'photo_studio', name: 'Fotostudio & Album', category: 'family', icon: '📷', badge: 'NEU', color: '#38bdf8', description: 'Porträts schießen & Fotoalbum' },
     { id: 'pet_nursery', name: 'Welpen-Kinderstube', category: 'family', icon: '🍼', badge: 'NEU', color: '#f43f5e', description: 'Haustiere verpaaren & Welpen aufziehen' },
     { id: 'health', name: 'Gesundheit', category: 'family', icon: '🏥', color: '#10b981', description: 'Krankheiten heilen & Vorsorge' },
     { id: 'vet', name: 'Tierklinik', category: 'family', icon: '🩺', color: '#14b8a6', description: 'Haustiere untersuchen & impfen' },
