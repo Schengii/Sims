@@ -46,4 +46,27 @@ export class SmartGardenSystem {
       });
     }
   }
+
+  public toggleSprinklers(gardenSystem: GardenSystem): boolean {
+    this.sprinklersInstalled = !this.sprinklersInstalled;
+    if (this.sprinklersInstalled) {
+      gardenSystem.plots.forEach(plot => {
+        plot.waterLevel = 100;
+      });
+    }
+    return this.sprinklersInstalled;
+  }
+
+  public exportData(): any {
+    return {
+      sprinklersInstalled: this.sprinklersInstalled,
+      autoFertilizerActive: this.autoFertilizerActive
+    };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (data.sprinklersInstalled !== undefined) this.sprinklersInstalled = data.sprinklersInstalled;
+    if (data.autoFertilizerActive !== undefined) this.autoFertilizerActive = data.autoFertilizerActive;
+  }
 }

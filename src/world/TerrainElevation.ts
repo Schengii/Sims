@@ -57,6 +57,7 @@ export class TerrainElevation {
    * Returns vertical pixel offset for isometric rendering (e.g. 1 elevation level = -12px higher).
    */
   public getYOffset(x: number, y: number): number {
-    return this.getElevation(x, y) * -12;
+    const offset = this.getElevation(x, y) * -12;
+    return offset === 0 ? 0 : offset;
   }
 }

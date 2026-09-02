@@ -22,15 +22,20 @@ export class ToastManager {
   private lastToastTime: number = 0;
   private static readonly DEDUP_MS = 800;
 
-  constructor(parentContainer: HTMLElement) {
-    let existing = document.getElementById('toast-container');
-    if (!existing) {
-      existing = document.createElement('div');
-      existing.id = 'toast-container';
-      existing.className = 'toast-container';
-      parentContainer.appendChild(existing);
+  constructor(parentContainer?: HTMLElement) {
+    if (typeof document !== 'undefined') {
+      let existing = document.getElementById('toast-container');
+      if (!existing) {
+        existing = document.createElement('div');
+        existing.id = 'toast-container';
+        existing.className = 'toast-container';
+        if (parentContainer) parentContainer.appendChild(existing);
+        else document.body.appendChild(existing);
+      }
+      this.container = existing;
+    } else {
+      this.container = {} as any;
     }
-    this.container = existing;
   }
 
   public show(message: string, type: 'info' | 'success' | 'warning' | 'levelUp' | 'error' = 'info'): void {

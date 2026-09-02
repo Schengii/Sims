@@ -120,4 +120,19 @@ export class EconomyMarketSystem {
       message: `${shares}x ${stk.name} Anteile für § ${revenue} verkauft!`
     };
   }
+
+  public exportData(): any {
+    return {
+      commodities: this.commodities,
+      stocks: this.stocks,
+      lastSimDay: this.lastSimDay
+    };
+  }
+
+  public importData(data: any): void {
+    if (!data) return;
+    if (data.commodities) this.commodities = { ...this.commodities, ...data.commodities };
+    if (data.stocks) this.stocks = { ...this.stocks, ...data.stocks };
+    if (data.lastSimDay !== undefined) this.lastSimDay = data.lastSimDay;
+  }
 }

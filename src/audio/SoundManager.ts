@@ -18,8 +18,10 @@ export class SoundManager {
   }
 
   private initContext(): void {
+    if (typeof window === 'undefined') return;
     if (!this.ctx) {
-      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      const AudioCtx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+      if (!AudioCtx) return;
       this.ctx = new AudioCtx();
       this.masterGain = this.ctx.createGain();
       this.updateMasterVolume();
@@ -306,6 +308,140 @@ export class SoundManager {
     else if (mood === 'flirty' || mood === 'romantic') emotion = 'flirty';
 
     this.playSimlish(pitchMod, emotion);
+  }
+
+  /**
+   * Procedural Cooking Sizzle Synthesizer (stove, pan, buffet)
+   */
+  public playCookingSizzle(): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(800, now);
+    osc.frequency.linearRampToValueAtTime(1400, now + 0.25);
+
+    gain.gain.setValueAtTime(0.08 * this.sfxVolume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.28);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.28);
+  }
+
+  /**
+   * Procedural Water Splash Synthesizer (shower, pool, sink)
+   */
+  public playWaterSplash(): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(600, now);
+    osc.frequency.exponentialRampToValueAtTime(180, now + 0.2);
+
+    gain.gain.setValueAtTime(0.14 * this.sfxVolume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.22);
+  }
+
+  /**
+   * Procedural Keyboard Typing Synthesizer (PC workstation, programming)
+   */
+  public playTypingSound(): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    for (let i = 0; i < 3; i++) {
+      const clickTime = now + (i * 0.05);
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(1200 + Math.random() * 400, clickTime);
+
+      gain.gain.setValueAtTime(0.06 * this.sfxVolume, clickTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, clickTime + 0.03);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain);
+
+      osc.start(clickTime);
+      osc.stop(clickTime + 0.03);
+    }
+  }
+
+  /**
+   * Procedural Fireplace Crackling Synthesizer
+   */
+  public playFireplaceCrackling(): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sawtooth';
+    osc.frequency.setValueAtTime(200, now);
+    osc.frequency.exponentialRampToValueAtTime(50, now + 0.15);
+
+    gain.gain.setValueAtTime(0.09 * this.sfxVolume, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.16);
+
+    osc.connect(gain);
+    gain.connect(this.masterGain);
+
+    osc.start(now);
+    osc.stop(now + 0.16);
+  }
+
+  /**
+   * Procedural Phone Ring / Notification Chime
+   */
+  public playPhoneRing(): void {
+    if (this.isMuted || this.sfxVolume <= 0) return;
+    this.initContext();
+    if (!this.ctx || !this.masterGain) return;
+
+    const now = this.ctx.currentTime;
+    const notes = [659.25, 783.99, 1046.5]; // E5, G5, C6
+    notes.forEach((freq, idx) => {
+      const osc = this.ctx!.createOscillator();
+      const gain = this.ctx!.createGain();
+
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, now + idx * 0.08);
+
+      gain.gain.setValueAtTime(0.12 * this.sfxVolume, now + idx * 0.08);
+      gain.gain.exponentialRampToValueAtTime(0.001, now + idx * 0.08 + 0.15);
+
+      osc.connect(gain);
+      gain.connect(this.masterGain!);
+
+      osc.start(now + idx * 0.08);
+      osc.stop(now + idx * 0.08 + 0.15);
+    });
   }
 }
 

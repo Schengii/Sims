@@ -83,6 +83,8 @@ export class Sim {
   public facing: 'south' | 'east' | 'north' | 'west' = 'south';
   /** Set to true when sim has critically low needs for 5+ game minutes */
   public isFainting: boolean = false;
+  /** Cooldown timer between autonomous decisions for this specific Sim */
+  public autonomyCooldownSec: number = 0;
 
   constructor(customization?: Partial<SimCustomization>) {
     this.id = `sim_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;

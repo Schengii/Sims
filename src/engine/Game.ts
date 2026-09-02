@@ -470,6 +470,8 @@ export class Game {
     this.cloudGalleryModal = new CloudGalleryModal(uiContainer, this, this.toastManager);
     this.marketSystem = new EconomyMarketSystem();
     this.marketModal = new MarketModal(uiContainer, this.marketSystem, this.sim, this.toastManager, this.soundManager);
+    this.multiplayerSystem = new MultiplayerSystem();
+    this.multiplayerModal = new MultiplayerModal(uiContainer, this.multiplayerSystem, this.npcManager, this.sim, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -997,6 +999,56 @@ export class Game {
     this.hud.onOpenPrivateChef = () => this.privateChefModal.open(this.privateChefManager, this.sim, this.toastManager);
     this.hud.onOpenCheats = () => this.cheatConsole.open();
     this.hud.onOpenSmartphone = () => this.smartphoneModal.open();
+    this.hud.onOpenMultiplayer = () => this.multiplayerModal.open();
+
+    // SimOS App Launcher Dispatcher
+    this.smartphoneModal.onLaunchApp = (appId: string) => {
+      switch (appId) {
+        case 'market': this.marketModal.open(); break;
+        case 'bills': this.billsModal.open(this.billsManager, this.house, this.sim, this.toastManager); break;
+        case 'business': this.businessModal.open(this.businessManager, this.sim, this.toastManager); break;
+        case 'real_estate': this.realEstateModal.open(this.realEstateManager, this.sim, this.toastManager, this.soundManager); break;
+        case 'penthouse': this.penthouseModal.open(this.penthouseManager, this.sim, this.toastManager); break;
+        case 'world_map': this.worldMapModal.open(this.worldMap, this.sim, this.toastManager); break;
+        case 'cruise': this.cruiseModal.open(this.yachtManager, this.sim, this.toastManager, this.soundManager); break;
+        case 'space': this.spaceModal.open(this.spaceManager, this.sim, this.toastManager); break;
+        case 'archaeology': this.archaeologyModal.open(this.archaeologySystem, this.sim, this.toastManager); break;
+        case 'scuba': this.scubaModal.open(this.scubaSystem, this.sim, this.toastManager); break;
+        case 'travel': this.travelModal.open(this.travelManager, this.sim, this.toastManager); break;
+        case 'smart_garden':
+          this.smartGarden.toggleSprinklers(this.gardenSystem);
+          this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
+          break;
+        case 'decorator': this.decoratorModal.open(this.decoratorSystem, this.sim, this.toastManager, this.soundManager); break;
+        case 'renters': this.rentersModal.open(this.sim, this.rentersManager, (amount) => { this.sim.simoleons += amount; }); break;
+        case 'pet_shelter': this.petShelterModal.open(this.petBreedingSystem, this.petManager, this.sim, this.toastManager, this.soundManager); break;
+        case 'band': this.bandModal.open(this.bandManager, this.sim, this.toastManager); break;
+        case 'director': this.directorModal.open(this.filmStudioSystem, this.sim, this.toastManager, this.soundManager); break;
+        case 'politics': this.politicsModal.open(this.politicsManager, this.sim, this.toastManager); break;
+        case 'theme_park': this.themeParkModal.open(this.themeParkManager, this.sim, this.toastManager); break;
+        case 'festival': this.festivalModal.open(this.sim, this.timeSystem.day, this.toastManager); break;
+        case 'pet_show': {
+          const pet = this.petManager.pets[0];
+          if (pet) this.petCompetitionModal.open(pet, this.sim, this.toastManager, this.soundManager);
+          else this.toastManager.showToast('🏆 Pet Show', 'Du benötigst ein Haustier im Haushalt!', '🐕', 'info');
+          break;
+        }
+        case 'magic': this.magicModal.open(this.magicManager, this, this.toastManager); break;
+        case 'modding': this.moddingModal.open(); break;
+        case 'cloud_gallery': this.cloudGalleryModal.open(); break;
+        case 'health': this.healthModal.open(this.healthSystem, this.sim, this.toastManager); break;
+        case 'vet': this.vetClinicModal.open(this.vetClinicManager, this.petManager.pets, this.sim, this.toastManager); break;
+        case 'school': this.schoolModal.open(this.schoolSystem, this.sim, this.toastManager); break;
+        case 'journal': this.lifeJournalModal.open(this.sim, this.traitQuestSystem, this.soundManager); break;
+        case 'fame': this.fameModal.open(this.fameSystem, this.sim, this.toastManager, this.soundManager); break;
+        case 'occult': this.occultModal.open(this.occultSystem, this.sim, this.toastManager, this.soundManager); break;
+        case 'aspirations': this.aspirationModal.open(this.sim, this.toastManager); break;
+        case 'calendar': this.calendarModal.open(this.calendarManager, this.sim, this.toastManager); break;
+        default:
+          this.toastManager.showToast('📱 SimOS App', `App ${appId} gestartet.`, '📱', 'info');
+      }
+    };
+
     this.hud.onOpenPetShow = () => {
       const pet = this.petManager.pets[0];
       if (pet) {

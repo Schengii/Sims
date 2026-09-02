@@ -379,6 +379,8 @@ export class SaveManager {
         occultData:      g.occultSystem?.exportData?.(),
         weddingData:     g.weddingManager?.exportData?.(),
         hobbyData:       g.hobbyManager?.exportData?.(),
+        marketData:      g.marketSystem?.exportData?.(),
+        smartGardenData: g.smartGarden?.exportData?.(),
       };
 
       // Merge into save object (skip undefined exports)
@@ -451,6 +453,8 @@ export class SaveManager {
         [g.occultSystem,       'occultData'],
         [g.weddingManager,     'weddingData'],
         [g.hobbyManager,       'hobbyData'],
+        [g.marketSystem,       'marketData'],
+        [g.smartGarden,        'smartGardenData'],
       ];
 
       systemImports.forEach(([system, key]) => {

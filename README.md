@@ -175,7 +175,28 @@ Sims/
 
 ## 📝 Changelog & Historie
 
-### Version 13.0.0 (Farm & Ranch Empire, Hollywood Film Studio, and Mega-Yacht Cruise Expansion)
+### Version 19.0.0 (SimOS 15 Pro Hub, Per-Sim Trait Autonomy, Multi-Touch Engine & Web Audio Soundfx)
+- **[Feature] SimOS 15 Pro Smartphone Hub (`SmartphoneModal.ts`, `Game.ts`)**:
+  - Zentrales smartes Betriebssystem im Glasmorphismus-Design mit 30+ integrierten Apps in 5 übersichtlichen Kategorien (Finanzen & Börse 📈, Reisen & Abenteuer 🌴, Smart Home & Design 🏡, Freizeit & Kultur 🎭, Familie & Gesundheit 🩺).
+  - Simstagram-Influencer Feed, Follower-Wachstum & Werbeeinnahmen, LlamaEats Express-Lieferdienst und SMS/Stadtgespräche.
+  - Nahtloses Direkt-Öffnen aller Subsysteme aus dem SimOS-App-Grid heraus mit dynamischem Audio-Feedback.
+- **[Engine & Autonomie] Multi-Sim Trait-KI & Cooldown-Fix (`SimAutonomy.ts`, `Sim.ts`)**:
+  - Unabhängige Cooldown-Timer (`autonomyCooldownSec`) pro Sim im Mehrpersonen-Haushalt, wodurch Multi-Sim Blockaden eliminiert wurden.
+  - Merkmal-abhängige Schwellenwerte & Objekt-Präferenzen (z. B. "Faul" legt sich früher aufs Sofa, "Genie" bevorzugt den PC, "Kreativ" die Staffelei, "Vielfraß" den Kühlschrank).
+- **[Audio] Prozedurale Möbel- & Interaktions-Synthesizer (`SoundManager.ts`)**:
+  - Prozedural synthetisierte Soundeffekte via Web Audio API für Kochen & Brutzeln (`playCookingSizzle`), Wasser & Dusche (`playWaterSplash`), PC-Tippen (`playTypingSound`), Kaminfeuer-Knacken (`playFireplaceCrackling`) und Smartphone-Chimes (`playPhoneRing`).
+  - SSR & Vitest geschützte AudioContext-Initialisierung mit Resilienz gegen Browser-Autoplay-Sperren.
+- **[Input & Steuerung] Multi-Touch & Mobile Gesten-Engine (`Input.ts`)**:
+  - 1-Finger Touch-Drag & Panning mit automatischer Drag-Threshold-Unterscheidung gegen versehentliche Klicks.
+  - 2-Finger Pinch-to-Zoom zur stufenlosen Skalierung auf Tablets und Mobilgeräten.
+- **[Persistenz & Stabilität] Lückenlose SaveManager-Erweiterung (`SaveManager.ts`, `EconomyMarketSystem.ts`, `SmartGardenSystem.ts`)**:
+  - Vollständige Serialisierung & Wiederherstellung von Börsen-Aktienportfolios, Marktpreisen und smarten Garten-Bewässerungszuständen.
+- **[Bugfixes] Unit-Test & Berechnungs-Reparaturen**:
+  - `NPCManager.ts`: Implementierung von `spawnVisitingNPC(...)` für Besucher & Multiplayer-Gäste.
+  - `TerrainElevation.ts`: Vorzeichen-Korrektur in `getYOffset(...)` zur Vermeidung von `-0` Fehlern.
+  - 39 Vitest-Testsuiten mit 89 automatisierten Tests laufen zu 100% grün durch.
+
+### Version 18.0.0 (Financial Market, Multiplayer Rooms, Cloud Gallery & Dynamic Environment Scoring)
 - **[Feature] Bauernhof & Ranch-Imperium (`FarmSystem.ts`, `RanchModal.ts`)**: Haltung von Nutztieren (Rinder 🐄 für Milch, Schafe 🐑 für Wolle, Llamas 🦙), Feldbau & Ernte (Riesen-Kürbis 🎃, Wassermelone 🍉, Weizen 🌾) und Verkauf auf dem Erzeugermarkt.
 - **[Feature] Hollywood Filmstudio & Regie (`FilmStudioSystem.ts`, `DirectorModal.ts`)**: Regieführung von Blockbustern in 4 Genres (Action 💥, Sci-Fi 🚀, Rom-Com 💕, Horror 👻), Einspielen hoher Kinokassen-Gewinne (§) & Gewinn von Starlight Oscar Trophäen 🏆.
 - **[Feature] Mega-Yacht & Insel-Kreuzfahrt Flotte (`YachtManager.ts`, `CruiseModal.ts`)**: Kauf luxuriöser Yachten (Sunseeker Express 🚤, Royal Ocean Liner 🛳️, Imperial Sovereign Mega-Yacht ⛵), Ausbau von Helipads, VIP-Casinos & Jacuzzi-Decks sowie Kassieren täglicher Charter-Einnahmen.

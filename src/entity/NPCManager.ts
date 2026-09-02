@@ -74,6 +74,27 @@ export class NPCManager {
     return townie;
   }
 
+  public spawnVisitingNPC(name: string, outfitColor: string = '#38bdf8', skinColor: string = '#f5d0b5'): NPCSim {
+    const id = `visitor_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`;
+    const posX = Math.floor(Math.random() * 8) + 4;
+    const posY = Math.floor(Math.random() * 8) + 4;
+    const sanitized = Sanitizer.sanitizeText(name, 24);
+    const visitor: NPCSim = {
+      id,
+      name: sanitized,
+      skinColor,
+      hairColor: '#4a2e18',
+      outfitColor,
+      trait: 'Besucher',
+      gridPos: { x: posX, y: posY },
+      renderPos: { x: posX, y: posY },
+      targetPath: [],
+      relationship: new Relationship(id, sanitized, 50, 0)
+    };
+    this.npcs.push(visitor);
+    return visitor;
+  }
+
   public update(deltaSec: number): void {
     const now = Date.now();
 

@@ -10,11 +10,9 @@ import { Pathfinding } from '../world/Pathfinding';
 import { FURNITURE_CATALOG } from '../world/Furniture';
 
 export class SimAutonomy {
-  private static cooldownSec: number = 0;
-
   public static update(sim: Sim, house: House, deltaSec: number): void {
-    if (this.cooldownSec > 0) {
-      this.cooldownSec -= deltaSec;
+    if (sim.autonomyCooldownSec > 0) {
+      sim.autonomyCooldownSec -= deltaSec;
       return;
     }
 
@@ -27,7 +25,15 @@ export class SimAutonomy {
     if (sim.isFainting) return;
 
     const lowest = sim.needs.getLowestNeed();
-    if (lowest.value >= 55) {
+    const traits = sim.getActiveTraitIds();
+
+    // Trait-based threshold adjustments
+    let threshold = 55;
+    if (traits.includes('lazy') && lowest.need === 'energy') threshold = 68; // Lazy sims want to rest earlier
+    if (traits.includes('glutton') && lowest.need === 'hunger') threshold = 70; // Glutton sims eat sooner
+    if (traits.includes('creative') && lowest.need === 'fun') threshold = 65;
+
+    if (lowest.value >= threshold) {
       // Needs are sufficiently high, no autonomous action required
       return;
     }
@@ -35,7 +41,7 @@ export class SimAutonomy {
     // Map needed category to target furniture ID prefix or type
     let targetFurnitureIds: string[] = [];
     if (lowest.need === 'energy') {
-      targetFurnitureIds = ['bed_basic', 'sofa_luxury'];
+      targetFurnitureIds = traits.includes('lazy') ? ['sofa_luxury', 'bed_basic'] : ['bed_basic', 'sofa_luxury'];
     } else if (lowest.need === 'hunger') {
       targetFurnitureIds = ['fridge_modern', 'party_buffet'];
     } else if (lowest.need === 'bladder') {
@@ -43,12 +49,17 @@ export class SimAutonomy {
     } else if (lowest.need === 'hygiene') {
       targetFurnitureIds = ['shower_glass', 'pool_ladder'];
     } else if (lowest.need === 'fun') {
-      targetFurnitureIds = ['tv_smart', 'pc_station', 'stereo_hifi', 'easel_artist'];
+      if (traits.includes('genius') || traits.includes('geek')) {
+        targetFurnitureIds = ['pc_station', 'tv_smart', 'easel_artist', 'stereo_hifi'];
+      } else if (traits.includes('creative')) {
+        targetFurnitureIds = ['easel_artist', 'stereo_hifi', 'tv_smart', 'pc_station'];
+      } else if (traits.includes('athletic')) {
+        targetFurnitureIds = ['pool_ladder', 'stereo_hifi', 'tv_smart'];
+      } else {
+        targetFurnitureIds = ['tv_smart', 'pc_station', 'stereo_hifi', 'easel_artist'];
+      }
     } else if (lowest.need === 'social') {
-      // Bug #4 fix: Social autonomy — sim moves toward stereo or phone to initiate contact
-      // Try furniture that boosts social (stereo for dancing) first
-      targetFurnitureIds = ['stereo_hifi', 'pc_station'];
-      // Note: NPC interaction is triggered via NPCAutonomy; here we boost fun via social furniture
+      targetFurnitureIds = ['stereo_hifi', 'pc_station', 'party_buffet'];
     }
 
     if (targetFurnitureIds.length === 0) return;
@@ -100,14 +111,13 @@ export class SimAutonomy {
           Object.entries(interaction.needEffects).forEach(([needKey, val]) => {
             if (val) sim.needs.modify(needKey as any, val);
           });
-          // Small social boost from autonomous social action
           if (lowest.need === 'social') {
             sim.needs.modify('social', 15);
           }
         }
       });
-      // Set a short cooldown before next autonomy check
-      this.cooldownSec = 8;
+      // Set a cooldown on this specific Sim
+      sim.autonomyCooldownSec = 7;
     }
   }
 }
