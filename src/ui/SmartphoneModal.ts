@@ -47,6 +47,7 @@ export class SmartphoneModal {
 
     // Reisen & Abenteuer
     { id: 'world_map', name: 'Weltkarte', category: 'travel', icon: '🗺️', color: '#0284c7', description: 'Reise zu Nachbarschaften & Lots' },
+    { id: 'skating', name: 'Schlittschuhbahn', category: 'travel', icon: '⛸️', badge: 'NEU', color: '#38bdf8', description: 'Eiskunstlauf, Hockey & Punsch' },
     { id: 'observatory', name: 'Observatorium', category: 'travel', icon: '🔭', badge: 'NEU', color: '#0ea5e9', description: 'Sterne scannen & Meteoriten bergen' },
     { id: 'cruise', name: 'Luxuskreuzfahrt', category: 'travel', icon: '🚢', badge: 'VIP', color: '#0ea5e9', description: 'Yachtreisen & Ozean-Abenteuer' },
     { id: 'space', name: 'Weltraum', category: 'travel', icon: '🚀', color: '#6366f1', description: 'Raketenstarts & Alien-Erkundung' },
@@ -55,6 +56,7 @@ export class SmartphoneModal {
     { id: 'travel', name: 'Urlaubswelten', category: 'travel', icon: '✈️', color: '#ec4899', description: 'Tropenstrände & Bergresorts' },
 
     // Smart Home & Lifestyle
+    { id: 'beekeeping', name: 'Honigmanufaktur', category: 'home', icon: '🐝', badge: 'NEU', color: '#f59e0b', description: 'Honig schleudern & Kerzen gießen' },
     { id: 'bakery', name: 'Gourmet-Bäckerei', category: 'home', icon: '🥐', badge: 'NEU', color: '#f59e0b', description: 'Torten, Croissants & Konditorei' },
     { id: 'wall_designer', name: 'Wand-Designer', category: 'home', icon: '🧱', badge: 'NEU', color: '#0284c7', description: 'Tapeten, Klinker & Marmor-Muster' },
     { id: 'greenhouse', name: 'Gewächshaus', category: 'home', icon: '🌿', badge: 'NEU', color: '#4ade80', description: 'Botanik-Kreuzung & Veredelung' },
@@ -65,6 +67,7 @@ export class SmartphoneModal {
     { id: 'pet_shelter', name: 'Tierheim & Zucht', category: 'home', icon: '🐾', color: '#f43f5e', description: 'Welpen adoptieren & Stammbaum' },
 
     // Kultur, Freizeit & Social
+    { id: 'runway', name: 'Modenschau-Catwalk', category: 'culture', icon: '💃', badge: 'NEU', color: '#f472b6', description: 'Laufsteg-Shows & Model-Agentur' },
     { id: 'cinema', name: 'Heimkino-Saal', category: 'culture', icon: '🎬', badge: 'NEU', color: '#ec4899', description: 'Filmvorführungen, Popcorn & Kino' },
     { id: 'magic_duel', name: 'Magier-Duellarena', category: 'culture', icon: '🪄', badge: 'NEU', color: '#c084fc', description: 'Zauberspruch-Duelle & Turniere' },
     { id: 'alchemy', name: 'Alchemie-Kessel', category: 'culture', icon: '🔮', badge: 'NEU', color: '#c084fc', description: 'Tränke brauen & Elixiere alchemieren' },

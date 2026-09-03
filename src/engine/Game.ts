@@ -191,6 +191,12 @@ import { HerbalSpaSystem } from '../systems/HerbalSpaSystem';
 import { HerbalSpaModal } from '../ui/HerbalSpaModal';
 import { GenealogyTreeSystem } from '../systems/GenealogyTreeSystem';
 import { GenealogyTreeModal } from '../ui/GenealogyTreeModal';
+import { IceSkatingSystem } from '../systems/IceSkatingSystem';
+import { IceSkatingModal } from '../ui/IceSkatingModal';
+import { BeekeepingManufactorySystem } from '../systems/BeekeepingManufactorySystem';
+import { BeekeepingModal } from '../ui/BeekeepingModal';
+import { FashionRunwaySystem } from '../systems/FashionRunwaySystem';
+import { FashionRunwayModal } from '../ui/FashionRunwayModal';
 
 export class Game {
   private canvas: HTMLCanvasElement;
@@ -368,6 +374,12 @@ export class Game {
   public spaModal: HerbalSpaModal;
   public genealogySystem: GenealogyTreeSystem;
   public genealogyModal: GenealogyTreeModal;
+  public skatingSystem: IceSkatingSystem;
+  public skatingModal: IceSkatingModal;
+  public beekeepingSystem: BeekeepingManufactorySystem;
+  public beekeepingModal: BeekeepingModal;
+  public runwaySystem: FashionRunwaySystem;
+  public runwayModal: FashionRunwayModal;
 
   private movingFurnitureInstanceId: string | null = null;
   private roomStartGrid: { x: number; y: number } | null = null;
@@ -562,6 +574,12 @@ export class Game {
     this.spaModal = new HerbalSpaModal(uiContainer, this.spaSystem, this.sim, this.toastManager, this.soundManager);
     this.genealogySystem = new GenealogyTreeSystem();
     this.genealogyModal = new GenealogyTreeModal(uiContainer, this.genealogySystem, this.sim, this.household, this.toastManager, this.soundManager);
+    this.skatingSystem = new IceSkatingSystem();
+    this.skatingModal = new IceSkatingModal(uiContainer, this.skatingSystem, this.sim, this.toastManager, this.soundManager);
+    this.beekeepingSystem = new BeekeepingManufactorySystem();
+    this.beekeepingModal = new BeekeepingModal(uiContainer, this.beekeepingSystem, this.sim, this.toastManager, this.soundManager);
+    this.runwaySystem = new FashionRunwaySystem();
+    this.runwayModal = new FashionRunwayModal(uiContainer, this.runwaySystem, this.sim, this.toastManager, this.soundManager);
 
     this.inputHandler = new InputHandler(this.canvas, this.camera, this.renderer, this.soundManager);
     this.inputHandler.onUndoPressed = () => {
@@ -1151,6 +1169,9 @@ export class Game {
         case 'observatory': this.observatoryModal.open(); break;
         case 'herbal_spa': this.spaModal.open(); break;
         case 'genealogy_tree': this.genealogyModal.open(); break;
+        case 'skating': this.skatingModal.open(); break;
+        case 'beekeeping': this.beekeepingModal.open(); break;
+        case 'runway': this.runwayModal.open(); break;
         case 'smart_garden':
           this.smartGarden.toggleSprinklers(this.gardenSystem);
           this.toastManager.showToast('🌿 Smart Garden', 'Intelligente Bodenbewässerung umgeschaltet!', '🌱', 'success');
@@ -1416,6 +1437,12 @@ export class Game {
           this.observatoryModal.open();
         } else if (interaction.id === 'open_spa') {
           this.spaModal.open();
+        } else if (interaction.id === 'open_skating') {
+          this.skatingModal.open();
+        } else if (interaction.id === 'open_beekeeping') {
+          this.beekeepingModal.open();
+        } else if (interaction.id === 'open_runway') {
+          this.runwayModal.open();
         }
 
         if (interaction.id === 'serve_buffet') {

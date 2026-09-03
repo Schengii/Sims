@@ -175,6 +175,22 @@ Sims/
 
 ## 📝 Changelog & Historie
 
+### Version 27.0.0 (Winter Resort Ice Skating, Beekeeping Manufactory & Fashion Runway)
+- **[Winter & Eissport] Outdoor-Schlittschuhbahn & Glühweinhütte (`IceSkatingSystem.ts`, `IceSkatingModal.ts`, `Furniture.ts`)**:
+  - Neue Winter-Möbel: **Outdoor-Kunsteisbahn** (`ice_skating_rink`, § 1.800) und **Glühwein- & Punschhütte** (`hot_punch_stand`, § 450).
+  - Eislauf-Skilltraining (Stufen 1–5), Hockey-Matches (+45 Spaß, +30 Sozial) und winterliche Eiskunstlauf-Kür vor Jury mit Gold-, Silber- und Bronzemedaillen sowie bis zu § 1.800 Preisgeld.
+  - SimOS-App *"Schlittschuhbahn"* (`skating`).
+- **[Imkerei & Kerzen] Honigmanufaktur & Bienenwachs-Gießerei (`BeekeepingManufactorySystem.ts`, `BeekeepingModal.ts`, `Furniture.ts`)**:
+  - Neue Imkerei-Möbel: **Elektrische Honigschleuder** (`honey_centrifuge`, § 650) und **Bienenwachs-Gießtisch** (`candle_crafting_station`, § 450).
+  - 4 Manufaktur-Erzeugnisse: *Edler Bio-Blütenhonig* (🍯 § 90), *Duftende Bienenwachskerze* (🕯️ § 65), *Gelee-Royale-Gesichtsmaske* (🧴 § 140) und *Propolis-Immunelixier* (🐝 § 180).
+  - SimOS-App *"Honigmanufaktur"* (`beekeeping`).
+- **[Glamour & Mode] LED-Catwalk & Modelagentur (`FashionRunwaySystem.ts`, `FashionRunwayModal.ts`, `Furniture.ts`)**:
+  - Neue Mode-Möbel: **LED-Laufsteg & Catwalk** (`fashion_runway`, § 1.600) und **Bühnen-Flutlichter** (`runway_spotlights`, § 500).
+  - 3 Fashion-Shows (*Urban Streetwear*, *Haute-Couture Galanacht*, *Avantgarde Fashion Finale*) mit Gagen bis § 3.500 und Model-Ratings (1 bis 5 Sterne ⭐).
+  - SimOS-App *"Modenschau-Catwalk"* (`runway`).
+- **[Testing & Persistenz] 57 Testsuiten & 125 Tests (100% grün)**:
+  - Vollständige Persistenz aller Eislauf-, Imkerei- und Modenschau-Daten im `SaveManager.ts`.
+
 ### Version 26.0.0 (Astronomy Observatory, Herbal Spa Wellness & Multi-Gen Genealogy Tree 3.0)
 - **[Astronomie & Kosmos] Sternwarte, Meteoritenschauer & Alien-Signale (`ObservatorySystem.ts`, `ObservatoryModal.ts`, `Furniture.ts`)**:
   - Neue Astronomie-Möbel: **Großes Spiegelteleskop** (`astronomy_telescope`, § 1.350) und **Meteoriten-Schaupodest** (`meteorite_display_stand`, § 450).

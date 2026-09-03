@@ -1494,5 +1494,137 @@ export const FURNITURE_CATALOG: Record<string, FurnitureDefinition> = {
         needEffects: { energy: 40, fun: 35 }
       }
     ]
+  },
+
+  ice_skating_rink: {
+    id: 'ice_skating_rink',
+    name: 'Outdoor-Kunsteisbahn',
+    category: 'entertainment',
+    price: 1800,
+    width: 3,
+    height: 2,
+    color: '#0284c7',
+    accentColor: '#38bdf8',
+    icon: '⛸️',
+    description: 'Glatte Eisfläche für Pirouetten, Hockey-Matches und Eiskunstlauf-Wettbewerbe.',
+    interactions: [
+      {
+        id: 'open_skating',
+        label: 'Schlittschuhbahn betreten',
+        icon: '⛸️',
+        duration: 4,
+        needEffects: { fun: 35 }
+      }
+    ]
+  },
+
+  hot_punch_stand: {
+    id: 'hot_punch_stand',
+    name: 'Glühwein- & Punschhütte',
+    category: 'appliances',
+    price: 450,
+    width: 1,
+    height: 1,
+    color: '#b45309',
+    accentColor: '#fbbf24',
+    icon: '☕',
+    description: 'Holzhütte mit dampfendem Gewürzpunsch für kalte Wintertage.',
+    interactions: [
+      {
+        id: 'open_skating',
+        label: 'Punsch bestellen',
+        icon: '☕',
+        duration: 3,
+        needEffects: { hunger: 20, energy: 20 }
+      }
+    ]
+  },
+
+  honey_centrifuge: {
+    id: 'honey_centrifuge',
+    name: 'Elektrische Honigschleuder',
+    category: 'appliances',
+    price: 650,
+    width: 1,
+    height: 1,
+    color: '#d97706',
+    accentColor: '#fde68a',
+    icon: '🍯',
+    description: 'Edelstahl-Zentrifuge zur Gewinnung von reinem Blütenhonig.',
+    interactions: [
+      {
+        id: 'open_beekeeping',
+        label: 'Honigschleuder öffnen',
+        icon: '🍯',
+        duration: 4,
+        needEffects: { fun: 20 }
+      }
+    ]
+  },
+
+  candle_crafting_station: {
+    id: 'candle_crafting_station',
+    name: 'Bienenwachs-Gießtisch',
+    category: 'surfaces',
+    price: 450,
+    width: 2,
+    height: 1,
+    color: '#78350f',
+    accentColor: '#fbbf24',
+    icon: '🕯️',
+    description: 'Werkbank zum Gießen duftender Bienenwachskerzen und Kosmetik.',
+    interactions: [
+      {
+        id: 'open_beekeeping',
+        label: 'Kerzenwerkstatt öffnen',
+        icon: '🕯️',
+        duration: 4,
+        needEffects: { fun: 25 }
+      }
+    ]
+  },
+
+  fashion_runway: {
+    id: 'fashion_runway',
+    name: 'LED-Laufsteg & Catwalk',
+    category: 'entertainment',
+    price: 1600,
+    width: 3,
+    height: 1,
+    color: '#831843',
+    accentColor: '#f43f5e',
+    icon: '💃',
+    description: 'Beleuchteter Catwalk für glamouröse Haute-Couture Modenschauen.',
+    interactions: [
+      {
+        id: 'open_runway',
+        label: 'Modenschau starten',
+        icon: '💃',
+        duration: 5,
+        needEffects: { fun: 40, social: 30 }
+      }
+    ]
+  },
+
+  runway_spotlights: {
+    id: 'runway_spotlights',
+    name: 'Bühnen-Flutlichter',
+    category: 'decor',
+    price: 500,
+    width: 1,
+    height: 1,
+    color: '#1e293b',
+    accentColor: '#fde047',
+    icon: '💡',
+    description: 'Starke Studio-Scheinwerfer für den perfekten Auftritt im Rampenlicht.',
+    interactions: [
+      {
+        id: 'open_runway',
+        label: 'Rampenlicht einschalten',
+        icon: '✨',
+        duration: 3,
+        needEffects: { fun: 20 }
+      }
+    ]
   }
 };
